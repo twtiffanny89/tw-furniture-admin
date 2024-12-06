@@ -3,6 +3,7 @@ import { menuItemsSlibar } from "@/constants/data/slideBarData";
 import { UserRoleEnum } from "@/constants/enum/UserRoleEnum";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 const MenuSidebar = () => {
   const pathname = usePathname();
@@ -27,7 +28,7 @@ const MenuSidebar = () => {
         href="/login"
         className="flex mb-4 items-end py-2 gap-2 sticky left-0 right-0 top-0"
       >
-        <img src="/img/haha.png" alt="logo" width={52} height={42} />
+        <Image src="/img/haha.png" alt="logo" width={52} height={42} />
       </Link>
       <div data-aos="fade-right" className=" ">
         <div className="text-sm flex flex-col space-y-4 text-gray-300">

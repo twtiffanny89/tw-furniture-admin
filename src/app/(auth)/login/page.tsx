@@ -9,7 +9,7 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 const LoginPage = () => {
   const [adUsername, setAdUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loading] = useState(false);
+
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
@@ -61,7 +61,7 @@ const LoginPage = () => {
               <span className="text-red-500 ml-1">*</span>
             </label>
             <Input
-              disabled={loading}
+              // disabled={loading}
               type="text"
               id="email"
               value={adUsername}
@@ -85,7 +85,7 @@ const LoginPage = () => {
             </label>
             <div className="relative">
               <Input
-                disabled={loading}
+                // disabled={loading}
                 type={passwordVisible ? "text" : "password"} // Toggle input type between text and password
                 id="password"
                 value={password}
@@ -111,7 +111,7 @@ const LoginPage = () => {
           <Button
             type="submit"
             className={`w-full h-11`}
-            loading={loading}
+            // loading={loading}
             textLoading="Logging in..."
             scaleOnHover={false}
           >
