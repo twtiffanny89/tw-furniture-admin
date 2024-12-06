@@ -9,12 +9,14 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 const LoginPage = () => {
   const [adUsername, setAdUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  const handleLogin = async (e: React.FormEvent) => {};
+  // const handleLogin = async (e: React.FormEvent) => {};
+
+  const handleLogin = async () => {};
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAdUsername(e.target.value);
@@ -25,7 +27,7 @@ const LoginPage = () => {
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      handleLogin(e as unknown as React.FormEvent);
+      // handleLogin(e as unknown as React.FormEvent);
     }
   };
 
@@ -51,7 +53,7 @@ const LoginPage = () => {
         <p className="text-base mb-4 text-black opacity-50">
           Please login to use dashboard
         </p>
-        <div className="h-[1px] bg-[#D9D9D9] w-full mb-4"/>
+        <div className="h-[1px] bg-[#D9D9D9] w-full mb-4" />
         <form onSubmit={handleLogin} className="">
           <div className="mb-4">
             <label className="block text-sm font-medium text-black">
