@@ -43,10 +43,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div
-      data-aos="fade-up"
-      className="flex items-center justify-center min-h-screen bg-gray-100"
-    >
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg transition-transform duration-300 hover:scale-x-105">
         <h1 className="text-2xl font-bold">Welcome to,</h1>
         <h2 className="text-2xl font-bold mb-2">TW Furniture Kh - Admin</h2>
