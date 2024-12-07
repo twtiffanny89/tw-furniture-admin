@@ -20,7 +20,7 @@ export const slideBarData = [
       },
       {
         label: "Position",
-        href: "/position",
+        href: "/login",
         icon: <FaCog />, // Add an icon
       },
       {

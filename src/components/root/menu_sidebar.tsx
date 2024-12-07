@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import { slideBarData } from "@/constants/data/slide_bar_data";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { routed } from "@/constants/navigation/routed";
+import { usePathname } from "next/navigation";
 
 const MenuSidebar = () => {
   const pathname = usePathname();
   const [activeHref, setActiveHref] = useState(pathname);
-  const router = useRouter();
 
   useEffect(() => {
     setActiveHref(pathname);
@@ -15,7 +13,6 @@ const MenuSidebar = () => {
 
   function onNavigation(item: string) {
     if (item == "/logout") {
-      router.replace(`/${routed.login}`);
     } else {
       setActiveHref(item);
     }
