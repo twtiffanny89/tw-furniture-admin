@@ -1,9 +1,10 @@
 "use client";
 
-import Button from "@/components/custom/Button";
-import Input from "@/components/custom/Input";
-import MessgaeError from "@/components/error-handle/MessageError";
+import Button from "@/components/custom/button";
+import Input from "@/components/custom/input";
+import MessgaeError from "@/components/error-handle/message_error";
 import { LoginService } from "@/service/auth/login_service";
+import { getCookieToken } from "@/utils/security/token";
 import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
@@ -15,6 +16,8 @@ const LoginPage = () => {
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
   // const handleLogin = async (e: React.FormEvent) => {};
+
+  console.log("## ==", getCookieToken());
 
   const handleLogin = async () => {
     const response = await LoginService({ password, username });

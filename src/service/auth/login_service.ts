@@ -1,4 +1,5 @@
 import { axiosNoAuth } from "@/utils/api/axios";
+import { setCookieToken } from "@/utils/security/token";
 
 interface LoginServiceParam {
   username: string;
@@ -6,12 +7,17 @@ interface LoginServiceParam {
 }
 
 export async function LoginService(data: LoginServiceParam) {
-  console.log("## ", process.env.NEXT_PUBLIC_BASE_URL);
   try {
     const response = await axiosNoAuth.post("/v1/admin/auth/login", data);
-    return response.data;
-  } catch (e) {
-    console.log("## ==", e);
-    return null;
+    setCookieToken(response.data.data.accessToken);
+    return {
+      success: true,
+      data: "",
+    };
+  } catch {
+    return {
+      success: false,
+      data: "",
+    };
   }
 }
