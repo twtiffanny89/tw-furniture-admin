@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import "aos/dist/aos.css";
-import ReduxProvider from "./reduxProvidor";
+import ReduxProvider from "./redux_providor";
 import Head from "next/head";
 import { Inter } from "next/font/google"; // Google Fonts (example)
 

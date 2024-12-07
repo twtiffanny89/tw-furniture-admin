@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getCookieToken } from "../security/token";
 
 // Base Axios instance (no token required)
 const axiosNoAuth = axios.create({
@@ -22,12 +23,12 @@ const axiosWithAuth = axios.create({
 // Adding an interceptor to include the token for requests that require authentication
 axiosWithAuth.interceptors.request.use(
   (config) => {
-    // const token = TokenStorage.getToken();
+    const token = getCookieToken();
+    console.log("###", token);
 
-    // if (token) {
-    //   config.headers["Authorization"] = Bearer ${token};
-    // }
-
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {

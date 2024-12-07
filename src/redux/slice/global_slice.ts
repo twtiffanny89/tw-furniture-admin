@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { GlobalModel } from "../model/global-model/GlobalModel";
+import { GlobalModel } from "../model/global-model/Global_model";
 
 const initialState: GlobalModel = {
   globalData: null,

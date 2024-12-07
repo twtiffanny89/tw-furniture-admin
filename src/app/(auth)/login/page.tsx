@@ -3,8 +3,11 @@
 import Button from "@/components/custom/button";
 import Input from "@/components/custom/input";
 import MessgaeError from "@/components/error-handle/message_error";
+import showToast from "@/components/error-handle/show-toast";
+import { routed } from "@/constants/navigation/routed";
 import { LoginService } from "@/service/auth/login_service";
 import { getCookieToken } from "@/utils/security/token";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
@@ -12,16 +15,23 @@ const LoginPage = () => {
   const [username, setUsername] = useState("menghorfreelance@gmail.com");
   const [password, setPassword] = useState("71OV58HM");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
-
-  // const handleLogin = async (e: React.FormEvent) => {};
+  const router = useRouter();
 
   console.log("## ==", getCookieToken());
 
   const handleLogin = async () => {
+    setLoading(true);
     const response = await LoginService({ password, username });
-    console.log("###", response);
+    if (response.success) {
+      showToast(response.data, "success");
+      router.replace(`/${routed.userManagement}/${routed.allUser}`);
+    } else {
+      showToast(response.data, "error");
+    }
+    setLoading(false);
   };
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,7 +74,7 @@ const LoginPage = () => {
               <span className="text-red-500 ml-1">*</span>
             </label>
             <Input
-              // disabled={loading}
+              disabled={loading}
               type="text"
               id="email"
               value={username}
@@ -88,7 +98,7 @@ const LoginPage = () => {
             </label>
             <div className="relative">
               <Input
-                // disabled={loading}
+                disabled={loading}
                 type={passwordVisible ? "text" : "password"} // Toggle input type between text and password
                 id="password"
                 value={password}
@@ -114,7 +124,7 @@ const LoginPage = () => {
           <Button
             onClick={handleLogin}
             className={`w-full h-11 `}
-            // loading={loading}
+            loading={loading}
             textLoading="Logging in..."
             scaleOnHover={false}
           >

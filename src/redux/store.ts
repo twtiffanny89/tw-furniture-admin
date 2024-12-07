@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-import loggerMiddleware from "./middleware/loggerMiddleware";
-import rootReducer from "./root-reducer";
+import loggerMiddleware from "./middleware/logger_middleware";
+import rootReducer from "./root_reducer";
 
 // Create and configure the Redux store
 const store = configureStore({
