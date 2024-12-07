@@ -14,7 +14,6 @@ const axiosNoAuth = axios.create({
 const axiosWithAuth = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
   timeout: 400000,
-  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
@@ -24,8 +23,6 @@ const axiosWithAuth = axios.create({
 axiosWithAuth.interceptors.request.use(
   (config) => {
     const token = getCookieToken();
-    console.log("###", token);
-
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }

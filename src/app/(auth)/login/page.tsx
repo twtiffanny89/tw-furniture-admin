@@ -5,7 +5,7 @@ import Input from "@/components/custom/input";
 import MessgaeError from "@/components/error-handle/message_error";
 import showToast from "@/components/error-handle/show-toast";
 import { routed } from "@/constants/navigation/routed";
-import { LoginService } from "@/service/auth/login_service";
+import { LoginService } from "@/redux/action/auth/login_service";
 import { getCookieToken } from "@/utils/security/token";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";

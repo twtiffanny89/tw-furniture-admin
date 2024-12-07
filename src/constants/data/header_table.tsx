@@ -1,12 +1,28 @@
 export const headerAllUser: string[] = [
-  "ID",
+  "Id",
   "Profile",
   "Username",
-  "Phone number",
+  "Created at",
+  "Role",
   "First name",
   "Last name",
+  "Phone number",
   "Active",
-  "CreatedAt",
-  "Role",
   "Action",
+];
+
+export const headerActivityLog: string[] = [
+  "Id",
+  "Profile",
+  "Client IP",
+  "Device model",
+  "Device OS",
+  "OS version",
+  "Device",
+  "Location",
+  "Created at",
+  "User Id",
+  "First name",
+  "Last name",
+  "Username",
 ];

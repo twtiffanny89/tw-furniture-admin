@@ -1,5 +1,6 @@
 import { keyStorage } from "@/constants/storage/key_storage";
 import Cookies from "js-cookie";
+import { cookies } from "next/headers";
 
 // Function to store a cookie
 export const setCookieToken = (value: string) => {
@@ -12,17 +13,13 @@ export const setCookieToken = (value: string) => {
 
 // Function to retrieve a cookie
 export const getCookieToken = () => {
+  // Client environment
   return Cookies.get(keyStorage.TOKEN);
 };
 
 // Function to retrieve all cookies
 export const getAllCookies = () => {
   return Cookies.get();
-};
-
-// Function to remove a specific cookie
-export const removeCookieToken = () => {
-  Cookies.remove(keyStorage.TOKEN, { path: "/" });
 };
 
 // Function to remove all cookies

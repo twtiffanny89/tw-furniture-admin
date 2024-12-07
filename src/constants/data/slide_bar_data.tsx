@@ -19,29 +19,9 @@ export const slideBarData = [
         icon: <FaHome />, // Add an icon
       },
       {
-        label: "Position",
-        href: "/login",
+        label: "Activity log",
+        href: `/${routed.userManagement}/${routed.activityLog}`,
         icon: <FaCog />, // Add an icon
-      },
-      {
-        label: "User Management",
-        href: "/user-management",
-        icon: <MdGroup />, // Add an icon
-      },
-      {
-        label: "User Request",
-        href: "/user-request",
-        icon: <MdPersonAdd />, // Add an icon
-      },
-      {
-        label: "Cash Management",
-        href: "/cash-management",
-        icon: <FaMoneyBillWave />, // Add an icon
-      },
-      {
-        label: "Cash Report",
-        href: "/cash-report",
-        icon: <FaFileInvoiceDollar />,
       },
     ],
   },

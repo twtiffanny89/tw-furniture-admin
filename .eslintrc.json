@@ -4,7 +4,9 @@
     {
       "files": ["path/to/your/file.tsx"],
       "rules": {
-        "@next/next/no-img-element": "off"
+        "@next/next/no-img-element": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-explicit-any": "off"
       }
     }
   ]

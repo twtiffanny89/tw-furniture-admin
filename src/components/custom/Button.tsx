@@ -27,7 +27,7 @@ const Button: React.FC<ButtonProps> = ({
 
   // Conditional loading styles
   const loadingStyles = loading
-    ? "bg-blue-400 text-white cursor-default"
+    ? "bg-primary text-white cursor-default opacity-40 "
     : variantStyles;
 
   // Add scale effect unless loading and if scaleOnHover is true
