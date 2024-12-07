@@ -110,7 +110,7 @@ const LoginPage = () => {
 
           <Button
             onClick={handleLogin}
-            className={`w-full h-11`}
+            className={`w-full h-11 `}
             // loading={loading}
             textLoading="Logging in..."
             scaleOnHover={false}

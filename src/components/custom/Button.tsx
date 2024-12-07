@@ -22,7 +22,7 @@ const Button: React.FC<ButtonProps> = ({
     "px-4 rounded focus:outline-none transition duration-300 transform flex justify-center items-center"; // Base styles for the button
   const variantStyles =
     variant === "submit"
-      ? "bg-gray-800  text-white hover:bg-black"
+      ? "bg-primary  text-white hover:bg-hoverPrimary"
       : "bg-gray-400 text-white hover:bg-gray-500";
 
   // Conditional loading styles
