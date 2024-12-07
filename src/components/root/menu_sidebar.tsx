@@ -38,7 +38,7 @@ const MenuSidebar = () => {
                     href={item.href == "/logout" ? "" : item.href}
                     key={item.label + index}
                     onClick={() => onNavigation(item.href)}
-                    className={`flex mb-2 lg:mb-0 items-center justify-center lg:justify-start gap-2 py-1 md:px-1.5 rounded-md transition-colors ${
+                    className={`flex mb-2 lg:mb-0 items-center justify-center lg:justify-start gap-2 py-1 md:px-1.5 rounded transition-colors ${
                       isActive
                         ? "text-white font-semibold bg-primary shadow-md" // Active background blue-500
                         : "text-white hover:text-white hover:bg-primary opacity-85 hover:bg-opacity-75" // Hover effect with blue-500
