@@ -39,7 +39,7 @@ axiosWithAuth.interceptors.response.use(
   (response) => {
     if (process.env.NEXT_PUBLIC_NODE_ENV == "development") {
       console.log(
-        "%c@@ Success: %cEndpoint hit successfully! %cURL: " +
+        "%c## Success: %cEndpoint hit successfully! %cURL: " +
           response.config.url +
           " %cStatus: " +
           response.status,
@@ -56,7 +56,7 @@ axiosWithAuth.interceptors.response.use(
       const { response } = error;
       if (response) {
         console.log(
-          "%c@@ Error: %cAn error occurred while hitting the endpoint! %cURL: " +
+          "%c## Error: %cAn error occurred while hitting the endpoint! %cURL: " +
             response.config.url +
             " %cStatus: " +
             response.status,
@@ -75,7 +75,7 @@ axiosNoAuth.interceptors.response.use(
   (response) => {
     if (process.env.NEXT_PUBLIC_NODE_ENV == "development") {
       console.log(
-        "%c@@ Success: %cEndpoint hit successfully! %cURL: " +
+        "%c## Success: %cEndpoint hit successfully! %cURL: " +
           response.config.url +
           " %cStatus: " +
           response.status,
@@ -92,7 +92,7 @@ axiosNoAuth.interceptors.response.use(
       const { response } = error;
       if (response) {
         console.log(
-          "%c@@ Error: %cAn error occurred while hitting the endpoint! %cURL: " +
+          "%c## Error: %cAn error occurred while hitting the endpoint! %cURL: " +
             response.config.url +
             " %cStatus: " +
             response.status,

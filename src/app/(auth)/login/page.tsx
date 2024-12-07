@@ -3,23 +3,26 @@
 import Button from "@/components/custom/Button";
 import Input from "@/components/custom/Input";
 import MessgaeError from "@/components/error-handle/MessageError";
+import { LoginService } from "@/service/auth/login_service";
 import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const LoginPage = () => {
-  const [adUsername, setAdUsername] = useState("");
-  const [password, setPassword] = useState("");
-
+  const [username, setUsername] = useState("menghorfreelance@gmail.com");
+  const [password, setPassword] = useState("71OV58HM");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
   // const handleLogin = async (e: React.FormEvent) => {};
 
-  const handleLogin = async () => {};
+  const handleLogin = async () => {
+    const response = await LoginService({ password, username });
+    console.log("###", response);
+  };
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAdUsername(e.target.value);
+    setUsername(e.target.value);
     if (usernameError) {
       setUsernameError(null);
     }
@@ -27,7 +30,7 @@ const LoginPage = () => {
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      // handleLogin(e as unknown as React.FormEvent);
+      handleLogin();
     }
   };
 
@@ -61,10 +64,10 @@ const LoginPage = () => {
               // disabled={loading}
               type="text"
               id="email"
-              value={adUsername}
+              value={username}
               onChange={handleUsernameChange} // Use new handler
-              placeholder="Enter your email"
-              className="mt-1 w-full py-2 px-4"
+              placeholder="Enter your username"
+              className="mt-1 w-full h-11 px-4"
               onKeyDown={handleKeyPress}
             />
             {usernameError && (
@@ -88,7 +91,7 @@ const LoginPage = () => {
                 value={password}
                 onChange={handlePasswordChange} // Use new handler
                 placeholder="Enter your password"
-                className="mt-1 w-full py-2 px-4"
+                className="mt-1 w-full h-11 px-4"
                 autoComplete="new-password"
                 onKeyDown={handleKeyPress}
               />
@@ -106,7 +109,7 @@ const LoginPage = () => {
           </div>
 
           <Button
-            type="submit"
+            onClick={handleLogin}
             className={`w-full h-11`}
             // loading={loading}
             textLoading="Logging in..."
@@ -114,6 +117,9 @@ const LoginPage = () => {
           >
             Login
           </Button>
+          <p className="text-center mt-4 text-[#00000096]">
+            Contact Support: +855 12345678
+          </p>
         </form>
       </div>
     </div>
