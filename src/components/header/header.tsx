@@ -10,6 +10,8 @@ interface HeaderProps {
   onRefreshClick?: () => void;
   onExportClick?: () => void;
   onAddNewClick?: () => void;
+  showAdd?: Boolean;
+  showExport?: Boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -17,6 +19,8 @@ const Header: React.FC<HeaderProps> = ({
   onRefreshClick,
   onExportClick,
   onAddNewClick,
+  showAdd = false,
+  showExport = false,
 }) => {
   return (
     <div className="p-4 bg-white">
@@ -32,16 +36,20 @@ const Header: React.FC<HeaderProps> = ({
           <Button className="w-9 h-9" onClick={onRefreshClick}>
             <HiRefresh size={20} />
           </Button>
-          <Button className="w-9 h-9" onClick={onExportClick}>
-            <LuDownload size={16} />
-          </Button>
+          {showExport && (
+            <Button className="w-9 h-9" onClick={onExportClick}>
+              <LuDownload size={16} />
+            </Button>
+          )}
         </div>
-        <Button
-          className="px-4 h-9 ml-2 font-normal text-xs"
-          onClick={onAddNewClick}
-        >
-          <IoMdAdd className="text-white mr-1" size={18} /> Add New
-        </Button>
+        {showAdd && (
+          <Button
+            className="px-4 h-9 ml-2 font-normal text-xs"
+            onClick={onAddNewClick}
+          >
+            <IoMdAdd className="text-white mr-1" size={18} /> Add New
+          </Button>
+        )}
       </div>
     </div>
   );

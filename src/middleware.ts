@@ -7,9 +7,9 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get(keyStorage.TOKEN);
 
   // Check if the request is for a public path
-  if (!token) {
-    return NextResponse.redirect(new URL(`/${routed.login}`, request.url));
-  }
+  // if (!token) {
+  //   return NextResponse.redirect(new URL(`/${routed.login}`, request.url));
+  // }
 
   // If the token exists, allow access to the requested page
   return NextResponse.next();

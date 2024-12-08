@@ -26,6 +26,21 @@ export const slideBarData = [
     ],
   },
   {
+    title: "Product Management",
+    items: [
+      {
+        label: "Category",
+        href: `/${routed.productManagement}/${routed.category}`,
+        icon: <FaHome />, // Add an icon
+      },
+      {
+        label: "Sub category",
+        href: `/${routed.productManagement}/${routed.subCategory}`,
+        icon: <FaCog />, // Add an icon
+      },
+    ],
+  },
+  {
     title: "OTHER",
     items: [
       {

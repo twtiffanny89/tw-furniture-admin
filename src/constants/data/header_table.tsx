@@ -26,3 +26,26 @@ export const headerActivityLog: string[] = [
   "Last name",
   "Username",
 ];
+
+export const headerCategory: string[] = [
+  "Id",
+  "Image",
+  "Name",
+  "Created at",
+  "Updated at",
+  "Product In",
+  "Subcategory In",
+  "Action",
+];
+
+export const headerSubCategory: string[] = [
+  "Id",
+  "Image",
+  "Name",
+  "Created at",
+  "Updated at",
+  "Category Id",
+  "Category name",
+  "Product In",
+  "Action",
+];

@@ -4,7 +4,9 @@ import Button from "@/components/custom/button";
 import CashImage from "@/components/custom/CashImage";
 import showToast from "@/components/error-handle/show-toast";
 import Header from "@/components/header/header";
+import Pagination from "@/components/pagination/pagination";
 import { headerActivityLog } from "@/constants/data/header_table";
+import { getActivityLogService } from "@/redux/action/user-management/activity_log_service";
 import { ActivityLogListModel } from "@/redux/model/activity-log/activity_log_model";
 import { openGoogleMap } from "@/utils/google-map/open_google_map";
 import { useRouter } from "next/navigation";
@@ -31,13 +33,18 @@ const ActivityLogComponent: React.FC<ActivityLogComponentprops> = ({
     openGoogleMap(lat, lat);
   }
 
+  async function onPageChange(value: number) {
+    const response = await getActivityLogService({ page: value });
+    setActivityData(response);
+  }
+
   return (
     <div>
       <Header onRefreshClick={onRefreshClick} />
 
-      <div className="mt-4 bg-white ">
+      <div className="mt-4 bg-white min-h-full">
         <div>
-          <div className="overflow-x-auto min-h-[85vh]">
+          <div className="overflow-x-auto min-h-[50vh]">
             <table>
               <thead className="bg-gray-100">
                 <tr>
@@ -105,6 +112,15 @@ const ActivityLogComponent: React.FC<ActivityLogComponentprops> = ({
               </tbody>
             </table>
           </div>
+          {activityData.data.length > 0 && (
+            <div className="flex justify-end mr-8 mt-8">
+              <Pagination
+                currentPage={activityData.pagination?.currentPage || 1}
+                onPageChange={onPageChange}
+                totalPages={activityData.pagination?.totalPages || 1}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

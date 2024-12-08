@@ -1,9 +1,19 @@
+"use server";
+
 import { axiosServerWithAuth } from "@/utils/api/axios_server";
 
-export async function getActivityLogService({}) {
+interface getSubCategoryParams {
+  page?: number;
+  limit?: number;
+}
+
+export async function getSubCategoryService({
+  page = 1,
+  limit = 10,
+}: getSubCategoryParams) {
   try {
     const response = await axiosServerWithAuth.get(
-      `/v1/admin/user/activity-log?page=1&limit=10&dateFrom=2024-12-06&dateTo=2024-12-08`
+      `/v1/admin/subcategory?page=${page}&limit=${limit}`
     );
     return {
       data: response.data.data.data,

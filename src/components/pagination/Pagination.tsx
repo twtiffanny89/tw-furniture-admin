@@ -54,10 +54,10 @@ const Pagination: React.FC<PaginationProps> = ({
           key={index}
           onClick={() => typeof page === "number" && onPageChange(page)}
           className={`mx-0.5 text-xs border border-gray-400 px-2 rounded transition-transform duration-200 ease-in-out transform ${
-            page !== currentPage && "hover:scale-105 hover:border-blue-600"
+            page !== currentPage && "hover:scale-105 hover:border-primary"
           } ${
             page === currentPage
-              ? "bg-blue-600 text-white border-blue-600"
+              ? "bg-primary text-white border-primary"
               : "text-gray-800"
           }`}
         >

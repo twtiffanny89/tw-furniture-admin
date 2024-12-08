@@ -1,4 +1,4 @@
-import { paginationModel } from "../global-model/pagination_model";
+import { paginationModel } from "../global/pagination_model";
 
 export interface UserInfoListModel {
   data: UserInfoModel[];

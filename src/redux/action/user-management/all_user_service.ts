@@ -1,4 +1,5 @@
-import { axiosWithAuth } from "@/utils/api/axios";
+"use server";
+
 import { axiosServerWithAuth } from "@/utils/api/axios_server";
 
 interface getAllUserParams {
