@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { FaSpinner } from "react-icons/fa"; // Import an icon for error
 import { images } from "@/constants/image/image";
@@ -21,6 +21,25 @@ const CashImage: React.FC<CashImageProps> = ({
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
+  useEffect(() => {
+    setHasError(false);
+    setLoading(true);
+  }, [imageUrl]);
+
+  useEffect(() => {
+    // Set a timeout to trigger error if image takes too long to load
+    const timeout = setTimeout(() => {
+      if (loading) {
+        setHasError(true); // Trigger error if image doesn't load within the timeout
+        setLoading(false); // Hide the loading spinner
+      }
+    }, 2000);
+
+    return () => {
+      clearTimeout(timeout); // Clean up the timeout on component unmount
+    };
+  }, [loading]);
+
   const handleLoadingComplete = () => {
     setLoading(false); // Image has loaded
   };
@@ -41,14 +60,15 @@ const CashImage: React.FC<CashImageProps> = ({
     >
       {/* Placeholder or Loading Spinner */}
       {loading && !hasError && (
-        <div className="absolute inset-0 bg-[#00000026] flex justify-center items-center">
-          <FaSpinner className="animate-spin text-white" />
+        <div className="absolute inset-0 bg-[#00000046] flex justify-center items-center">
+          <FaSpinner size={16} className="animate-spin text-white" />
         </div>
       )}
 
       {/* Actual Image */}
       <Image
-        src={hasError ? images.errorImage : imageUrl} // Show fallback image if error occurs
+        key={imageUrl} // Add the key here
+        src={hasError ? images.errorImg : imageUrl} // Show fallback image if error occurs
         alt="Cash image"
         width={width}
         height={height}

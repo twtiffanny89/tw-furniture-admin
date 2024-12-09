@@ -13,7 +13,7 @@ export async function getActivityLogService({
 }: getActivityLogParams) {
   try {
     const response = await axiosServerWithAuth.get(
-      `/v1/admin/user/activity-log?page=${page}&limit=${limit}&dateFrom=2024-12-06&dateTo=2024-12-08`
+      `/v1/admin/user/activity-log?page=${page}&limit=${limit}&dateFrom=2024-12-06&dateTo=2024-12-10`
     );
     return {
       data: response.data.data.data,

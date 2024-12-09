@@ -8,9 +8,10 @@ import Pagination from "@/components/pagination/pagination";
 import { headerActivityLog } from "@/constants/data/header_table";
 import { getActivityLogService } from "@/redux/action/user-management/activity_log_service";
 import { ActivityLogListModel } from "@/redux/model/activity-log/activity_log_model";
+import { debounce } from "@/utils/debounce/debounce";
 import { openGoogleMap } from "@/utils/google-map/open_google_map";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 interface ActivityLogComponentprops {
   initialData: ActivityLogListModel;
@@ -24,16 +25,19 @@ const ActivityLogComponent: React.FC<ActivityLogComponentprops> = ({
   const router = useRouter();
 
   // const response = await
-  async function onRefreshClick() {
-    router.refresh();
-    showToast("Refresh page successfully!", "success");
-  }
+  const onRefreshClick = useCallback(
+    debounce(async () => {
+      onCallApi(1);
+      showToast("Refresh page successfully!", "success");
+    }), // 300ms debounce delay
+    [] // Empty array ensures this function is only created once
+  );
 
   function openMap(lat: string, lng: string) {
     openGoogleMap(lat, lat);
   }
 
-  async function onPageChange(value: number) {
+  async function onCallApi(value: number) {
     const response = await getActivityLogService({ page: value });
     setActivityData(response);
   }
@@ -116,7 +120,7 @@ const ActivityLogComponent: React.FC<ActivityLogComponentprops> = ({
             <div className="flex justify-end mr-8 mt-8">
               <Pagination
                 currentPage={activityData.pagination?.currentPage || 1}
-                onPageChange={onPageChange}
+                onPageChange={onCallApi}
                 totalPages={activityData.pagination?.totalPages || 1}
               />
             </div>

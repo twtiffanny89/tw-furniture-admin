@@ -1,5 +1,6 @@
 export const headerAllUser: string[] = [
-  "Id",
+  "No",
+  "User Id",
   "Profile",
   "Username",
   "Created at",
@@ -7,7 +8,7 @@ export const headerAllUser: string[] = [
   "First name",
   "Last name",
   "Phone number",
-  "Active",
+  "Status",
   "Action",
 ];
 
@@ -28,7 +29,8 @@ export const headerActivityLog: string[] = [
 ];
 
 export const headerCategory: string[] = [
-  "Id",
+  "No",
+  "Categories Id",
   "Image",
   "Name",
   "Created at",
@@ -39,13 +41,14 @@ export const headerCategory: string[] = [
 ];
 
 export const headerSubCategory: string[] = [
-  "Id",
+  "No",
+  "Subcategory Id",
   "Image",
   "Name",
-  "Created at",
-  "Updated at",
+  "Product In",
   "Category Id",
   "Category name",
-  "Product In",
+  "Created at",
+  "Updated at",
   "Action",
 ];

@@ -5,13 +5,13 @@ export interface SubCategoryListModel {
   pagination: paginationModel | null;
 }
 
-interface Subcategory {
+export interface Subcategory {
   id: string;
   name: string;
   categoryId: string;
   createdAt: string;
   updatedAt: string;
-  image: any;
+  image: Image;
   category: Category;
   _count: Count;
 }
@@ -26,4 +26,10 @@ interface Category {
 
 interface Count {
   products: number;
+}
+
+interface Image {
+  fileName: string;
+  id: string;
+  imageUrl: string;
 }

@@ -1,19 +1,44 @@
 "use server";
 
 import { axiosServerWithAuth } from "@/utils/api/axios_server";
+import axios from "axios";
 
 interface getCategoryParams {
   page?: number;
   limit?: number;
+  search?: string;
 }
 
+interface uploadCategoryParams {
+  name: string;
+}
+
+interface updateCategoryParams {
+  categoryId: string;
+  data: uploadCategoryParams;
+}
+
+interface imageCategory {
+  fileContent: number;
+  fileExtension: number;
+}
+
+interface uploadImageCategoryParams {
+  categoryId: string;
+  data: imageCategory;
+}
+
+interface deleteCategoryParams {
+  categoryId: string;
+}
 export async function getCategoryService({
   page = 1,
-  limit = 10,
+  limit = 15,
+  search = "",
 }: getCategoryParams) {
   try {
     const response = await axiosServerWithAuth.get(
-      `/v1/admin/category?page=${page}&limit=${limit}`
+      `/v1/admin/category?page=${page}&limit=${limit}&search=${search}`
     );
     return {
       data: response.data.data.data,
@@ -23,6 +48,110 @@ export async function getCategoryService({
     return {
       data: [],
       pagination: null,
+    };
+  }
+}
+
+export async function uploadCategory(data: uploadCategoryParams) {
+  try {
+    const response = await axiosServerWithAuth.post("/v1/admin/category", data);
+    return {
+      success: true,
+      message: "Category created successfully!",
+      data: response.data.data,
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response && error.response.status === 400) {
+        return {
+          success: false,
+          message:
+            "This category name is already taken. Please choose a different name.!",
+          data: null,
+        };
+      }
+      return {
+        success: false,
+        message: "Failed to create Category. Please try again!",
+        data: null,
+      };
+    }
+  }
+  return {
+    success: false,
+    message: "Failed to create Category. Please try again!",
+    data: null,
+  };
+}
+
+export async function uploadImageCategory({
+  categoryId,
+  data,
+}: uploadImageCategoryParams) {
+  try {
+    await axiosServerWithAuth.post(
+      `/v1/admin/category/${categoryId}/image`,
+      data
+    );
+    return {
+      success: true,
+      message: "Image Category created successfully!",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Failed to create Image Category. Please try again!",
+      data: null,
+    };
+  }
+}
+
+export async function onUpdateCategory({
+  categoryId,
+  data,
+}: updateCategoryParams) {
+  try {
+    await axiosServerWithAuth.patch(`/v1/admin/category/${categoryId}`, data);
+    return {
+      success: true,
+      message: "Category updated successfully!",
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response && error.response.status === 400) {
+        return {
+          success: false,
+          message:
+            "This category name is already taken. Please choose a different name.!",
+          data: null,
+        };
+      }
+      return {
+        success: false,
+        message: "Failed to updated Category. Please try again!",
+        data: null,
+      };
+    }
+  }
+  return {
+    success: false,
+    message: "Failed to updated Category. Please try again!",
+    data: null,
+  };
+}
+
+export async function onDeleteCategory({ categoryId }: deleteCategoryParams) {
+  try {
+    await axiosServerWithAuth.delete(`/v1/admin/category/${categoryId}`);
+    return {
+      success: true,
+      message: "Category deleted successfully!",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Failed to deleted Category. Please try again!",
+      data: null,
     };
   }
 }

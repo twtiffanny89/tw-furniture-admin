@@ -12,6 +12,8 @@ interface HeaderProps {
   onAddNewClick?: () => void;
   showAdd?: Boolean;
   showExport?: Boolean;
+  title?: string;
+  placeholder?: string;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -21,14 +23,17 @@ const Header: React.FC<HeaderProps> = ({
   onAddNewClick,
   showAdd = false,
   showExport = false,
+  title = "User Profile",
+  placeholder = "",
 }) => {
   return (
     <div className="p-4 bg-white">
-      <h1 className="font-bold text-xl">User Profile</h1>
+      <h1 className="font-bold text-xl">{title}</h1>
       <div className="flex mt-2">
         <div className="flex flex-1 gap-2">
           <Input
             className="max-w-md h-9"
+            placeholder={placeholder}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               onSearchChange?.(e.target.value)
             }
