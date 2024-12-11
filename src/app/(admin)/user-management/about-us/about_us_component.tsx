@@ -2,8 +2,17 @@
 "use client";
 
 import Button from "@/components/custom/button";
+import CashImage from "@/components/custom/CashImage";
 import Input from "@/components/custom/input";
+import showToast from "@/components/error-handle/show-toast";
+import CenteredLoading from "@/components/loading/center_loading";
+import { base64Cut } from "@/constants/image/base64_cut";
+import {
+  updateAboutUsService,
+  updateImageAboutUsService,
+} from "@/redux/action/user-management/about_us_service";
 import { AboutUsModel } from "@/redux/model/about-us/about_us_model";
+import { UpdateAboutUsModel } from "@/redux/model/about-us/update_about_us_model";
 import { ProcessedImage } from "@/redux/model/global/ProcessedImage";
 import { resizeImageConvertBase64 } from "@/utils/security/image_convert";
 import React, { useState } from "react";
@@ -16,26 +25,34 @@ interface AboutUsComponentProps {
 
 const AboutUsComponent: React.FC<AboutUsComponentProps> = ({ initialData }) => {
   // State for the main form
-  const [formData, setFormData] = useState({
-    email: "",
-    location: "",
-    phoneNumber: "",
-    phoneStore: "",
-    availableTime: "",
-    showroomHours: "",
-    websiteUrl: "",
-    telegramLink: "",
-    messengerLink: "",
-    facebookLink: "",
-    instagramLink: "",
-    twitterLink: "",
-    description: "",
+  const [formData, setFormData] = useState<UpdateAboutUsModel>({
+    email: initialData?.email || "",
+    location: initialData?.location || "",
+    phoneNumber: initialData?.phoneNumber || "",
+    phoneStore: initialData?.phoneStore || "",
+    availableTime: initialData.availableTime || "",
+    showroomHours: initialData.showroomHours || "",
+    websiteUrl: initialData?.websiteUrl || "",
+    telegramUrl: initialData?.telegramUrl || "",
+    messagerUrl: initialData?.messagerUrl || "",
+    facebookUrl: initialData?.facebookUrl || "",
+    instagramUrl: initialData?.instagramUrl || "",
+    twitterUrl: initialData?.twitterUrl || "",
+    description: initialData?.description || "",
   });
 
-  console.log("### ===hahahah", initialData);
+  const [loading, setLoading] = useState(false);
+  const [isUplaodImage, setIsUplaodImage] = useState(false);
+  const [isUplaodData, setIsUplaodData] = useState(false);
 
-  // Separate state for image
-  const [imageData, setImageData] = useState<ProcessedImage | null>(null);
+  const [imageData, setImageData] = useState<ProcessedImage | null>(
+    initialData.image
+      ? {
+          base64: initialData.image.imageUrl,
+          type: null,
+        }
+      : null
+  );
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -45,6 +62,7 @@ const AboutUsComponent: React.FC<AboutUsComponentProps> = ({ initialData }) => {
       ...prev,
       [name]: value,
     }));
+    setIsUplaodData(true);
   };
 
   const handleImageUpload = async (
@@ -54,6 +72,7 @@ const AboutUsComponent: React.FC<AboutUsComponentProps> = ({ initialData }) => {
     if (file) {
       const resizedBase64 = await resizeImageConvertBase64(file, 1920, 1080);
       const fileExtension = `.${file.type.split("/")[1]}`;
+      setIsUplaodImage(true);
       setImageData({
         base64: resizedBase64,
         type: fileExtension,
@@ -63,25 +82,57 @@ const AboutUsComponent: React.FC<AboutUsComponentProps> = ({ initialData }) => {
 
   const handleRemoveImage = () => {
     setImageData(null); // Clear the image state
+    setIsUplaodImage(false);
   };
 
-  const handleFormSubmit = () => {
-    // API payload for the main form
-    const payload = {
-      ...formData,
-      image: imageData?.base64,
-    };
-    console.log("### Form Payload:", payload);
-    // Make API call here
+  const handleFormSubmit = async () => {
+    setLoading(true);
+    if (isUplaodData) {
+      const response = await updateAboutUsService({
+        aboutUsId: initialData.id,
+        data: formData,
+      });
+      if (response.success) {
+        setIsUplaodData(false);
+        showToast(response.message, "success");
+      } else {
+        showToast(response.message, "error");
+      }
+    }
+
+    if (imageData?.type && isUplaodImage) {
+      const response = await updateImageAboutUsService({
+        aboutUsId: initialData.id,
+        data: {
+          fileContent: imageData.base64.replace(base64Cut.cutHead, ""),
+          fileExtension: imageData.type,
+        },
+      });
+      if (response.success) {
+        showToast(response.message, "success");
+        setIsUplaodImage(false);
+      } else {
+        showToast(response.message, "error");
+      }
+    }
+    setLoading(false);
   };
 
   return (
     <div>
       <div className="p-4 bg-white flex justify-between">
         <h1 className="font-bold text-xl">About us</h1>
-        <Button className="px-4" onClick={handleFormSubmit}>
-          Update
-        </Button>
+        <div className="flex gap-4">
+          <Button
+            className={`px-4 py-1  ${
+              !isUplaodData && !isUplaodImage && "bg-gray-600"
+            }`}
+            disabled={!isUplaodData && !isUplaodImage}
+            onClick={handleFormSubmit}
+          >
+            Update
+          </Button>
+        </div>
       </div>
       <div className="p-4 mt-4 bg-white">
         <div className="grid grid-cols-3 gap-4">
@@ -105,7 +156,7 @@ const AboutUsComponent: React.FC<AboutUsComponentProps> = ({ initialData }) => {
             ) : null
           )}
         </div>
-        <div className="flex gap-4 mt-4">
+        <div className="flex gap-4 mt-8">
           {/* Image upload */}
           <div className="mb-4">
             <label className="block text-xs font-medium text-gray-700 mb-1">
@@ -113,11 +164,20 @@ const AboutUsComponent: React.FC<AboutUsComponentProps> = ({ initialData }) => {
             </label>
             {imageData ? (
               <div className="relative w-24 h-24">
-                <img
-                  src={imageData.base64}
-                  alt="Uploaded Preview"
-                  className="w-full h-full object-cover rounded-md border"
-                />
+                {imageData?.type ? (
+                  <img
+                    src={imageData.base64}
+                    alt="Uploaded Preview"
+                    className="w-full h-full object-cover rounded-md border"
+                  />
+                ) : (
+                  <CashImage
+                    width={96}
+                    height={96}
+                    imageUrl={`${process.env.NEXT_PUBLIC_BASE_URL}${imageData.base64}`}
+                  />
+                )}
+
                 <button
                   onClick={handleRemoveImage}
                   className="absolute top-2 right-2 bg-red-500 text-white px-1 py-1 rounded"
@@ -157,6 +217,7 @@ const AboutUsComponent: React.FC<AboutUsComponentProps> = ({ initialData }) => {
           />
         </div>
       </div>
+      <CenteredLoading loading={loading} text="Updating, please wait ..." />
     </div>
   );
 };

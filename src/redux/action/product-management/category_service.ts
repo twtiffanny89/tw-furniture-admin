@@ -19,8 +19,8 @@ interface updateCategoryParams {
 }
 
 interface imageCategory {
-  fileContent: number;
-  fileExtension: number;
+  fileContent: string;
+  fileExtension: string;
 }
 
 interface uploadImageCategoryParams {

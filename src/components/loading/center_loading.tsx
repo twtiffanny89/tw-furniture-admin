@@ -1,12 +1,16 @@
 interface CenteredLoadingProps {
+  loading?: boolean;
   className?: string;
   text?: string;
 }
 
 const CenteredLoading: React.FC<CenteredLoadingProps> = ({
+  loading = false,
   className = "",
   text = "Loading, please wait...",
 }) => {
+  if (!loading) return null;
+
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center ${className} bg-black bg-opacity-50 z-50`}
