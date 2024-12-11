@@ -12,6 +12,7 @@ import {
   headerSubCategory,
 } from "@/constants/data/header_table";
 import { base64Cut } from "@/constants/image/base64_cut";
+import { getCategoryService } from "@/redux/action/product-management/category_service";
 import {
   createSubCategory,
   getSubCategoryService,
@@ -34,25 +35,28 @@ import { MdDeleteOutline } from "react-icons/md";
 
 interface SubCategoryComponentProps {
   initialData: SubCategoryListModel;
+  initialCategory: CategoryListModel;
 }
 
 const SubCategoryComponent: React.FC<SubCategoryComponentProps> = ({
   initialData,
+  initialCategory,
 }) => {
   const [subCategory, setSubCategory] =
     useState<SubCategoryListModel>(initialData);
+  const [category, setCategory] = useState<CategoryListModel>(initialCategory);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [subItem, setSubItem] = useState<Subcategory | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [search, setSearch] = useState("");
-  const router = useRouter();
+  const [loadingSelect, setLoadingSelect] = useState<boolean>(false);
 
   const onRefreshClick = useCallback(
     debounce(async () => {
       onCallApi({});
       showToast("Refresh page successfully!", "success");
-    }), // 300ms debounce delay
-    [] // Empty array ensures this function is only created once
+    }),
+    []
   );
 
   async function onCallApi({
@@ -158,6 +162,21 @@ const SubCategoryComponent: React.FC<SubCategoryComponentProps> = ({
     []
   );
 
+  const fetchMoreData = async () => {
+    if (category.pagination!.currentPage < category.pagination!.totalPages) {
+      setLoadingSelect(true);
+      // Simulate fetching data
+      const result = await getCategoryService({
+        page: category.pagination!.currentPage + 1,
+      });
+      setCategory((prev) => ({
+        data: [...prev.data, ...result.data], // Concatenate new categories with existing ones
+        pagination: result.pagination, // Update pagination metadata
+      }));
+    }
+    setLoadingSelect(false);
+  };
+
   return (
     <div>
       <Header
@@ -243,12 +262,15 @@ const SubCategoryComponent: React.FC<SubCategoryComponentProps> = ({
       </div>
 
       <SubCategoryModal
+        category={category.data}
         title="Sub category"
-        isOpen={openModal}
+        isOpen={!openModal}
         loadingButton={loading}
         onClose={() => setOpenModal(false)}
         onConfirm={onConfirm}
         initialData={subItem}
+        isLoading={loadingSelect}
+        onLoadMore={fetchMoreData}
       />
     </div>
   );

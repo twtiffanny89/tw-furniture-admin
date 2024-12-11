@@ -13,9 +13,10 @@ import Button from "../custom/button";
 import { LuImagePlus } from "react-icons/lu";
 import { IoClose } from "react-icons/io5";
 import { resizeImageConvertBase64 } from "@/utils/security/image_convert";
-import { Category } from "@/redux/model/category/category_model";
 import CashImage from "../custom/CashImage";
 import { Subcategory } from "@/redux/model/sub-category/sub_categpry_model";
+import DropDownMenu from "../custom/drop_down_menu";
+import { Category } from "@/redux/model/category/category_model";
 
 interface SubCategoryModalProps {
   isOpen: boolean;
@@ -24,6 +25,9 @@ interface SubCategoryModalProps {
   title: string;
   loadingButton?: boolean;
   initialData?: Subcategory | null;
+  category: Category[];
+  onLoadMore?: () => void; // Callback for loading more items
+  isLoading?: boolean; // Indicates if data is being loaded
 }
 
 type ProcessedImage = {
@@ -38,6 +42,9 @@ const SubCategoryModal = ({
   initialData,
   title,
   onConfirm,
+  category,
+  onLoadMore,
+  isLoading,
 }: SubCategoryModalProps) => {
   const [nameSub, setNameSub] = useState("");
   const [image, setImage] = useState<ProcessedImage | null>(null);
@@ -104,6 +111,8 @@ const SubCategoryModal = ({
     resetForm();
   }
 
+  function handleChange() {}
+
   return (
     <Dialog open={isOpen} onOpenChange={onCloseFrom}>
       <DialogContent>
@@ -135,7 +144,15 @@ const SubCategoryModal = ({
             )}
           </div>
 
-          <div className="mb-4">
+          <DropDownMenu
+            dataList={category}
+            onChange={handleChange}
+            label="Category"
+            onLoadMore={onLoadMore}
+            isLoading={isLoading}
+          />
+
+          <div className="mb-4 mt-4">
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Image subcategory<span className="text-red-500 ml-1">*</span>
             </label>

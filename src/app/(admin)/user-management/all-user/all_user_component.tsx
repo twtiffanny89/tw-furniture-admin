@@ -79,27 +79,23 @@ const AllUserComponent: React.FC<AllUserComponentProps> = ({ initialData }) => {
                     1;
                   return (
                     <tr key={user.id} className="hover:bg-gray-200">
-                      <td className="truncate">{displayIndex}</td>
-                      <td className="truncate">{user.id}</td>
-                      <td className="truncate">
+                      <td>{displayIndex}</td>
+                      <td>{user.id}</td>
+                      <td>
                         <CashImage
                           width={32}
                           height={32}
                           imageUrl={`${process.env.NEXT_PUBLIC_BASE_URL}/${user.image?.imageUrl}`}
                         />
                       </td>
-                      <td className="truncate">{user?.username || "- - -"}</td>
-                      <td className="truncate">
-                        {formatTimestamp(user.createdAt)}
-                      </td>
-                      <td className="truncate">{user.role}</td>
-                      <td className="truncate">{user.firstName || "- - -"}</td>
-                      <td className="truncate">{user.lastName || "- - -"}</td>
-                      <td className="truncate">{user.phoneNumber}</td>
-                      <td className="truncate">
-                        {user.active ? "Active" : "Inactive"}
-                      </td>
-                      <td className="truncate">{user.phoneNumber}</td>
+                      <td>{user?.username || "- - -"}</td>
+                      <td>{formatTimestamp(user.createdAt)}</td>
+                      <td>{user.role}</td>
+                      <td>{user.firstName || "- - -"}</td>
+                      <td>{user.lastName || "- - -"}</td>
+                      <td>{user.phoneNumber}</td>
+                      <td>{user.active ? "Active" : "Inactive"}</td>
+                      <td>{user.phoneNumber}</td>
                     </tr>
                   );
                 })}

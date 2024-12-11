@@ -35,7 +35,7 @@ interface updateSubParams {
 
 export async function getSubCategoryService({
   page = 1,
-  limit = 15,
+  limit = 1,
   search = "",
 }: getSubCategoryParams) {
   try {
