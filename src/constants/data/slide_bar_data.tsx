@@ -14,13 +14,18 @@ export const slideBarData = [
     title: "User Management",
     items: [
       {
-        label: "All user",
+        label: "User listing",
         href: `/${routed.userManagement}/${routed.allUser}`,
         icon: <FaHome />, // Add an icon
       },
       {
         label: "Activity log",
         href: `/${routed.userManagement}/${routed.activityLog}`,
+        icon: <FaCog />, // Add an icon
+      },
+      {
+        label: "About us",
+        href: `/${routed.userManagement}/${routed.aboutUs}`,
         icon: <FaCog />, // Add an icon
       },
     ],
@@ -43,11 +48,6 @@ export const slideBarData = [
   {
     title: "OTHER",
     items: [
-      {
-        label: "Profile",
-        href: "/profile",
-        icon: <FaUserCircle />,
-      },
       {
         label: "Logout",
         href: "/logout",

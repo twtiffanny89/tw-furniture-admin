@@ -24,7 +24,7 @@ const MenuSidebar = () => {
         <div className="text-sm flex flex-col space-y-4 text-gray-300">
           {slideBarData.map((section, index) => (
             <div className="flex flex-col gap-2" key={section.title + index}>
-              <span className="hidden lg:block text-white font-light">
+              <span className="hidden lg:block text-white font-light overflow-hidden whitespace-nowrap overflow-ellipsis">
                 {section.title}
               </span>
               {section.items.map((item, index) => {

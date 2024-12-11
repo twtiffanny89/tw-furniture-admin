@@ -11,7 +11,6 @@ import {
   Category,
   CategoryListModel,
 } from "@/redux/model/category/category_model";
-import { useRouter } from "next/navigation";
 import { FiEdit } from "react-icons/fi";
 import Button from "@/components/custom/button";
 import CategoryModal from "@/components/modal/category_modal";
@@ -41,7 +40,6 @@ const CategoryComponent: React.FC<CategoryComponentProps> = ({
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [search, setSearch] = useState("");
   const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
-  const router = useRouter();
 
   const onRefreshClick = useCallback(
     debounce(async () => {
@@ -175,7 +173,7 @@ const CategoryComponent: React.FC<CategoryComponentProps> = ({
   return (
     <div>
       <Header
-        title="Categories"
+        title="Category"
         onRefreshClick={onRefreshClick}
         onSearchChange={onSearchChange}
         showAdd={true}
@@ -210,15 +208,11 @@ const CategoryComponent: React.FC<CategoryComponentProps> = ({
                       <td>{displayIndex}</td>
                       <td>{categories.id}</td>
                       <td>
-                        {loading ? (
-                          <CashImage width={32} height={32} imageUrl={``} />
-                        ) : (
-                          <CashImage
-                            width={32}
-                            height={32}
-                            imageUrl={`${process.env.NEXT_PUBLIC_BASE_URL}${categories.image?.imageUrl}`}
-                          />
-                        )}
+                        <CashImage
+                          width={32}
+                          height={32}
+                          imageUrl={`${process.env.NEXT_PUBLIC_BASE_URL}${categories.image?.imageUrl}`}
+                        />
                       </td>
                       <td>{categories.name}</td>
                       <td>{formatTimestamp(categories.createdAt)}</td>

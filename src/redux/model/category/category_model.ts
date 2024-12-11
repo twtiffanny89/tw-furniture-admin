@@ -15,6 +15,14 @@ export interface Category {
   _count: Count;
 }
 
+export interface CategorySelect {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface Count {
   products: number;
   subcategories: number;

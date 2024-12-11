@@ -1,17 +1,17 @@
 import React from "react";
-import Input from "../custom/input";
-import Button from "../custom/button";
 import { HiRefresh } from "react-icons/hi";
 import { LuDownload } from "react-icons/lu";
 import { IoMdAdd } from "react-icons/io";
+import Button from "../custom/button";
+import Input from "../custom/input";
 
 interface HeaderProps {
   onSearchChange?: (value: string) => void;
   onRefreshClick?: () => void;
   onExportClick?: () => void;
   onAddNewClick?: () => void;
-  showAdd?: Boolean;
-  showExport?: Boolean;
+  showAdd?: boolean;
+  showExport?: boolean;
   title?: string;
   placeholder?: string;
 }

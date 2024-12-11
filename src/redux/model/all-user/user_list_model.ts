@@ -5,7 +5,7 @@ export interface UserInfoListModel {
   pagination: paginationModel | null;
 }
 
-interface UserInfoModel {
+export interface UserInfoModel {
   id: string;
   username: string;
   email: string;

@@ -24,18 +24,17 @@ interface uploadImageParams {
   data: imageCategory;
 }
 
-interface nameSub {
-  name: string;
-}
-
 interface updateSubParams {
   subCategoryId: string;
-  data: nameSub;
+  data: createSubParams;
 }
 
+interface deleteSubParams {
+  subCategoryId: string;
+}
 export async function getSubCategoryService({
   page = 1,
-  limit = 1,
+  limit = 15,
   search = "",
 }: getSubCategoryParams) {
   try {
@@ -116,7 +115,7 @@ export async function updatedSubCategory({
   data,
 }: updateSubParams) {
   try {
-    const response = await axiosServerWithAuth.post(
+    const response = await axiosServerWithAuth.patch(
       `/v1/admin/subcategory/${subCategoryId}`,
       data
     );
@@ -144,6 +143,22 @@ export async function updatedSubCategory({
     return {
       success: false,
       message: "Failed to updated Subcategory. Please try again!",
+      data: null,
+    };
+  }
+}
+
+export async function onDeleteSubCategory({ subCategoryId }: deleteSubParams) {
+  try {
+    await axiosServerWithAuth.delete(`/v1/admin/subcategory/${subCategoryId}`);
+    return {
+      success: true,
+      message: "SubCategory deleted successfully!",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Failed to deleted SubCategory. Please try again!",
       data: null,
     };
   }

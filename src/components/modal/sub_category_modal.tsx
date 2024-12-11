@@ -16,7 +16,10 @@ import { resizeImageConvertBase64 } from "@/utils/security/image_convert";
 import CashImage from "../custom/CashImage";
 import { Subcategory } from "@/redux/model/sub-category/sub_categpry_model";
 import DropDownMenu from "../custom/drop_down_menu";
-import { Category } from "@/redux/model/category/category_model";
+import {
+  Category,
+  CategorySelect,
+} from "@/redux/model/category/category_model";
 
 interface SubCategoryModalProps {
   isOpen: boolean;
@@ -26,8 +29,11 @@ interface SubCategoryModalProps {
   loadingButton?: boolean;
   initialData?: Subcategory | null;
   category: Category[];
-  onLoadMore?: () => void; // Callback for loading more items
-  isLoading?: boolean; // Indicates if data is being loaded
+  onLoadMore?: () => void;
+  isLoading?: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onClearSearch: () => void;
+  value: string;
 }
 
 type ProcessedImage = {
@@ -45,15 +51,20 @@ const SubCategoryModal = ({
   category,
   onLoadMore,
   isLoading,
+  onChange,
+  onClearSearch,
+  value,
 }: SubCategoryModalProps) => {
   const [nameSub, setNameSub] = useState("");
   const [image, setImage] = useState<ProcessedImage | null>(null);
+  const [categoryItem, setCategoryItem] = useState<CategorySelect | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (initialData) {
       setNameSub(initialData.name);
       setImage({ base64: initialData.image?.imageUrl, type: null });
+      setCategoryItem(initialData.category);
     }
   }, [initialData, isOpen]);
 
@@ -74,9 +85,9 @@ const SubCategoryModal = ({
     }
 
     onConfirm({
-      nameCategory: nameSub,
-
+      nameSub,
       image,
+      idCategory: categoryItem?.id,
     });
 
     resetForm();
@@ -97,7 +108,7 @@ const SubCategoryModal = ({
   ) => {
     const file = event.target.files?.[0];
     if (file) {
-      const resizedBase64 = await resizeImageConvertBase64(file, 1920, 1080); // Resize to Full HD (1920x1080)
+      const resizedBase64 = await resizeImageConvertBase64(file, 1920, 1080);
       const fileExtension = `.${file.type.split("/")[1]}`;
       setImage({
         base64: resizedBase64,
@@ -111,7 +122,9 @@ const SubCategoryModal = ({
     resetForm();
   }
 
-  function handleChange() {}
+  function onItemSelect(value: CategorySelect) {
+    setCategoryItem(value);
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onCloseFrom}>
@@ -145,11 +158,15 @@ const SubCategoryModal = ({
           </div>
 
           <DropDownMenu
+            onItemSelect={onItemSelect}
+            onClearSearch={onClearSearch}
+            value={value}
             dataList={category}
-            onChange={handleChange}
+            onChange={onChange}
             label="Category"
             onLoadMore={onLoadMore}
             isLoading={isLoading}
+            selectedOption={categoryItem}
           />
 
           <div className="mb-4 mt-4">
