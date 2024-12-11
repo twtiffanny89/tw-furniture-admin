@@ -51,7 +51,7 @@ const DropDownMenu = ({
     }
   }, []);
 
-  // Debugging: Check if inView is triggered
+  // Debugging: Check if inView is
   useEffect(() => {
     if (inView && onLoadMore && !isLoading) {
       onLoadMore();
