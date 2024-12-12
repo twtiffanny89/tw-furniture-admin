@@ -9,7 +9,7 @@ import {
 import React, { useEffect, useState } from "react";
 import Input from "../custom/input";
 import MessgaeError from "../error-handle/message_error";
-import Button from "../custom/button";
+import ButtonCustom from "../custom/ButtonCustom";
 import { LuImagePlus } from "react-icons/lu";
 import { IoClose } from "react-icons/io5";
 import { resizeImageConvertBase64 } from "@/utils/security/image_convert";
@@ -216,21 +216,21 @@ const SubCategoryModal = ({
           </div>
 
           <div className="flex justify-end space-x-2 mt-8">
-            <Button
+            <ButtonCustom
               onClick={onCloseFrom}
               className="px-4 py-1.5"
               variant="cancel"
             >
               Cancel
-            </Button>
-            <Button
+            </ButtonCustom>
+            <ButtonCustom
               loading={loadingButton}
               textLoading="Saving..."
               onClick={handleConfirm}
               className="px-4 py-1.5 transition"
             >
               Save
-            </Button>
+            </ButtonCustom>
           </div>
         </form>
       </DialogContent>

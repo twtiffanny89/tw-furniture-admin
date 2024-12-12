@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "../custom/button";
+import ButtonCustom from "../custom/ButtonCustom";
 import { LuDownload } from "react-icons/lu";
 import { DateRangePicker } from "../custom/date_range_picker";
 import { FiSearch } from "react-icons/fi";
@@ -43,19 +43,19 @@ const HeaderCalender: React.FC<HeaderProps> = ({
           title="To date"
         />
         {(selectedToDate || selectedFromDate) && (
-          <Button className="w-9 h-9" onClick={onClearSearchClick}>
+          <ButtonCustom className="w-9 h-9" onClick={onClearSearchClick}>
             <IoClose size={18} />
-          </Button>
+          </ButtonCustom>
         )}
 
-        <Button className="w-9 h-9" onClick={onSearchClick}>
+        <ButtonCustom className="w-9 h-9" onClick={onSearchClick}>
           <FiSearch size={18} />
-        </Button>
+        </ButtonCustom>
 
         {showExport && (
-          <Button className="w-9 h-9" onClick={onExportClick}>
+          <ButtonCustom className="w-9 h-9" onClick={onExportClick}>
             <LuDownload size={16} />
-          </Button>
+          </ButtonCustom>
         )}
       </div>
     </div>

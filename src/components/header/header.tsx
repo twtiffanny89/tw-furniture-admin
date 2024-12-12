@@ -2,7 +2,7 @@ import React from "react";
 import { HiRefresh } from "react-icons/hi";
 import { LuDownload } from "react-icons/lu";
 import { IoMdAdd } from "react-icons/io";
-import Button from "../custom/button";
+import ButtonCustom from "../custom/ButtonCustom";
 import Input from "../custom/input";
 
 interface HeaderProps {
@@ -38,22 +38,22 @@ const Header: React.FC<HeaderProps> = ({
               onSearchChange?.(e.target.value)
             }
           />
-          <Button className="w-9 h-9" onClick={onRefreshClick}>
+          <ButtonCustom className="w-9 h-9" onClick={onRefreshClick}>
             <HiRefresh size={20} />
-          </Button>
+          </ButtonCustom>
           {showExport && (
-            <Button className="w-9 h-9" onClick={onExportClick}>
+            <ButtonCustom className="w-9 h-9" onClick={onExportClick}>
               <LuDownload size={16} />
-            </Button>
+            </ButtonCustom>
           )}
         </div>
         {showAdd && (
-          <Button
+          <ButtonCustom
             className="px-4 h-9 ml-2 font-normal text-xs"
             onClick={onAddNewClick}
           >
             <IoMdAdd className="text-white mr-1" size={18} /> Add New
-          </Button>
+          </ButtonCustom>
         )}
       </div>
     </div>

@@ -9,7 +9,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   scaleOnHover?: boolean; // New prop to control scaling on hover
 }
 
-const Button: React.FC<ButtonProps> = ({
+const ButtonCustom: React.FC<ButtonProps> = ({
   variant = "submit",
   className,
   loading = false,
@@ -52,4 +52,4 @@ const Button: React.FC<ButtonProps> = ({
   );
 };
 
-export default Button;
+export default ButtonCustom;

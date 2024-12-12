@@ -5,14 +5,14 @@ import { useCallback, useState } from "react";
 import CashImage from "@/components/custom/CashImage";
 import showToast from "@/components/error-handle/show-toast";
 import Header from "@/components/header/header";
-import Pagination from "@/components/pagination/pagination";
+import Pagination from "@/components/pagination/Pagination";
 import { headerCategory } from "@/constants/data/header_table";
 import {
   Category,
   CategoryListModel,
 } from "@/redux/model/category/category_model";
 import { FiEdit } from "react-icons/fi";
-import Button from "@/components/custom/button";
+import ButtonCustom from "@/components/custom/ButtonCustom";
 import CategoryModal from "@/components/modal/category_modal";
 import {
   getCategoryService,
@@ -222,12 +222,12 @@ const CategoryComponent: React.FC<CategoryComponentProps> = ({
                       <td>{`${categories._count.products} Items`}</td>
                       <td>
                         <div className="flex gap-2">
-                          <Button
+                          <ButtonCustom
                             onClick={() => onOpenModalCategory(categories)}
                             className="w-6 h-6 "
                           >
                             <FiEdit size={14} className="text-white" />
-                          </Button>
+                          </ButtonCustom>
                           <button
                             onClick={() => onDeleteItemCategory(categories)}
                             className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"

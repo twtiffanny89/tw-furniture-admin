@@ -9,7 +9,7 @@ import {
 import React, { useEffect, useState } from "react";
 import Input from "../custom/input";
 import MessgaeError from "../error-handle/message_error";
-import Button from "../custom/button";
+import ButtonCustom from "../custom/ButtonCustom";
 import { AttributeModel } from "@/redux/model/attribute-model/attribute-model";
 
 interface AttributeModalProps {
@@ -94,16 +94,19 @@ const AttributeModal = ({
           </div>
 
           <div className="flex justify-end space-x-2 mt-8">
-            <Button
+            <ButtonCustom
               onClick={onCloseFrom}
               className="px-4 py-1.5"
               variant="cancel"
             >
               Cancel
-            </Button>
-            <Button onClick={handleConfirm} className="px-4 py-1.5 transition">
+            </ButtonCustom>
+            <ButtonCustom
+              onClick={handleConfirm}
+              className="px-4 py-1.5 transition"
+            >
               Save
-            </Button>
+            </ButtonCustom>
           </div>
         </form>
       </DialogContent>

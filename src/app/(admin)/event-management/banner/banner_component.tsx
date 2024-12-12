@@ -1,12 +1,12 @@
 "use client";
 
-import Button from "@/components/custom/button";
+import ButtonCustom from "@/components/custom/ButtonCustom";
 import CashImage from "@/components/custom/CashImage";
 import showToast from "@/components/error-handle/show-toast";
 import CenteredLoading from "@/components/loading/center_loading";
 import BannerModal from "@/components/modal/banner_modal";
 import ModalConfirm from "@/components/modal/modal_confirm";
-import Pagination from "@/components/pagination/pagination";
+import Pagination from "@/components/pagination/Pagination";
 import { eventHeader, headerCategory } from "@/constants/data/header_table";
 import { base64Cut } from "@/constants/image/base64_cut";
 import {
@@ -110,12 +110,12 @@ const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
     <div>
       <div className="p-4 bg-white flex justify-between">
         <h1 className="font-bold text-xl">Banner</h1>
-        <Button
+        <ButtonCustom
           className="px-4 h-9 ml-2 font-normal text-xs"
           onClick={onAddNewClick}
         >
           <IoMdAdd className="text-white mr-1" size={18} /> Add New
-        </Button>
+        </ButtonCustom>
       </div>
       <div className="mt-4 bg-white min-h-full">
         <div>
@@ -154,12 +154,12 @@ const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
 
                       <td>
                         <div className="flex gap-2">
-                          <Button
+                          <ButtonCustom
                             onClick={() => onEditBanner(value)}
                             className="w-6 h-6 "
                           >
                             <FiEdit size={14} className="text-white" />
-                          </Button>
+                          </ButtonCustom>
                           <button
                             onClick={() => onDeleteBanner(value)}
                             className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"

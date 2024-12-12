@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/components/custom/button";
+import ButtonCustom from "@/components/custom/ButtonCustom";
 import Input from "@/components/custom/input";
 import MessgaeError from "@/components/error-handle/message_error";
 import showToast from "@/components/error-handle/show-toast";
@@ -121,7 +121,7 @@ const LoginPage = () => {
             )}
           </div>
 
-          <Button
+          <ButtonCustom
             onClick={handleLogin}
             className={`w-full h-11 `}
             loading={loading}
@@ -129,7 +129,7 @@ const LoginPage = () => {
             scaleOnHover={false}
           >
             Login
-          </Button>
+          </ButtonCustom>
           <p className="text-center mt-4 text-[#00000096]">
             Contact Support: +855 12345678
           </p>

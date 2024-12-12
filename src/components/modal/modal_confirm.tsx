@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import Button from "../custom/button";
+import ButtonCustom from "../custom/ButtonCustom";
 interface ModalConfirmProps {
   isOpen: boolean;
   onClose: () => void;
@@ -24,15 +24,19 @@ const ModalConfirm = ({ isOpen, onClose, onConfirm }: ModalConfirmProps) => {
         </DialogHeader>
 
         <div className="flex justify-end space-x-2">
-          <Button onClick={onClose} className="px-4 py-1" variant="cancel">
+          <ButtonCustom
+            onClick={onClose}
+            className="px-4 py-1"
+            variant="cancel"
+          >
             Cancel
-          </Button>
-          <Button
+          </ButtonCustom>
+          <ButtonCustom
             onClick={onConfirm}
             className="px-4 py-1 bg-red-600 hover:bg-red-700"
           >
             Confirm
-          </Button>
+          </ButtonCustom>
         </div>
       </DialogContent>
     </Dialog>

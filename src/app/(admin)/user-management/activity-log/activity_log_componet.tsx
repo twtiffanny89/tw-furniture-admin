@@ -4,7 +4,7 @@
 import CashImage from "@/components/custom/CashImage";
 import showToast from "@/components/error-handle/show-toast";
 import HeaderCalender from "@/components/header/HeaderCalender";
-import Pagination from "@/components/pagination/pagination";
+import Pagination from "@/components/pagination/Pagination";
 import { headerActivityLog } from "@/constants/data/header_table";
 import { getActivityLogService } from "@/redux/action/user-management/activity_log_service";
 import { ActivityLogListModel } from "@/redux/model/activity-log/activity_log_model";

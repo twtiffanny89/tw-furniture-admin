@@ -1,11 +1,11 @@
 "use client";
 
-import Button from "@/components/custom/button";
+import ButtonCustom from "@/components/custom/ButtonCustom";
 import CashImage from "@/components/custom/CashImage";
 import { Switch } from "@/components/custom/Switch";
 import showToast from "@/components/error-handle/show-toast";
 import Header from "@/components/header/header";
-import Pagination from "@/components/pagination/pagination";
+import Pagination from "@/components/pagination/Pagination";
 import { headerAllUser } from "@/constants/data/header_table";
 import { getAllUserService } from "@/redux/action/user-management/all_user_service";
 import {
@@ -135,12 +135,12 @@ const AllUserComponent: React.FC<AllUserComponentProps> = ({ initialData }) => {
                         </div>
                       </td>
                       <td>
-                        <Button
+                        <ButtonCustom
                           // onClick={() => onOpenModalSub(sub)}
                           className="w-6 h-6 "
                         >
                           <FiEdit size={14} className="text-white" />
-                        </Button>
+                        </ButtonCustom>
                       </td>
                     </tr>
                   );

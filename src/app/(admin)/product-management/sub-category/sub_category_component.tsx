@@ -1,13 +1,13 @@
 "use client";
 
-import Button from "@/components/custom/button";
+import ButtonCustom from "@/components/custom/ButtonCustom";
 import CashImage from "@/components/custom/CashImage";
 import showToast from "@/components/error-handle/show-toast";
 import Header from "@/components/header/header";
 import CenteredLoading from "@/components/loading/center_loading";
 import ModalConfirm from "@/components/modal/modal_confirm";
 import SubCategoryModal from "@/components/modal/sub_category_modal";
-import Pagination from "@/components/pagination/pagination";
+import Pagination from "@/components/pagination/Pagination";
 import { headerSubCategory } from "@/constants/data/header_table";
 import { base64Cut } from "@/constants/image/base64_cut";
 import { getCategoryService } from "@/redux/action/product-management/category_service";
@@ -283,12 +283,12 @@ const SubCategoryComponent: React.FC<SubCategoryComponentProps> = ({
                       <td>{formatTimestamp(sub.updatedAt)}</td>
                       <td>
                         <div className="flex gap-2">
-                          <Button
+                          <ButtonCustom
                             onClick={() => onOpenModalSub(sub)}
                             className="w-6 h-6 "
                           >
                             <FiEdit size={14} className="text-white" />
-                          </Button>
+                          </ButtonCustom>
                           <button
                             onClick={() => onDeleteItem(sub)}
                             className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"

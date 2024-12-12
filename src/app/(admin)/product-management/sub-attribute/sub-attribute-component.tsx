@@ -1,12 +1,12 @@
 "use client";
 
-import Button from "@/components/custom/button";
+import ButtonCustom from "@/components/custom/ButtonCustom";
 import showToast from "@/components/error-handle/show-toast";
 import CenteredLoading from "@/components/loading/center_loading";
 import AttributeModal from "@/components/modal/attribute-modal";
 import ModalConfirm from "@/components/modal/modal_confirm";
 import SubAttributeModal from "@/components/modal/sub-attribute-modal";
-import Pagination from "@/components/pagination/pagination";
+import Pagination from "@/components/pagination/Pagination";
 import {
   attributeHeader,
   subAttributeHeader,
@@ -127,12 +127,12 @@ const SubAttributeComponent: React.FC<AttributeComponentProps> = ({
     <div>
       <div className="p-4 bg-white flex justify-between">
         <h1 className="font-bold text-xl">Sub Attribute</h1>
-        <Button
+        <ButtonCustom
           className="px-4 h-9 ml-2 font-normal text-xs"
           onClick={onAddNewClick}
         >
           <IoMdAdd className="text-white mr-1" size={18} /> Add New
-        </Button>
+        </ButtonCustom>
       </div>
       <div className="mt-4 bg-white min-h-full">
         <div>
@@ -168,12 +168,12 @@ const SubAttributeComponent: React.FC<AttributeComponentProps> = ({
                       <td>{value.attributeId}</td>
                       <td>
                         <div className="flex gap-2">
-                          <Button
+                          <ButtonCustom
                             onClick={() => onEditAttribte(value)}
                             className="w-6 h-6 "
                           >
                             <FiEdit size={14} className="text-white" />
-                          </Button>
+                          </ButtonCustom>
                           <button
                             onClick={() => onDeleteAttribte(value)}
                             className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"

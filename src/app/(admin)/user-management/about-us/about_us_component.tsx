@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import Button from "@/components/custom/button";
+import ButtonCustom from "@/components/custom/ButtonCustom";
 import CashImage from "@/components/custom/CashImage";
 import Input from "@/components/custom/input";
 import showToast from "@/components/error-handle/show-toast";
@@ -123,7 +123,7 @@ const AboutUsComponent: React.FC<AboutUsComponentProps> = ({ initialData }) => {
       <div className="p-4 bg-white flex justify-between">
         <h1 className="font-bold text-xl">About us</h1>
         <div className="flex gap-4">
-          <Button
+          <ButtonCustom
             className={`px-4 py-1  ${
               !isUplaodData && !isUplaodImage && "bg-gray-600"
             }`}
@@ -131,7 +131,7 @@ const AboutUsComponent: React.FC<AboutUsComponentProps> = ({ initialData }) => {
             onClick={handleFormSubmit}
           >
             Update
-          </Button>
+          </ButtonCustom>
         </div>
       </div>
       <div className="p-4 mt-4 bg-white">
