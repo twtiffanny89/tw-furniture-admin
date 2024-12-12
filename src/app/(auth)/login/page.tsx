@@ -21,6 +21,7 @@ const LoginPage = () => {
   const router = useRouter();
 
   console.log("## ==", getCookieToken());
+  console.log("## ==dd", process.env.NEXT_PUBLIC_BASE_URL);
 
   const handleLogin = async () => {
     setLoading(true);
