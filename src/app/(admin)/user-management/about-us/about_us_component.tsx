@@ -3,7 +3,7 @@
 
 import ButtonCustom from "@/components/custom/ButtonCustom";
 import CashImage from "@/components/custom/CashImage";
-import Input from "@/components/custom/input";
+import Input from "@/components/custom/Input";
 import showToast from "@/components/error-handle/show-toast";
 import CenteredLoading from "@/components/loading/center_loading";
 import { base64Cut } from "@/constants/image/base64_cut";

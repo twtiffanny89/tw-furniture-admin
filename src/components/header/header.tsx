@@ -3,7 +3,7 @@ import { HiRefresh } from "react-icons/hi";
 import { LuDownload } from "react-icons/lu";
 import { IoMdAdd } from "react-icons/io";
 import ButtonCustom from "../custom/ButtonCustom";
-import Input from "../custom/input";
+import Input from "../custom/Input";
 
 interface HeaderProps {
   onSearchChange?: (value: string) => void;

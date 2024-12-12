@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CategorySelect } from "@/redux/model/category/category_model";
 import { useInView } from "react-intersection-observer";
-import Input from "./input";
+import Input from "./Input";
 
 interface CustomSelectProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;

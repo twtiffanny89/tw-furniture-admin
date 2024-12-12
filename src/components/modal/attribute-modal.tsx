@@ -7,7 +7,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import React, { useEffect, useState } from "react";
-import Input from "../custom/input";
+import Input from "../custom/Input";
 import MessgaeError from "../error-handle/message_error";
 import ButtonCustom from "../custom/ButtonCustom";
 import { AttributeModel } from "@/redux/model/attribute-model/attribute-model";

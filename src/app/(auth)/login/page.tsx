@@ -1,7 +1,7 @@
 "use client";
 
 import ButtonCustom from "@/components/custom/ButtonCustom";
-import Input from "@/components/custom/input";
+import Input from "@/components/custom/Input";
 import MessgaeError from "@/components/error-handle/message_error";
 import showToast from "@/components/error-handle/show-toast";
 import { routed } from "@/constants/navigation/routed";
