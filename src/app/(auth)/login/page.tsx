@@ -26,6 +26,7 @@ const LoginPage = () => {
   const handleLogin = async () => {
     setLoading(true);
     const response = await LoginService({ password, username });
+    console.log("## ==dd", response.test);
     if (response.success) {
       showToast(response.data, "success");
       router.replace(`/${routed.userManagement}/${routed.allUser}`);

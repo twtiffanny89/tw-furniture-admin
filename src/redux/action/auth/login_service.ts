@@ -12,11 +12,13 @@ export async function LoginService(data: LoginServiceParam) {
     setCookieToken(response.data.data.accessToken);
     return {
       success: true,
+      test: response.data,
       data: "Login successful! Welcome back 🎉.",
     };
-  } catch {
+  } catch (e) {
     return {
       success: false,
+      test: e,
       data: "Login failed. Please try again.",
     };
   }
