@@ -4,6 +4,7 @@ import Button from "@/components/custom/button";
 import CashImage from "@/components/custom/CashImage";
 import showToast from "@/components/error-handle/show-toast";
 import Header from "@/components/header/header";
+import CenteredLoading from "@/components/loading/center_loading";
 import ModalConfirm from "@/components/modal/modal_confirm";
 import SubCategoryModal from "@/components/modal/sub_category_modal";
 import Pagination from "@/components/pagination/pagination";
@@ -129,6 +130,7 @@ const SubCategoryComponent: React.FC<SubCategoryComponentProps> = ({
   }
 
   async function onConfirm(data: any) {
+    setOpenModal(false);
     setLoading(true);
     if (subCategoryItem) {
       await onEditCategory(data);
@@ -138,7 +140,6 @@ const SubCategoryComponent: React.FC<SubCategoryComponentProps> = ({
       await onCreateCategory(data);
       onCallApi({});
     }
-    setOpenModal(false);
     setLoading(false);
   }
 
@@ -191,7 +192,6 @@ const SubCategoryComponent: React.FC<SubCategoryComponentProps> = ({
   }
 
   function onChange(e: React.ChangeEvent<HTMLInputElement>) {
-    console.log("###");
     setSearchAdd(e.target.value);
     onSearchCategory(e.target.value);
   }
@@ -212,14 +212,18 @@ const SubCategoryComponent: React.FC<SubCategoryComponentProps> = ({
   }
 
   async function onConfirmDelete() {
+    setOpenModalDelete(false);
+    setLoading(true);
     const resposne = await onDeleteSubCategory({
       subCategoryId: subCategoryItem!.id,
     });
     if (resposne.success) {
       showToast(resposne.message, "success");
+      onCallApi({});
     } else {
       showToast(resposne.message, "error");
     }
+    setLoading(false);
   }
 
   function onDeleteItem(value: Subcategory) {
@@ -315,7 +319,6 @@ const SubCategoryComponent: React.FC<SubCategoryComponentProps> = ({
         category={category.data}
         title="Sub category"
         isOpen={openModal}
-        loadingButton={loading}
         onClose={() => setOpenModal(false)}
         onConfirm={onConfirm}
         initialData={subCategoryItem}
@@ -331,6 +334,8 @@ const SubCategoryComponent: React.FC<SubCategoryComponentProps> = ({
         isOpen={openModalDelete}
         onConfirm={onConfirmDelete}
       />
+
+      <CenteredLoading loading={loading} />
     </div>
   );
 };

@@ -7,7 +7,7 @@ interface CenteredLoadingProps {
 const CenteredLoading: React.FC<CenteredLoadingProps> = ({
   loading = false,
   className = "",
-  text = "Loading, please wait...",
+  text = "Loading, please wait ...",
 }) => {
   if (!loading) return null;
 

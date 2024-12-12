@@ -1,58 +1,59 @@
 "use client";
 
 import Button from "@/components/custom/button";
-import CashImage from "@/components/custom/CashImage";
 import showToast from "@/components/error-handle/show-toast";
 import CenteredLoading from "@/components/loading/center_loading";
-import BannerModal from "@/components/modal/banner_modal";
+import AttributeModal from "@/components/modal/attribute-modal";
 import ModalConfirm from "@/components/modal/modal_confirm";
 import Pagination from "@/components/pagination/pagination";
-import { eventHeader, headerCategory } from "@/constants/data/header_table";
-import { base64Cut } from "@/constants/image/base64_cut";
+import { attributeHeader } from "@/constants/data/header_table";
 import {
-  deletedBannerService,
-  getBannerService,
-  updateBannerService,
-  uploadBannerService,
-} from "@/redux/action/event-management/banner_service";
+  createAttributeService,
+  deletedAttributeService,
+  getAttributeService,
+  onUpdateAttribute,
+} from "@/redux/action/product-management/attribute-service";
 import {
-  BannerListModel,
-  BannerModel,
-} from "@/redux/model/banner/banner_model";
-import { ProcessedImage } from "@/redux/model/global/ProcessedImage";
+  AttributeListModel,
+  AttributeModel,
+} from "@/redux/model/attribute-model/attribute-model";
+
+import { formatTimestamp } from "@/utils/date/format_timestamp";
 import React, { useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { IoMdAdd } from "react-icons/io";
 import { MdDeleteOutline } from "react-icons/md";
 
-interface BannerComponentProps {
-  initialData: BannerListModel;
+interface AttributeComponentProps {
+  initialData: AttributeListModel;
 }
 
-const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
-  const [banner, setBanner] = useState<BannerListModel>(initialData);
+const AttributeComponent: React.FC<AttributeComponentProps> = ({
+  initialData,
+}) => {
+  const [attribute, setAttribute] = useState<AttributeListModel>(initialData);
   const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
-  const [modelItem, setModelItem] = useState<BannerModel | null>(null);
+  const [modelItem, setModelItem] = useState<AttributeModel | null>(null);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
   async function onCallApi({ page = 1 }: { page?: number }) {
-    const response = await getBannerService({
+    const response = await getAttributeService({
       page,
     });
-    setBanner(response);
+    setAttribute(response);
   }
 
   function onAddNewClick() {
     setOpenModal(true);
   }
 
-  function onDeleteBanner(item: BannerModel) {
+  function onDeleteAttribte(item: AttributeModel) {
     setModelItem(item);
     setOpenModalDelete(true);
   }
 
-  function onEditBanner(item: BannerModel) {
+  function onEditAttribte(item: AttributeModel) {
     setModelItem(item);
     setOpenModal(true);
   }
@@ -60,39 +61,32 @@ const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
   async function onConfirmDelete() {
     setOpenModalDelete(false);
     setLoading(true);
-    const response = await deletedBannerService({ id: modelItem?.id });
+    const response = await deletedAttributeService({ id: modelItem?.id });
     if (response.success) {
-      showToast(response.message, "success");
       onCallApi({});
+      showToast(response.message, "success");
     } else {
       showToast(response.message, "error");
     }
     setLoading(false);
   }
 
-  async function onConfirm(data: ProcessedImage) {
+  async function onConfirm(data: string) {
     setOpenModal(false);
     setLoading(true);
     if (modelItem) {
-      if (data.type) {
-        const response = await updateBannerService({
-          fileContent: data.base64.replace(base64Cut.cutHead, ""),
-          fileExtension: data.type,
-          imageId: modelItem.id,
-        });
-        if (response.success) {
-          onCallApi({});
-          showToast(response.message, "success");
-        } else {
-          showToast(response.message, "error");
-        }
+      const response = await onUpdateAttribute({
+        id: modelItem.id,
+        data: { name: data },
+      });
+      if (response.success) {
+        onCallApi({});
+        showToast(response.message, "success");
+      } else {
+        showToast(response.message, "error");
       }
     } else {
-      const response = await uploadBannerService({
-        fileContent: data.base64.replace(base64Cut.cutHead, ""),
-        fileExtension: data?.type || ".png",
-      });
-
+      const response = await createAttributeService({ name: data });
       if (response.success) {
         onCallApi({});
         showToast(response.message, "success");
@@ -109,7 +103,7 @@ const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
   return (
     <div>
       <div className="p-4 bg-white flex justify-between">
-        <h1 className="font-bold text-xl">Banner</h1>
+        <h1 className="font-bold text-xl">Attribute </h1>
         <Button
           className="px-4 h-9 ml-2 font-normal text-xs"
           onClick={onAddNewClick}
@@ -123,7 +117,7 @@ const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
             <table>
               <thead className="bg-gray-100">
                 <tr>
-                  {eventHeader.map((header, index) => (
+                  {attributeHeader.map((header, index) => (
                     <th
                       key={header + index.toString()}
                       className="border border-gray-300 px-4 py-2 text-left"
@@ -134,34 +128,28 @@ const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
                 </tr>
               </thead>
               <tbody>
-                {banner?.data.map((value, index) => {
+                {attribute?.data.map((value, index) => {
                   const displayIndex =
-                    ((banner.pagination?.currentPage || 1) - 1) * 15 +
+                    ((attribute.pagination?.currentPage || 1) - 1) * 15 +
                     index +
                     1;
                   return (
                     <tr key={value.id} className="hover:bg-gray-200">
                       <td>{displayIndex}</td>
                       <td>{value.id}</td>
-                      <td>{value.bannerType}</td>
-                      <td className="max-w-full">
-                        <CashImage
-                          width={361}
-                          height={200}
-                          imageUrl={`${process.env.NEXT_PUBLIC_BASE_URL}${value.imageUrl}`}
-                        />
-                      </td>
-
+                      <td>{value.name}</td>
+                      <td>{formatTimestamp(value.createdAt)}</td>
+                      <td>{formatTimestamp(value.updatedAt)}</td>
                       <td>
                         <div className="flex gap-2">
                           <Button
-                            onClick={() => onEditBanner(value)}
+                            onClick={() => onEditAttribte(value)}
                             className="w-6 h-6 "
                           >
                             <FiEdit size={14} className="text-white" />
                           </Button>
                           <button
-                            onClick={() => onDeleteBanner(value)}
+                            onClick={() => onDeleteAttribte(value)}
                             className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"
                           >
                             <MdDeleteOutline size={16} className="text-white" />
@@ -174,19 +162,19 @@ const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
               </tbody>
             </table>
           </div>
-          {banner.data.length > 0 && (
+          {attribute.data.length > 0 && (
             <div className="flex justify-end mr-8 mt-8">
               <Pagination
-                currentPage={banner.pagination?.currentPage || 1}
+                currentPage={attribute.pagination?.currentPage || 1}
                 onPageChange={(page) => onCallApi({ page })}
-                totalPages={banner.pagination?.totalPages || 1}
+                totalPages={attribute.pagination?.totalPages || 1}
               />
             </div>
           )}
         </div>
       </div>
 
-      <BannerModal
+      <AttributeModal
         isOpen={openModal}
         onConfirm={onConfirm}
         onClose={onClose}
@@ -205,4 +193,4 @@ const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
   );
 };
 
-export default BannerComponent;
+export default AttributeComponent;

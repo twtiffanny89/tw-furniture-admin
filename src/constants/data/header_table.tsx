@@ -59,3 +59,22 @@ export const eventHeader: string[] = [
   "Image",
   "Action",
 ];
+
+export const attributeHeader: string[] = [
+  "No",
+  "Attribute Id",
+  "Name",
+  "Created At",
+  "Updated At",
+  "Action",
+];
+
+export const subAttributeHeader: string[] = [
+  "No",
+  "SubAttribute Id",
+  "Label",
+  "Value Type",
+  "Created At",
+  "Attribute Id",
+  "Action",
+];

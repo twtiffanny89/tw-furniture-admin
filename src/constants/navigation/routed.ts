@@ -9,4 +9,7 @@ export const routed = {
   subCategory: "sub-category",
   aboutUs: "about-us",
   banner: "banner",
+  attribute: "attribute",
+  subAttribute: "sub-attribute",
+  product: "product",
 };

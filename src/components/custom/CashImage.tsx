@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { FaSpinner } from "react-icons/fa"; // Import an icon for error
-import { images } from "@/constants/image/image";
+import { FaSpinner } from "react-icons/fa";
 
 interface CashImageProps {
   imageUrl: string;
   width?: number;
   height?: number;
   borderRadius?: number;
-  fit?: "contain" | "cover" | "fill" | "none" | "scale-down"; // Valid ObjectFit values
+  fit?: "contain" | "cover" | "fill" | "none" | "scale-down";
 }
 
 const CashImage: React.FC<CashImageProps> = ({
@@ -16,7 +15,7 @@ const CashImage: React.FC<CashImageProps> = ({
   width = 36,
   height = 36,
   borderRadius = 4,
-  fit = "cover", // Default to 'cover'
+  fit = "cover",
 }) => {
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -27,31 +26,32 @@ const CashImage: React.FC<CashImageProps> = ({
   }, [imageUrl]);
 
   useEffect(() => {
-    // Set a timeout to trigger error if image takes too long to load
     const timeout = setTimeout(() => {
       if (loading) {
-        setHasError(true); // Trigger error if image doesn't load within the timeout
-        setLoading(false); // Hide the loading spinner
+        setHasError(true);
+        setLoading(false);
       }
     }, 2000);
 
     return () => {
-      clearTimeout(timeout); // Clean up the timeout on component unmount
+      clearTimeout(timeout);
     };
   }, [loading]);
 
   const handleLoadingComplete = () => {
-    setLoading(false); // Image has loaded
+    setLoading(false);
   };
 
   const handleError = () => {
-    setHasError(true); // Error loading image
-    setLoading(false); // Hide loading spinner
+    setHasError(true);
+    setLoading(false);
   };
 
   return (
     <div
-      className="relative overflow-hidden"
+      className={`relative overflow-hidden flex items-center justify-center ${
+        hasError ? "bg-red-500" : "bg-transparent"
+      }`}
       style={{
         width: `${width}px`,
         height: `${height}px`,
@@ -65,21 +65,40 @@ const CashImage: React.FC<CashImageProps> = ({
         </div>
       )}
 
+      {/* Error State */}
+      {hasError && (
+        <div
+          className="flex justify-center items-center text-white text-center"
+          style={{
+            fontSize: `${Math.min(width, height) * 0.3}px`, // Scale font size based on container size
+            padding: "4px",
+            wordWrap: "break-word",
+          }}
+        >
+          Error
+        </div>
+      )}
+
       {/* Actual Image */}
-      <Image
-        key={imageUrl} // Add the key here
-        src={hasError ? images.errorImg : imageUrl} // Show fallback image if error occurs
-        alt="Cash image"
-        width={width}
-        height={height}
-        className="object-cover" // Tailwind's object-fit classes
-        style={{
-          objectFit: fit, // Use 'cover', 'contain', etc.
-          visibility: loading ? "hidden" : "visible",
-        }}
-        onLoadingComplete={handleLoadingComplete} // Image loaded
-        onError={handleError} // Image load error
-      />
+      {!hasError && (
+        <Image
+          key={imageUrl}
+          src={imageUrl}
+          alt={imageUrl}
+          width={width}
+          height={height}
+          className="overflow-hidden"
+          style={{
+            objectFit: fit,
+            width: "100%",
+            height: "100%",
+            visibility: loading ? "hidden" : "visible",
+            borderRadius: `${borderRadius}px`,
+          }}
+          onLoadingComplete={handleLoadingComplete}
+          onError={handleError}
+        />
+      )}
     </div>
   );
 };

@@ -23,16 +23,16 @@ export const slideBarData = [
         href: `/${routed.userManagement}/${routed.activityLog}`,
         icon: <FaCog />, // Add an icon
       },
-      {
-        label: "About us",
-        href: `/${routed.userManagement}/${routed.aboutUs}`,
-        icon: <FaCog />, // Add an icon
-      },
     ],
   },
   {
     title: "Product Management",
     items: [
+      {
+        label: "Product",
+        href: `/${routed.productManagement}/${routed.product}`,
+        icon: <FaHome />, // Add an icon
+      },
       {
         label: "Category",
         href: `/${routed.productManagement}/${routed.category}`,
@@ -41,6 +41,16 @@ export const slideBarData = [
       {
         label: "Sub category",
         href: `/${routed.productManagement}/${routed.subCategory}`,
+        icon: <FaCog />, // Add an icon
+      },
+      {
+        label: "Attribute",
+        href: `/${routed.productManagement}/${routed.attribute}`,
+        icon: <FaCog />, // Add an icon
+      },
+      {
+        label: "Sub attribute",
+        href: `/${routed.productManagement}/${routed.subAttribute}`,
         icon: <FaCog />, // Add an icon
       },
     ],
@@ -58,6 +68,11 @@ export const slideBarData = [
   {
     title: "OTHER",
     items: [
+      {
+        label: "About us",
+        href: `/${routed.userManagement}/${routed.aboutUs}`,
+        icon: <FaCog />, // Add an
+      },
       {
         label: "Logout",
         href: "/logout",

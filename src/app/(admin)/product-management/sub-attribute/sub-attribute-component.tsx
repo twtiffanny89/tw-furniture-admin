@@ -1,58 +1,76 @@
 "use client";
 
 import Button from "@/components/custom/button";
-import CashImage from "@/components/custom/CashImage";
 import showToast from "@/components/error-handle/show-toast";
 import CenteredLoading from "@/components/loading/center_loading";
-import BannerModal from "@/components/modal/banner_modal";
+import AttributeModal from "@/components/modal/attribute-modal";
 import ModalConfirm from "@/components/modal/modal_confirm";
+import SubAttributeModal from "@/components/modal/sub-attribute-modal";
 import Pagination from "@/components/pagination/pagination";
-import { eventHeader, headerCategory } from "@/constants/data/header_table";
-import { base64Cut } from "@/constants/image/base64_cut";
 import {
-  deletedBannerService,
-  getBannerService,
-  updateBannerService,
-  uploadBannerService,
-} from "@/redux/action/event-management/banner_service";
+  attributeHeader,
+  subAttributeHeader,
+} from "@/constants/data/header_table";
 import {
-  BannerListModel,
-  BannerModel,
-} from "@/redux/model/banner/banner_model";
-import { ProcessedImage } from "@/redux/model/global/ProcessedImage";
+  createAttributeService,
+  deletedAttributeService,
+  getAttributeService,
+  onUpdateAttribute,
+} from "@/redux/action/product-management/attribute-service";
+import {
+  createSubAttributeService,
+  deletedSubAttributeService,
+  getSubAttributeService,
+  onUpdateSubAttribute,
+} from "@/redux/action/product-management/sub-attribude-service";
+import {
+  AttributeListModel,
+  AttributeModel,
+} from "@/redux/model/attribute-model/attribute-model";
+import {
+  SubAttributeModel,
+  SubAttrinuteListModel,
+} from "@/redux/model/sub-attribute-model/sub-attribute-model";
+
+import { formatTimestamp } from "@/utils/date/format_timestamp";
 import React, { useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { IoMdAdd } from "react-icons/io";
 import { MdDeleteOutline } from "react-icons/md";
 
-interface BannerComponentProps {
-  initialData: BannerListModel;
+interface AttributeComponentProps {
+  initialData: SubAttrinuteListModel;
+  initialAttribute: AttributeListModel;
 }
 
-const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
-  const [banner, setBanner] = useState<BannerListModel>(initialData);
+const SubAttributeComponent: React.FC<AttributeComponentProps> = ({
+  initialData,
+  initialAttribute,
+}) => {
+  const [subAttribute, setSubAttribute] =
+    useState<SubAttrinuteListModel>(initialData);
   const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
-  const [modelItem, setModelItem] = useState<BannerModel | null>(null);
+  const [modelItem, setModelItem] = useState<SubAttributeModel | null>(null);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
   async function onCallApi({ page = 1 }: { page?: number }) {
-    const response = await getBannerService({
+    const response = await getSubAttributeService({
       page,
     });
-    setBanner(response);
+    setSubAttribute(response);
   }
 
   function onAddNewClick() {
     setOpenModal(true);
   }
 
-  function onDeleteBanner(item: BannerModel) {
+  function onDeleteAttribte(item: SubAttributeModel) {
     setModelItem(item);
     setOpenModalDelete(true);
   }
 
-  function onEditBanner(item: BannerModel) {
+  function onEditAttribte(item: SubAttributeModel) {
     setModelItem(item);
     setOpenModal(true);
   }
@@ -60,39 +78,38 @@ const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
   async function onConfirmDelete() {
     setOpenModalDelete(false);
     setLoading(true);
-    const response = await deletedBannerService({ id: modelItem?.id });
+    const response = await deletedSubAttributeService({ id: modelItem?.id });
     if (response.success) {
-      showToast(response.message, "success");
       onCallApi({});
+      showToast(response.message, "success");
     } else {
       showToast(response.message, "error");
     }
     setLoading(false);
   }
 
-  async function onConfirm(data: ProcessedImage) {
+  async function onConfirm(data: string) {
     setOpenModal(false);
     setLoading(true);
     if (modelItem) {
-      if (data.type) {
-        const response = await updateBannerService({
-          fileContent: data.base64.replace(base64Cut.cutHead, ""),
-          fileExtension: data.type,
-          imageId: modelItem.id,
-        });
-        if (response.success) {
-          onCallApi({});
-          showToast(response.message, "success");
-        } else {
-          showToast(response.message, "error");
-        }
+      const filter = initialAttribute.data.find((item) => item.name === "Size");
+      const response = await onUpdateSubAttribute({
+        id: modelItem.id,
+        data: { attributeId: filter?.id, label: data, value: data },
+      });
+      if (response.success) {
+        onCallApi({});
+        showToast(response.message, "success");
+      } else {
+        showToast(response.message, "error");
       }
     } else {
-      const response = await uploadBannerService({
-        fileContent: data.base64.replace(base64Cut.cutHead, ""),
-        fileExtension: data?.type || ".png",
+      const filter = initialAttribute.data.find((item) => item.name === "Size");
+      const response = await createSubAttributeService({
+        label: data,
+        value: data,
+        attributeId: filter?.id,
       });
-
       if (response.success) {
         onCallApi({});
         showToast(response.message, "success");
@@ -109,7 +126,7 @@ const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
   return (
     <div>
       <div className="p-4 bg-white flex justify-between">
-        <h1 className="font-bold text-xl">Banner</h1>
+        <h1 className="font-bold text-xl">Sub Attribute</h1>
         <Button
           className="px-4 h-9 ml-2 font-normal text-xs"
           onClick={onAddNewClick}
@@ -123,7 +140,7 @@ const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
             <table>
               <thead className="bg-gray-100">
                 <tr>
-                  {eventHeader.map((header, index) => (
+                  {subAttributeHeader.map((header, index) => (
                     <th
                       key={header + index.toString()}
                       className="border border-gray-300 px-4 py-2 text-left"
@@ -134,34 +151,31 @@ const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
                 </tr>
               </thead>
               <tbody>
-                {banner?.data.map((value, index) => {
+                {subAttribute?.data.map((value, index) => {
                   const displayIndex =
-                    ((banner.pagination?.currentPage || 1) - 1) * 15 +
+                    ((subAttribute.pagination?.currentPage || 1) - 1) * 15 +
                     index +
                     1;
                   return (
                     <tr key={value.id} className="hover:bg-gray-200">
                       <td>{displayIndex}</td>
                       <td>{value.id}</td>
-                      <td>{value.bannerType}</td>
-                      <td className="max-w-full">
-                        <CashImage
-                          width={361}
-                          height={200}
-                          imageUrl={`${process.env.NEXT_PUBLIC_BASE_URL}${value.imageUrl}`}
-                        />
+                      <td>{value.label}</td>
+                      <td className="text-amber-700 font-semibold">
+                        {value.valueType}
                       </td>
-
+                      <td>{formatTimestamp(value.createdAt)}</td>
+                      <td>{value.attributeId}</td>
                       <td>
                         <div className="flex gap-2">
                           <Button
-                            onClick={() => onEditBanner(value)}
+                            onClick={() => onEditAttribte(value)}
                             className="w-6 h-6 "
                           >
                             <FiEdit size={14} className="text-white" />
                           </Button>
                           <button
-                            onClick={() => onDeleteBanner(value)}
+                            onClick={() => onDeleteAttribte(value)}
                             className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"
                           >
                             <MdDeleteOutline size={16} className="text-white" />
@@ -174,23 +188,23 @@ const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
               </tbody>
             </table>
           </div>
-          {banner.data.length > 0 && (
+          {subAttribute.data.length > 0 && (
             <div className="flex justify-end mr-8 mt-8">
               <Pagination
-                currentPage={banner.pagination?.currentPage || 1}
+                currentPage={subAttribute.pagination?.currentPage || 1}
                 onPageChange={(page) => onCallApi({ page })}
-                totalPages={banner.pagination?.totalPages || 1}
+                totalPages={subAttribute.pagination?.totalPages || 1}
               />
             </div>
           )}
         </div>
       </div>
 
-      <BannerModal
+      <SubAttributeModal
         isOpen={openModal}
         onConfirm={onConfirm}
         onClose={onClose}
-        title="Create Banner"
+        title="Create Sub-Attribute"
         initialData={modelItem}
       />
 
@@ -205,4 +219,4 @@ const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
   );
 };
 
-export default BannerComponent;
+export default SubAttributeComponent;

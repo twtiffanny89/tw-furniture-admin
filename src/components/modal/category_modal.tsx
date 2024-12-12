@@ -21,7 +21,6 @@ interface CategoryModalProps {
   onClose: () => void;
   onConfirm: (data: any) => void;
   title: string;
-  loadingButton?: boolean;
   initialData?: Category | null;
 }
 
@@ -33,7 +32,6 @@ type ProcessedImage = {
 const CategoryModal = ({
   isOpen,
   onClose,
-  loadingButton = false,
   initialData,
   title,
   onConfirm,
@@ -46,6 +44,8 @@ const CategoryModal = ({
     if (initialData) {
       setNameCategory(initialData.name);
       setImage({ base64: initialData.image?.imageUrl, type: null });
+    } else {
+      resetForm();
     }
   }, [initialData, isOpen]);
 
@@ -67,11 +67,8 @@ const CategoryModal = ({
 
     onConfirm({
       nameCategory,
-
       image,
     });
-
-    resetForm();
   };
 
   const resetForm = () => {
@@ -100,7 +97,6 @@ const CategoryModal = ({
 
   function onCloseFrom() {
     onClose();
-    resetForm();
   }
 
   return (
@@ -189,12 +185,7 @@ const CategoryModal = ({
             >
               Cancel
             </Button>
-            <Button
-              loading={loadingButton}
-              textLoading="Saving..."
-              onClick={handleConfirm}
-              className="px-4 py-1.5 transition"
-            >
+            <Button onClick={handleConfirm} className="px-4 py-1.5 transition">
               Save
             </Button>
           </div>

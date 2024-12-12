@@ -119,6 +119,7 @@ const CategoryComponent: React.FC<CategoryComponentProps> = ({
   }
 
   async function onConfirm(data: any) {
+    setOpenModal(false);
     setLoading(true);
     if (categoryItem) {
       onEditCategory(data);
@@ -128,7 +129,7 @@ const CategoryComponent: React.FC<CategoryComponentProps> = ({
       await onCreateCategory(data);
       onCallApi({});
     }
-    setOpenModal(false);
+
     setLoading(false);
   }
 
@@ -256,7 +257,6 @@ const CategoryComponent: React.FC<CategoryComponentProps> = ({
       <CategoryModal
         title="Category"
         isOpen={openModal}
-        loadingButton={loading}
         onClose={() => setOpenModal(false)}
         onConfirm={onConfirm}
         initialData={categoryItem}

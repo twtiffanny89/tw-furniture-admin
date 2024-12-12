@@ -7,64 +7,36 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import React, { useEffect, useState } from "react";
-import Input from "../custom/input";
 import MessgaeError from "../error-handle/message_error";
 import Button from "../custom/button";
 import { LuImagePlus } from "react-icons/lu";
 import { IoClose } from "react-icons/io5";
 import { resizeImageConvertBase64 } from "@/utils/security/image_convert";
 import CashImage from "../custom/CashImage";
-import { Subcategory } from "@/redux/model/sub-category/sub_categpry_model";
-import DropDownMenu from "../custom/drop_down_menu";
-import {
-  Category,
-  CategorySelect,
-} from "@/redux/model/category/category_model";
+import { ProcessedImage } from "@/redux/model/global/ProcessedImage";
+import { BannerModel } from "@/redux/model/banner/banner_model";
 
-interface SubCategoryModalProps {
+interface BannerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (data: any) => void;
+  onConfirm: (data: ProcessedImage) => void;
   title: string;
-  loadingButton?: boolean;
-  initialData?: Subcategory | null;
-  category: Category[];
-  onLoadMore?: () => void;
-  isLoading?: boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onClearSearch: () => void;
-  value: string;
+  initialData?: BannerModel | null;
 }
 
-type ProcessedImage = {
-  base64: string;
-  type: string | null;
-};
-
-const SubCategoryModal = ({
+const BannerModal = ({
   isOpen,
   onClose,
-  loadingButton = false,
   initialData,
   title,
   onConfirm,
-  category,
-  onLoadMore,
-  isLoading,
-  onChange,
-  onClearSearch,
-  value,
-}: SubCategoryModalProps) => {
-  const [nameSub, setNameSub] = useState("");
+}: BannerModalProps) => {
   const [image, setImage] = useState<ProcessedImage | null>(null);
-  const [categoryItem, setCategoryItem] = useState<CategorySelect | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (initialData) {
-      setNameSub(initialData.name);
-      setImage({ base64: initialData.image?.imageUrl, type: null });
-      setCategoryItem(initialData.category);
+      setImage({ base64: initialData.imageUrl, type: null });
     } else {
       resetForm();
     }
@@ -78,23 +50,15 @@ const SubCategoryModal = ({
 
   const handleConfirm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!nameSub) newErrors.nameCategory = "Name Subcategories is required.";
-    if (!image) newErrors.image = "Image Subcategory is required.";
-
-    if (Object.keys(newErrors).length > 0) {
+    if (!image) {
+      newErrors.image = "Image banner is required."; // Add error if image is null
       setErrors(newErrors);
       return;
     }
-
-    onConfirm({
-      nameSub,
-      image,
-      idCategory: categoryItem?.id,
-    });
+    onConfirm(image);
   };
 
   const resetForm = () => {
-    setNameSub("");
     setImage(null);
     setErrors({});
   };
@@ -121,10 +85,6 @@ const SubCategoryModal = ({
     onClose();
   }
 
-  function onItemSelect(value: CategorySelect) {
-    setCategoryItem(value);
-  }
-
   return (
     <Dialog open={isOpen} onOpenChange={onCloseFrom}>
       <DialogContent>
@@ -135,45 +95,12 @@ const SubCategoryModal = ({
           </DialogDescription>
         </DialogHeader>
         <form onKeyDown={handleKeyPress}>
-          <div className="my-4 ">
+          <div className="mb-4">
             <label className="block text-xs font-medium text-gray-700 mb-1">
-              Name Subcategories
-              <span className="text-red-500 ml-1">*</span>
-            </label>
-            <Input
-              type="text"
-              placeholder="Input Subcategory name..."
-              value={nameSub}
-              onChange={(e) => {
-                setNameSub(e.target.value);
-                setErrors((prev) => ({ ...prev, nameCategory: "" }));
-              }}
-              required
-              className="h-11"
-            />
-            {errors.nameCategory && (
-              <MessgaeError message={errors.nameCategory} type="error" />
-            )}
-          </div>
-
-          <DropDownMenu
-            onItemSelect={onItemSelect}
-            onClearSearch={onClearSearch}
-            value={value}
-            dataList={category}
-            onChange={onChange}
-            label="Category"
-            onLoadMore={onLoadMore}
-            isLoading={isLoading}
-            selectedOption={categoryItem}
-          />
-
-          <div className="mb-4 mt-4">
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Image subcategory<span className="text-red-500 ml-1">*</span>
+              Image Banner<span className="text-red-500 ml-1">*</span>
             </label>
             {image ? (
-              <div className="relative w-24 h-24">
+              <div className="relative w-[360px] h-[200px] ">
                 {image.type ? (
                   <img
                     src={image.base64}
@@ -182,8 +109,9 @@ const SubCategoryModal = ({
                   />
                 ) : (
                   <CashImage
-                    width={96}
-                    height={96}
+                    borderRadius={0}
+                    width={361}
+                    height={200}
                     imageUrl={`${process.env.NEXT_PUBLIC_BASE_URL}${image.base64}`}
                   />
                 )}
@@ -198,7 +126,7 @@ const SubCategoryModal = ({
             ) : (
               <label
                 htmlFor="fileInput"
-                className="flex items-center justify-center w-24 h-24 bg-[#00000026] rounded-md cursor-pointer relative"
+                className="flex items-center justify-center w-[361px] h-[200px] bg-[#00000026] rounded-md cursor-pointer relative"
               >
                 <input
                   id="fileInput"
@@ -223,12 +151,7 @@ const SubCategoryModal = ({
             >
               Cancel
             </Button>
-            <Button
-              loading={loadingButton}
-              textLoading="Saving..."
-              onClick={handleConfirm}
-              className="px-4 py-1.5 transition"
-            >
+            <Button onClick={handleConfirm} className="px-4 py-1.5 transition">
               Save
             </Button>
           </div>
@@ -238,4 +161,4 @@ const SubCategoryModal = ({
   );
 };
 
-export default SubCategoryModal;
+export default BannerModal;
