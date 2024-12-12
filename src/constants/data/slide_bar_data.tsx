@@ -46,6 +46,16 @@ export const slideBarData = [
     ],
   },
   {
+    title: "Event Management",
+    items: [
+      {
+        label: "Banner",
+        href: `/${routed.eventManagement}/${routed.banner}`,
+        icon: <FaHome />, // Add an icon
+      },
+    ],
+  },
+  {
     title: "OTHER",
     items: [
       {

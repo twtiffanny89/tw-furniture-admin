@@ -51,3 +51,11 @@ export const headerSubCategory: string[] = [
   "Updated at",
   "Action",
 ];
+
+export const eventHeader: string[] = [
+  "No",
+  "Banner Id",
+  "Banner Type",
+  "Image",
+  "Action",
+];
