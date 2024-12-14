@@ -82,12 +82,14 @@ export const subAttributeHeader: string[] = [
 export const productHeader: string[] = [
   "No",
   "Product Id",
-  "name",
+  "Name",
+  "Description",
   "Product View",
-  "Base Price",
+  "Status",
   "Created At",
-  "Is Public",
+  "Category Id",
   "Category Name",
+  "Sub-category Id",
   "Sub-category Name",
   "Action",
 ];

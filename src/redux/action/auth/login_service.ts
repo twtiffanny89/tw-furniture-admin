@@ -1,3 +1,5 @@
+"use server";
+
 import { axiosNoAuth } from "@/utils/api/axios";
 import { setCookieToken } from "@/utils/security/token";
 

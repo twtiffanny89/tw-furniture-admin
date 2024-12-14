@@ -6,7 +6,6 @@ import MessgaeError from "@/components/error-handle/message_error";
 import showToast from "@/components/error-handle/show-toast";
 import { routed } from "@/constants/navigation/routed";
 import { LoginService } from "@/redux/action/auth/login_service";
-import { getCookieToken } from "@/utils/security/token";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
@@ -20,13 +19,9 @@ const LoginPage = () => {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const router = useRouter();
 
-  console.log("## ==", getCookieToken());
-  console.log("## ==dd", process.env.NEXT_PUBLIC_BASE_URL);
-
   const handleLogin = async () => {
     setLoading(true);
     const response = await LoginService({ password, username });
-    console.log("## ==dddd", response.test);
     if (response.success) {
       showToast(response.data, "success");
       router.replace(`/${routed.userManagement}/${routed.allUser}`);

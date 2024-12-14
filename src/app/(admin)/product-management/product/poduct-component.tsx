@@ -1,31 +1,17 @@
 "use client";
 
 import ButtonCustom from "@/components/custom/ButtonCustom";
-import CashImage from "@/components/custom/CashImage";
 import showToast from "@/components/error-handle/show-toast";
-import Header from "@/components/header/header";
 import CenteredLoading from "@/components/loading/center_loading";
-import BannerModal from "@/components/modal/banner_modal";
 import ModalConfirm from "@/components/modal/modal_confirm";
 import Pagination from "@/components/pagination/Pagination";
-import {
-  eventHeader,
-  headerCategory,
-  productHeader,
-} from "@/constants/data/header_table";
-import { base64Cut } from "@/constants/image/base64_cut";
+import { productHeader } from "@/constants/data/header_table";
 import {
   deletedBannerService,
   getBannerService,
-  updateBannerService,
-  uploadBannerService,
 } from "@/redux/action/event-management/banner_service";
-import {
-  BannerListModel,
-  BannerModel,
-} from "@/redux/model/banner/banner_model";
-import { ProcessedImage } from "@/redux/model/global/ProcessedImage";
-import { ProductListModel } from "@/redux/model/product/product-model";
+
+import { Product, ProductListModel } from "@/redux/model/product/product-model";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import React, { useState } from "react";
 import { FiEdit } from "react-icons/fi";
@@ -39,8 +25,8 @@ interface ProductComponentProps {
 const ProductComponent: React.FC<ProductComponentProps> = ({ initialData }) => {
   const [product, setProduct] = useState<ProductListModel>(initialData);
   const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
-  const [modelItem, setModelItem] = useState<BannerModel | null>(null);
-  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [modelItem, setModelItem] = useState<Product | null>(null);
+
   const [loading, setLoading] = useState<boolean>(false);
 
   async function onCallApi({ page = 1 }: { page?: number }) {
@@ -50,18 +36,15 @@ const ProductComponent: React.FC<ProductComponentProps> = ({ initialData }) => {
     setProduct(response);
   }
 
-  function onAddNewClick() {
-    setOpenModal(true);
-  }
+  function onAddNewClick() {}
 
-  function onDeleteBanner(item: BannerModel) {
+  function onDeleteBanner(item: Product) {
     setModelItem(item);
     setOpenModalDelete(true);
   }
 
-  function onEditBanner(item: BannerModel) {
+  function onEditBanner(item: Product) {
     setModelItem(item);
-    setOpenModal(true);
   }
 
   async function onConfirmDelete() {
@@ -77,52 +60,11 @@ const ProductComponent: React.FC<ProductComponentProps> = ({ initialData }) => {
     setLoading(false);
   }
 
-  async function onConfirm(data: ProcessedImage) {
-    setOpenModal(false);
-    setLoading(true);
-    if (modelItem) {
-      if (data.type) {
-        const response = await updateBannerService({
-          fileContent: data.base64.replace(base64Cut.cutHead, ""),
-          fileExtension: data.type,
-          imageId: modelItem.id,
-        });
-        if (response.success) {
-          onCallApi({});
-          showToast(response.message, "success");
-        } else {
-          showToast(response.message, "error");
-        }
-      }
-    } else {
-      const response = await uploadBannerService({
-        fileContent: data.base64.replace(base64Cut.cutHead, ""),
-        fileExtension: data?.type || ".png",
-      });
-
-      if (response.success) {
-        onCallApi({});
-        showToast(response.message, "success");
-      } else {
-        showToast(response.message, "error");
-      }
-    }
-    setLoading(false);
-  }
-
-  function onClose() {
-    setOpenModal(false);
-  }
-
-  function onRefreshClick() {}
   return (
     <div>
-      <Header
-        title="Product Listing"
-        onRefreshClick={onRefreshClick}
-        // onSearchChange={onSearchChange}
-        placeholder="Search User id, username ..."
-      />
+      <div className="p-4 bg-white flex justify-between">
+        <h1 className="font-bold text-xl">Product</h1>
+      </div>
       <div className="mt-4 bg-white min-h-full">
         <div>
           <div className="overflow-x-auto min-h-[50vh]">
@@ -150,32 +92,29 @@ const ProductComponent: React.FC<ProductComponentProps> = ({ initialData }) => {
                       <td>{displayIndex}</td>
                       <td>{value.id}</td>
                       <td>{value.name}</td>
+                      <td>{value.description}</td>
                       <td>{value.viewCount}</td>
-                      <td>{value.basePrice}</td>
+                      <td>{value.isPublic ? "true" : "false"}</td>
                       <td>{formatTimestamp(value.createdAt)}</td>
-                      <td>{value.isPublic}</td>
-                      <td>{value.category?.name}</td>
-                      <td>{value.subcategory?.name}</td>
+                      <td>{value.categoryId || "- - -"}</td>
+                      <td>{value.category?.name || "- - -"}</td>
+                      <td>{value.subcategoryId || "- - -"}</td>
+                      <td>{value.subcategory?.name || "- - -"}</td>
                       <td>
-                        {
-                          <div className="flex gap-2">
-                            <ButtonCustom
-                              //   onClick={() => onEditBanner(value)}
-                              className="w-6 h-6 "
-                            >
-                              <FiEdit size={14} className="text-white" />
-                            </ButtonCustom>
-                            <button
-                              //   onClick={() => onDeleteBanner(value)}
-                              className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"
-                            >
-                              <MdDeleteOutline
-                                size={16}
-                                className="text-white"
-                              />
-                            </button>
-                          </div>
-                        }
+                        <div className="flex gap-2">
+                          <ButtonCustom
+                            onClick={() => onEditBanner(value)}
+                            className="w-6 h-6 "
+                          >
+                            <FiEdit size={14} className="text-white" />
+                          </ButtonCustom>
+                          <button
+                            onClick={() => onDeleteBanner(value)}
+                            className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"
+                          >
+                            <MdDeleteOutline size={16} className="text-white" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -194,14 +133,6 @@ const ProductComponent: React.FC<ProductComponentProps> = ({ initialData }) => {
           )}
         </div>
       </div>
-
-      <BannerModal
-        isOpen={openModal}
-        onConfirm={onConfirm}
-        onClose={onClose}
-        title="Create Banner"
-        initialData={modelItem}
-      />
 
       <ModalConfirm
         onClose={() => setOpenModalDelete(false)}
