@@ -1,10 +1,7 @@
-"use client";
-
 import { useEffect } from "react";
 import "../globals.css";
 import Head from "next/head";
 import { ToastContainer } from "react-toastify";
-import Aos from "aos";
 import MenuSidebar from "@/components/root/menu_sidebar";
 import Navbar from "@/components/root/navbar";
 
@@ -13,14 +10,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  useEffect(() => {
-    Aos.init({
-      duration: 1000,
-      once: true,
-      easing: "ease-out",
-    });
-  }, []);
-
   return (
     <html lang="en">
       <Head>
