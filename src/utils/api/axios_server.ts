@@ -28,7 +28,7 @@ axiosServerWithAuth.interceptors.request.use(
 
 axiosServerWithAuth.interceptors.response.use(
   (response) => {
-    if (process.env.DEV == "development") {
+    if (config.DEV == "development") {
       console.log(
         "%c## Success: %cEndpoint hit successfully! %cURL: " +
           response.config.url +
@@ -43,7 +43,7 @@ axiosServerWithAuth.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (process.env.DEV == "development") {
+    if (config.DEV == "development") {
       const { response } = error;
       if (response) {
         console.log(

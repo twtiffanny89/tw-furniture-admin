@@ -36,7 +36,7 @@ axiosWithAuth.interceptors.request.use(
 
 axiosWithAuth.interceptors.response.use(
   (response) => {
-    if (process.env.DEV == "development") {
+    if (config.DEV == "development") {
       console.log(
         "%c## Success: %cEndpoint hit successfully! %cURL: " +
           response.config.url +
@@ -51,7 +51,7 @@ axiosWithAuth.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (process.env.DEV == "development") {
+    if (config.DEV == "development") {
       const { response } = error;
       if (response) {
         console.log(
@@ -72,7 +72,7 @@ axiosWithAuth.interceptors.response.use(
 
 axiosNoAuth.interceptors.response.use(
   (response) => {
-    if (process.env.DEV == "development") {
+    if (config.DEV == "development") {
       console.log(
         "%c## Success: %cEndpoint hit successfully! %cURL: " +
           response.config.url +
@@ -87,7 +87,7 @@ axiosNoAuth.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (process.env.DEV == "development") {
+    if (config.DEV == "development") {
       const { response } = error;
       if (response) {
         console.log(
