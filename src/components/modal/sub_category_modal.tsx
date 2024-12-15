@@ -20,6 +20,7 @@ import {
   Category,
   CategorySelect,
 } from "@/redux/model/category/category_model";
+import { config } from "@/utils/config/config";
 
 interface SubCategoryModalProps {
   isOpen: boolean;
@@ -184,7 +185,7 @@ const SubCategoryModal = ({
                   <CashImage
                     width={96}
                     height={96}
-                    imageUrl={`${process.env.BASE_URL}${image.base64}`}
+                    imageUrl={`${config.BASE_URL}${image.base64}`}
                   />
                 )}
 

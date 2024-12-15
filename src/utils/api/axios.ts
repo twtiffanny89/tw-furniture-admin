@@ -1,9 +1,10 @@
 import axios from "axios";
 import { getCookieToken } from "../security/token";
+import { config } from "../config/config";
 
 // Base Axios instance (no token required)
 const axiosNoAuth = axios.create({
-  baseURL: process.env.BASE_URL,
+  baseURL: config.BASE_URL,
   timeout: 400000,
   headers: {
     "Content-Type": "application/json",
@@ -12,7 +13,7 @@ const axiosNoAuth = axios.create({
 
 // Axios instance with token (authentication required)
 const axiosWithAuth = axios.create({
-  baseURL: process.env.BASE_URL,
+  baseURL: config.BASE_URL,
   timeout: 400000,
   headers: {
     "Content-Type": "application/json",

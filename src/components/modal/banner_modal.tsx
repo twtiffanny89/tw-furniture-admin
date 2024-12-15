@@ -15,6 +15,7 @@ import { resizeImageConvertBase64 } from "@/utils/security/image_convert";
 import CashImage from "../custom/CashImage";
 import { ProcessedImage } from "@/redux/model/global/ProcessedImage";
 import { BannerModel } from "@/redux/model/banner/banner_model";
+import { config } from "@/utils/config/config";
 
 interface BannerModalProps {
   isOpen: boolean;
@@ -112,7 +113,7 @@ const BannerModal = ({
                     borderRadius={0}
                     width={361}
                     height={200}
-                    imageUrl={`${process.env.BASE_URL}${image.base64}`}
+                    imageUrl={`${config.BASE_URL}${image.base64}`}
                   />
                 )}
 

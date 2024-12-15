@@ -23,6 +23,7 @@ import {
   Subcategory,
   SubCategoryListModel,
 } from "@/redux/model/sub-category/sub_categpry_model";
+import { config } from "@/utils/config/config";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
 import { useCallback, useState } from "react";
@@ -272,7 +273,7 @@ const SubCategoryComponent: React.FC<SubCategoryComponentProps> = ({
                         <CashImage
                           width={32}
                           height={32}
-                          imageUrl={`${process.env.BASE_URL}${sub.image?.imageUrl}`}
+                          imageUrl={`${config.BASE_URL}${sub.image?.imageUrl}`}
                         />
                       </td>
                       <td>{sub.name}</td>

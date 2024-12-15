@@ -20,6 +20,7 @@ import {
   BannerModel,
 } from "@/redux/model/banner/banner_model";
 import { ProcessedImage } from "@/redux/model/global/ProcessedImage";
+import { config } from "@/utils/config/config";
 import React, { useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { IoMdAdd } from "react-icons/io";
@@ -148,7 +149,7 @@ const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
                         <CashImage
                           width={361}
                           height={200}
-                          imageUrl={`${process.env.BASE_URL}${value.imageUrl}`}
+                          imageUrl={`${config.BASE_URL}${value.imageUrl}`}
                         />
                       </td>
 

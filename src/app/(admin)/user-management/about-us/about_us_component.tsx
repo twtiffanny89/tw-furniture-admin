@@ -14,6 +14,7 @@ import {
 import { AboutUsModel } from "@/redux/model/about-us/about_us_model";
 import { UpdateAboutUsModel } from "@/redux/model/about-us/update_about_us_model";
 import { ProcessedImage } from "@/redux/model/global/ProcessedImage";
+import { config } from "@/utils/config/config";
 import { resizeImageConvertBase64 } from "@/utils/security/image_convert";
 import React, { useState } from "react";
 import { IoClose } from "react-icons/io5";
@@ -174,7 +175,7 @@ const AboutUsComponent: React.FC<AboutUsComponentProps> = ({ initialData }) => {
                   <CashImage
                     width={96}
                     height={96}
-                    imageUrl={`${process.env.BASE_URL}${imageData.base64}`}
+                    imageUrl={`${config.BASE_URL}${imageData.base64}`}
                   />
                 )}
 

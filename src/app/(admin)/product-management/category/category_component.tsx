@@ -26,6 +26,7 @@ import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
 import { MdDeleteOutline } from "react-icons/md";
 import ModalConfirm from "@/components/modal/modal_confirm";
+import { config } from "@/utils/config/config";
 
 interface CategoryComponentProps {
   initialData: CategoryListModel;
@@ -212,7 +213,7 @@ const CategoryComponent: React.FC<CategoryComponentProps> = ({
                         <CashImage
                           width={32}
                           height={32}
-                          imageUrl={`${process.env.BASE_URL}${categories.image?.imageUrl}`}
+                          imageUrl={`${config.BASE_URL}${categories.image?.imageUrl}`}
                         />
                       </td>
                       <td>{categories.name}</td>

@@ -8,6 +8,7 @@ import Pagination from "@/components/pagination/Pagination";
 import { headerActivityLog } from "@/constants/data/header_table";
 import { getActivityLogService } from "@/redux/action/user-management/activity_log_service";
 import { ActivityLogListModel } from "@/redux/model/activity-log/activity_log_model";
+import { config } from "@/utils/config/config";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
 import { openGoogleMap } from "@/utils/google-map/open_google_map";
@@ -97,7 +98,7 @@ const ActivityLogComponent: React.FC<ActivityLogComponentprops> = ({
                         <CashImage
                           width={32}
                           height={32}
-                          imageUrl={`${process.env.BASE_URL}/${activity.user?.image}`}
+                          imageUrl={`${config.BASE_URL}/${activity.user?.image}`}
                         />
                       </td>
                       <td>{`${activity?.deviceName} - ${activity.deviceType} - ${activity.osVersion}`}</td>

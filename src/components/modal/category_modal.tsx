@@ -15,6 +15,7 @@ import { IoClose } from "react-icons/io5";
 import { resizeImageConvertBase64 } from "@/utils/security/image_convert";
 import { Category } from "@/redux/model/category/category_model";
 import CashImage from "../custom/CashImage";
+import { config } from "@/utils/config/config";
 
 interface CategoryModalProps {
   isOpen: boolean;
@@ -146,7 +147,7 @@ const CategoryModal = ({
                   <CashImage
                     width={96}
                     height={96}
-                    imageUrl={`${process.env.BASE_URL}${image.base64}`}
+                    imageUrl={`${config.BASE_URL}${image.base64}`}
                   />
                 )}
 

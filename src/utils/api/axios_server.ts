@@ -1,9 +1,10 @@
 import axios from "axios";
 import { getServerCookieToken } from "../security/token_server";
+import { config } from "../config/config";
 
 // Axios instance with token (authentication required)
 const axiosServerWithAuth = axios.create({
-  baseURL: process.env.BASE_URL,
+  baseURL: config.BASE_URL,
   timeout: 400000,
   headers: {
     "Content-Type": "application/json",

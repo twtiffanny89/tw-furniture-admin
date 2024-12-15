@@ -12,6 +12,7 @@ import {
   UserInfoListModel,
   UserInfoModel,
 } from "@/redux/model/all-user/user_list_model";
+import { config } from "@/utils/config/config";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
 import { useRouter } from "next/navigation";
@@ -113,7 +114,7 @@ const AllUserComponent = () => {
                         <CashImage
                           width={32}
                           height={32}
-                          imageUrl={`${process.env.BASE_URL}/${user.image?.imageUrl}`}
+                          imageUrl={`${config.BASE_URL}/${user.image?.imageUrl}`}
                         />
                       </td>
                       <td>{user?.username || "- - -"}</td>
