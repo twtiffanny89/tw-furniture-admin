@@ -29,14 +29,8 @@ import ModalConfirm from "@/components/modal/modal_confirm";
 import { config } from "@/utils/config/config";
 import CenteredLoading from "@/components/loading/center_loading";
 
-interface CategoryComponentProps {
-  initialData: CategoryListModel;
-}
-
-const CategoryComponent: React.FC<CategoryComponentProps> = ({
-  initialData,
-}) => {
-  const [category, setCategory] = useState<CategoryListModel>(initialData);
+const CategoryComponent = () => {
+  const [category, setCategory] = useState<CategoryListModel>();
   const [categoryItem, setCategoryItem] = useState<Category | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -132,7 +126,7 @@ const CategoryComponent: React.FC<CategoryComponentProps> = ({
     if (categoryItem) {
       onEditCategory(data);
       setCategoryItem(null);
-      onCallApi({ page: category.pagination?.currentPage, search: search });
+      onCallApi({ page: category!.pagination?.currentPage, search: search });
     } else {
       await onCreateCategory(data);
       onCallApi({});
@@ -159,7 +153,7 @@ const CategoryComponent: React.FC<CategoryComponentProps> = ({
     const resposne = await onDeleteCategory({ categoryId: categoryItem!.id });
     if (resposne.success) {
       showToast(resposne.message, "success");
-      onCallApi({ page: category.pagination?.currentPage, search: search });
+      onCallApi({ page: category!.pagination?.currentPage, search: search });
     } else {
       showToast(resposne.message, "error");
     }
@@ -250,7 +244,7 @@ const CategoryComponent: React.FC<CategoryComponentProps> = ({
               </tbody>
             </table>
           </div>
-          {category.data.length > 0 && (
+          {category && category.data.length > 0 && (
             <div className="flex justify-end mr-8 mt-8">
               <Pagination
                 currentPage={category.pagination?.currentPage || 1}
