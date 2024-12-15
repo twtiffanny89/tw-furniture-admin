@@ -1,5 +1,5 @@
 import React from "react";
-import CategoryComponent from "./category_component";
+import CategoryComponent from "../../../../components/page/category_component";
 import { getCategoryService } from "@/redux/action/product-management/category_service";
 
 const CategoryPage = async () => {
