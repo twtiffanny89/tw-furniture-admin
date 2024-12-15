@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { slideBarData } from "@/constants/data/slide_bar_data";
 import Link from "next/link";
@@ -20,7 +22,7 @@ const MenuSidebar = () => {
 
   return (
     <div className="bg-black w-20 lg:w-[16%] xl:w-[14%] overflow-y-scroll px-4 pt-20  scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-      <div data-aos="fade-right" className=" ">
+      <div className=" ">
         <div className="text-sm flex flex-col space-y-4 text-gray-300">
           {slideBarData.map((section, index) => (
             <div className="flex flex-col gap-2" key={section.title + index}>
