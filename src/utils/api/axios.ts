@@ -3,7 +3,7 @@ import { getCookieToken } from "../security/token";
 
 // Base Axios instance (no token required)
 const axiosNoAuth = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  baseURL: "https://dev.twfurniturekh.com",
   timeout: 400000,
   headers: {
     "Content-Type": "application/json",
@@ -12,7 +12,7 @@ const axiosNoAuth = axios.create({
 
 // Axios instance with token (authentication required)
 const axiosWithAuth = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  baseURL: "https://dev.twfurniturekh.com",
   timeout: 400000,
   headers: {
     "Content-Type": "application/json",

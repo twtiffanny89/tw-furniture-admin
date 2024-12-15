@@ -3,7 +3,7 @@ import { getServerCookieToken } from "../security/token_server";
 
 // Axios instance with token (authentication required)
 const axiosServerWithAuth = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  baseURL: "https://dev.twfurniturekh.com",
   timeout: 400000,
   headers: {
     "Content-Type": "application/json",
