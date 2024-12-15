@@ -18,6 +18,8 @@ const nextConfig = {
     BASE_URL: process.env.BASE_URL,
     DEV: process.env.DEV,
   },
+  reactStrictMode: true,
+  swcMinify: true, // Enable minification
 };
 
 export default nextConfig;
