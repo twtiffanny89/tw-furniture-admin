@@ -1,10 +1,11 @@
+"use server";
+
 import React from "react";
 import CategoryComponent from "../../../../components/page/category_component";
 import { getCategoryService } from "@/redux/action/product-management/category_service";
 
 const CategoryPage = async () => {
   const response = await getCategoryService({});
-
   return <CategoryComponent initialData={response} />;
 };
 
