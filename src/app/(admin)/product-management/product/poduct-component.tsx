@@ -57,6 +57,11 @@ const ProductComponent: React.FC<ProductComponentProps> = ({ initialData }) => {
     setLoading(false);
   }
 
+  if (typeof window == "undefined") {
+    // Client-specific logic here
+    return <div>Helo</div>;
+  }
+
   return (
     <div>
       <div className="p-4 bg-white flex justify-between">

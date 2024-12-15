@@ -14,6 +14,8 @@ const nextConfig = {
       },
     ];
   },
+  reactStrictMode: true,
+  swcMinify: true, // Enable minification
 };
 
 export default nextConfig;
