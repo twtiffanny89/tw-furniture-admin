@@ -47,6 +47,7 @@ export async function createSubAttributeService(data: createdParams) {
     await axiosServerWithAuth.post("/v1/admin/attribute-value", data);
     return {
       success: true,
+      // data:
       message: "Sub-Attribute created successfully!",
     };
   } catch {

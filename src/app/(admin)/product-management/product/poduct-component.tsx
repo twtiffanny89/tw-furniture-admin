@@ -15,7 +15,6 @@ import { Product, ProductListModel } from "@/redux/model/product/product-model";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import React, { useState } from "react";
 import { FiEdit } from "react-icons/fi";
-import { IoMdAdd } from "react-icons/io";
 import { MdDeleteOutline } from "react-icons/md";
 
 interface ProductComponentProps {
@@ -35,8 +34,6 @@ const ProductComponent: React.FC<ProductComponentProps> = ({ initialData }) => {
     });
     setProduct(response);
   }
-
-  function onAddNewClick() {}
 
   function onDeleteBanner(item: Product) {
     setModelItem(item);

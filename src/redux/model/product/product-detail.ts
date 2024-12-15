@@ -1,11 +1,4 @@
-import { paginationModel } from "../global/pagination_model";
-
-export interface ProductListModel {
-  data: Product[];
-  pagination: paginationModel | null;
-}
-
-export interface Product {
+export interface ProductDetailModel {
   id: string;
   name: string;
   description: string;
@@ -76,12 +69,12 @@ interface Variant {
   discountStartDate?: string;
   discountEndDate?: string;
   stock: number;
-  sku: string;
+  sku: any;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
   attributes: Attribute3[];
-  images: Image[];
+  images: Image2[];
 }
 
 interface Attribute3 {
@@ -102,4 +95,10 @@ interface AttributeValue {
   attributeId: string;
   createdAt: string;
   updatedAt: string;
+}
+
+interface Image2 {
+  fileName: string;
+  id: string;
+  imageUrl: string;
 }
