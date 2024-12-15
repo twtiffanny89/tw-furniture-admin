@@ -18,12 +18,12 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 
-interface AllUserComponentProps {
-  initialData: UserInfoListModel;
-}
+// interface AllUserComponentProps {
+//   initialData: UserInfoListModel;
+// }
 
-const AllUserComponent: React.FC<AllUserComponentProps> = ({ initialData }) => {
-  const [userData, setUserData] = useState<UserInfoListModel>(initialData);
+const AllUserComponent = () => {
+  const [userData, setUserData] = useState<UserInfoListModel>();
   const [loadingUpdate, setLoadingUpdate] = useState({
     id: "",
     loading: false,
@@ -152,7 +152,7 @@ const AllUserComponent: React.FC<AllUserComponentProps> = ({ initialData }) => {
               </tbody>
             </table>
           </div>
-          {userData.data.length > 0 && (
+          {userData && userData.data.length > 0 && (
             <div className="flex justify-end mr-8 mt-8">
               <Pagination
                 currentPage={userData.pagination?.currentPage || 1}
