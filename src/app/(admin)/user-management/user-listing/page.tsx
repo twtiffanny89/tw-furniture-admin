@@ -113,7 +113,7 @@ const AllUserComponent = () => {
                         <CashImage
                           width={32}
                           height={32}
-                          imageUrl={`${process.env.NEXT_PUBLIC_BASE_URL}/${user.image?.imageUrl}`}
+                          imageUrl={`${process.env.BASE_URL}/${user.image?.imageUrl}`}
                         />
                       </td>
                       <td>{user?.username || "- - -"}</td>

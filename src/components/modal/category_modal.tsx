@@ -146,7 +146,7 @@ const CategoryModal = ({
                   <CashImage
                     width={96}
                     height={96}
-                    imageUrl={`${process.env.NEXT_PUBLIC_BASE_URL}${image.base64}`}
+                    imageUrl={`${process.env.BASE_URL}${image.base64}`}
                   />
                 )}
 

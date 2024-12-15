@@ -14,8 +14,10 @@ const nextConfig = {
       },
     ];
   },
-  reactStrictMode: true,
-  swcMinify: true, // Enable minification
+  env: {
+    BASE_URL: process.env.BASE_URL,
+    DEV: process.env.DEV,
+  },
 };
 
 export default nextConfig;

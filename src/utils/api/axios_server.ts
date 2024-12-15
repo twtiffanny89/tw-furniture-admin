@@ -3,7 +3,7 @@ import { getServerCookieToken } from "../security/token_server";
 
 // Axios instance with token (authentication required)
 const axiosServerWithAuth = axios.create({
-  baseURL: "https://dev.twfurniturekh.com",
+  baseURL: process.env.BASE_URL,
   timeout: 400000,
   headers: {
     "Content-Type": "application/json",
@@ -27,7 +27,7 @@ axiosServerWithAuth.interceptors.request.use(
 
 axiosServerWithAuth.interceptors.response.use(
   (response) => {
-    if (process.env.NEXT_PUBLIC_NODE_ENV == "development") {
+    if (process.env.DEV == "development") {
       console.log(
         "%c## Success: %cEndpoint hit successfully! %cURL: " +
           response.config.url +
@@ -42,7 +42,7 @@ axiosServerWithAuth.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (process.env.NEXT_PUBLIC_NODE_ENV == "development") {
+    if (process.env.DEV == "development") {
       const { response } = error;
       if (response) {
         console.log(

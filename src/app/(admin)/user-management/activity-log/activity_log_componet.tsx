@@ -97,7 +97,7 @@ const ActivityLogComponent: React.FC<ActivityLogComponentprops> = ({
                         <CashImage
                           width={32}
                           height={32}
-                          imageUrl={`${process.env.NEXT_PUBLIC_BASE_URL}/${activity.user?.image}`}
+                          imageUrl={`${process.env.BASE_URL}/${activity.user?.image}`}
                         />
                       </td>
                       <td>{`${activity?.deviceName} - ${activity.deviceType} - ${activity.osVersion}`}</td>

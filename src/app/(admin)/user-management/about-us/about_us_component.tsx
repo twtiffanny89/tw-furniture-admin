@@ -174,7 +174,7 @@ const AboutUsComponent: React.FC<AboutUsComponentProps> = ({ initialData }) => {
                   <CashImage
                     width={96}
                     height={96}
-                    imageUrl={`${process.env.NEXT_PUBLIC_BASE_URL}${imageData.base64}`}
+                    imageUrl={`${process.env.BASE_URL}${imageData.base64}`}
                   />
                 )}
 

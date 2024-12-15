@@ -148,7 +148,7 @@ const BannerComponent: React.FC<BannerComponentProps> = ({ initialData }) => {
                         <CashImage
                           width={361}
                           height={200}
-                          imageUrl={`${process.env.NEXT_PUBLIC_BASE_URL}${value.imageUrl}`}
+                          imageUrl={`${process.env.BASE_URL}${value.imageUrl}`}
                         />
                       </td>
 

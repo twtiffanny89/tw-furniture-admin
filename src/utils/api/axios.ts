@@ -3,7 +3,7 @@ import { getCookieToken } from "../security/token";
 
 // Base Axios instance (no token required)
 const axiosNoAuth = axios.create({
-  baseURL: "https://dev.twfurniturekh.com",
+  baseURL: process.env.BASE_URL,
   timeout: 400000,
   headers: {
     "Content-Type": "application/json",
@@ -12,7 +12,7 @@ const axiosNoAuth = axios.create({
 
 // Axios instance with token (authentication required)
 const axiosWithAuth = axios.create({
-  baseURL: "https://dev.twfurniturekh.com",
+  baseURL: process.env.BASE_URL,
   timeout: 400000,
   headers: {
     "Content-Type": "application/json",
@@ -35,7 +35,7 @@ axiosWithAuth.interceptors.request.use(
 
 axiosWithAuth.interceptors.response.use(
   (response) => {
-    if (process.env.NEXT_PUBLIC_NODE_ENV == "development") {
+    if (process.env.DEV == "development") {
       console.log(
         "%c## Success: %cEndpoint hit successfully! %cURL: " +
           response.config.url +
@@ -50,7 +50,7 @@ axiosWithAuth.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (process.env.NEXT_PUBLIC_NODE_ENV == "development") {
+    if (process.env.DEV == "development") {
       const { response } = error;
       if (response) {
         console.log(
@@ -71,7 +71,7 @@ axiosWithAuth.interceptors.response.use(
 
 axiosNoAuth.interceptors.response.use(
   (response) => {
-    if (process.env.NEXT_PUBLIC_NODE_ENV == "development") {
+    if (process.env.DEV == "development") {
       console.log(
         "%c## Success: %cEndpoint hit successfully! %cURL: " +
           response.config.url +
@@ -86,7 +86,7 @@ axiosNoAuth.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (process.env.NEXT_PUBLIC_NODE_ENV == "development") {
+    if (process.env.DEV == "development") {
       const { response } = error;
       if (response) {
         console.log(

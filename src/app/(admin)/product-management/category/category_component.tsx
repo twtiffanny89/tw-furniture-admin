@@ -212,7 +212,7 @@ const CategoryComponent: React.FC<CategoryComponentProps> = ({
                         <CashImage
                           width={32}
                           height={32}
-                          imageUrl={`${process.env.NEXT_PUBLIC_BASE_URL}${categories.image?.imageUrl}`}
+                          imageUrl={`${process.env.BASE_URL}${categories.image?.imageUrl}`}
                         />
                       </td>
                       <td>{categories.name}</td>
