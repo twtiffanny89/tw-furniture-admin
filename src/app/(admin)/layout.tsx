@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "../globals.css";
 import Head from "next/head";
 import { ToastContainer } from "react-toastify";
@@ -13,6 +13,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [mounted, setMounted] = useState(false);
   useEffect(() => {
     Aos.init({
       duration: 1000,
@@ -20,6 +21,13 @@ export default function RootLayout({
       easing: "ease-out",
     });
   }, []);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if (!mounted) {
+    return <div>HAHAHHA</div>;
+  }
   return (
     <html lang="en">
       <Head>
