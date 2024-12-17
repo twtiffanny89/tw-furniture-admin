@@ -55,6 +55,17 @@ export const slideBarData = [
       },
     ],
   },
+
+  {
+    title: "Order Management",
+    items: [
+      {
+        label: "Order listing",
+        href: `/${routed.orderManagement}/${routed.allOrder}`,
+        icon: <FaHome />, // Add an icon
+      },
+    ],
+  },
   {
     title: "Event Management",
     items: [

@@ -1,9 +1,11 @@
 export const routed = {
   login: "login",
   userManagement: "user-management",
+  orderManagement: "order-management",
   productManagement: "product-management",
   eventManagement: "event-management",
   allUser: "user-listing",
+  allOrder: "order-listing",
   activityLog: "activity-log",
   category: "category",
   subCategory: "sub-category",
