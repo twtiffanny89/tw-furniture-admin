@@ -38,17 +38,15 @@ const CategoryComponent = () => {
   const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
 
   useEffect(() => {
-    setLoading(true);
     onCallApi({});
-    setLoading(false);
   }, []);
 
   const onRefreshClick = useCallback(
     debounce(async () => {
       onCallApi({});
       showToast("Refresh page successfully!", "success");
-    }), // 300ms debounce delay
-    [] // Empty array ensures this function is only created once
+    }),
+    []
   );
 
   async function onCallApi({
@@ -268,7 +266,6 @@ const CategoryComponent = () => {
         isOpen={openModalDelete}
         onConfirm={onConfirmDelete}
       />
-
       <CenteredLoading loading={loading} />
     </div>
   );

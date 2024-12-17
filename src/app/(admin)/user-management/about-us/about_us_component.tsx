@@ -71,7 +71,7 @@ const AboutUsComponent: React.FC<AboutUsComponentProps> = ({ initialData }) => {
   ) => {
     const file = event.target.files?.[0];
     if (file) {
-      const resizedBase64 = await resizeImageConvertBase64(file, 1920, 1080);
+      const resizedBase64 = await resizeImageConvertBase64(file);
       const fileExtension = `.${file.type.split("/")[1]}`;
       setIsUplaodImage(true);
       setImageData({
@@ -89,11 +89,13 @@ const AboutUsComponent: React.FC<AboutUsComponentProps> = ({ initialData }) => {
   const handleFormSubmit = async () => {
     setLoading(true);
     if (isUplaodData) {
+      console.log("### ===dddjdj", formData);
       const response = await updateAboutUsService({
         aboutUsId: initialData.id,
         data: formData,
       });
       if (response.success) {
+        console.log("### ===dddjdj", response.data);
         setIsUplaodData(false);
         showToast(response.message, "success");
       } else {

@@ -6,20 +6,17 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "http://143.198.199.248/:path*", // External HTTP API
-      },
-    ];
-  },
   env: {
     BASE_URL: process.env.BASE_URL,
     DEV: process.env.DEV,
   },
   reactStrictMode: true,
   swcMinify: true, // Enable minification
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb", // Set the desired size limit (e.g., '10mb', '20mb', etc.)
+    },
+  },
 };
 
 export default nextConfig;

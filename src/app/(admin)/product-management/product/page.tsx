@@ -1,10 +1,6 @@
 import React from "react";
 import { getAllProductService } from "@/redux/action/product-management/product-service";
-import dynamic from "next/dynamic";
-
-const ProductComponent = dynamic(() => import("./poduct-component"), {
-  ssr: false,
-});
+import ProductComponent from "./poduct-component";
 
 const ProductPage = async () => {
   const response = await getAllProductService({});

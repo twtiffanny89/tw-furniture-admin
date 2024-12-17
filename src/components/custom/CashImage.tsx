@@ -25,19 +25,6 @@ const CashImage: React.FC<CashImageProps> = ({
     setLoading(true);
   }, [imageUrl]);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (loading) {
-        setHasError(true);
-        setLoading(false);
-      }
-    }, 2000);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [loading]);
-
   const handleLoadingComplete = () => {
     setLoading(false);
   };

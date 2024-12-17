@@ -32,9 +32,13 @@ export async function updateAboutUsService({
   data,
 }: updateAboutUsParams) {
   try {
-    await axiosServerWithAuth.patch(`/v1/admin/about-us/${aboutUsId}`, data);
+    const response = await axiosServerWithAuth.patch(
+      `/v1/admin/about-us/${aboutUsId}`,
+      data
+    );
     return {
       success: true,
+      data: response.data,
       message: "About us updated successfully!",
     };
   } catch {

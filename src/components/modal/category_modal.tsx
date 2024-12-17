@@ -87,7 +87,7 @@ const CategoryModal = ({
   ) => {
     const file = event.target.files?.[0];
     if (file) {
-      const resizedBase64 = await resizeImageConvertBase64(file, 1920, 1080); // Resize to Full HD (1920x1080)
+      const resizedBase64 = await resizeImageConvertBase64(file); // Resize to Full HD (1920x1080)
       const fileExtension = `.${file.type.split("/")[1]}`;
       setImage({
         base64: resizedBase64,

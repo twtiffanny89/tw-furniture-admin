@@ -11,6 +11,7 @@ interface createdParams {
   value?: string;
   label?: string;
   attributeId?: string;
+  valueType: string;
 }
 
 interface updateParams {
@@ -44,10 +45,13 @@ export async function getSubAttributeService({
 
 export async function createSubAttributeService(data: createdParams) {
   try {
-    await axiosServerWithAuth.post("/v1/admin/attribute-value", data);
+    const response = await axiosServerWithAuth.post(
+      "/v1/admin/attribute-value",
+      data
+    );
     return {
       success: true,
-      // data:
+      data: response.data.data,
       message: "Sub-Attribute created successfully!",
     };
   } catch {

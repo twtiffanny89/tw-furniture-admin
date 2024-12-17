@@ -93,3 +93,13 @@ export const productHeader: string[] = [
   "Sub-category Name",
   "Action",
 ];
+
+export const colorHeader: string[] = [
+  "No",
+  "Image Button",
+  "Label",
+  "Type",
+  "Price",
+  "Image Cover",
+  "Action",
+];

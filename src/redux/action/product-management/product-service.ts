@@ -30,6 +30,18 @@ interface addAttributeModel {
   data: PostData;
 }
 
+interface addAttributeValueImageModel {
+  productId: string;
+  data: PostImageData;
+}
+
+interface PostImageData {
+  fileContent: string;
+  fileExtension: string;
+  attributeValueId: string;
+  attributeId: string;
+}
+
 interface addVariantValueModel {
   productId: string;
   data: addVariantValue;
@@ -51,16 +63,12 @@ interface removeVariantModel {
 }
 
 interface addVariantImageModel {
-  productId: string;
+  variantId: string;
   data: FileImageUpload;
 }
 
 interface addVariant {
   price: string;
-  discount: string;
-  stock: string;
-  isActive: boolean;
-  discountType: string;
 }
 
 interface getByProductIdModel {
@@ -130,19 +138,43 @@ export async function addAttributeProductService({
   productId,
   data,
 }: addAttributeModel) {
+  console.log("### ===dataaaa", data);
   try {
-    await axiosServerWithAuth.post(
+    const response = await axiosServerWithAuth.post(
       `/v1/admin/product/${productId}/add-attribute`,
       data
     );
     return {
       success: true,
+      data: response.data.data,
       message: "Attribute add successfully!",
+    };
+  } catch (e) {
+    return {
+      success: false,
+      data: e,
+      message: "Failed to add Attribute. Please try again!",
+    };
+  }
+}
+
+export async function addAttributeValueImageProductService({
+  productId,
+  data,
+}: addAttributeValueImageModel) {
+  try {
+    await axiosServerWithAuth.post(
+      `/v1/admin/product/${productId}/attribute-value-image`,
+      data
+    );
+    return {
+      success: true,
+      message: "Attribute value image add successfully!",
     };
   } catch {
     return {
-      success: true,
-      message: "Failed to add Attribute. Please try again!",
+      success: false,
+      message: "Failed to add Attribute value image. Please try again!",
     };
   }
 }
@@ -152,17 +184,18 @@ export async function addVariantProductService({
   productId,
 }: addVariantModel) {
   try {
-    await axiosServerWithAuth.post(
+    const response = await axiosServerWithAuth.post(
       `/v1/admin/product/${productId}/add-variant`,
       data
     );
     return {
       success: true,
+      data: response.data.data,
       message: "Variant add successfully!",
     };
   } catch {
     return {
-      success: true,
+      success: false,
       message: "Failed to add Variant. Please try again!",
     };
   }
@@ -181,7 +214,7 @@ export async function removeVariantProductService({
     };
   } catch {
     return {
-      success: true,
+      success: false,
       message: "Failed to add Deleted. Please try again!",
     };
   }
@@ -189,11 +222,11 @@ export async function removeVariantProductService({
 
 export async function addVariantImageProductService({
   data,
-  productId,
+  variantId,
 }: addVariantImageModel) {
   try {
     await axiosServerWithAuth.post(
-      `/v1/admin/product/${productId}/variant-image`,
+      `/v1/admin/product/${variantId}/variant-image`,
       data
     );
     return {
@@ -202,7 +235,7 @@ export async function addVariantImageProductService({
     };
   } catch {
     return {
-      success: true,
+      success: false,
       message: "Failed to add Variant image. Please try again!",
     };
   }
@@ -223,7 +256,7 @@ export async function addVariantValueProductService({
     };
   } catch {
     return {
-      success: true,
+      success: false,
       message: "Failed to add Variant value. Please try again!",
     };
   }

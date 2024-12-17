@@ -3,6 +3,7 @@
 import ButtonCustom from "@/components/custom/ButtonCustom";
 import showToast from "@/components/error-handle/show-toast";
 import CenteredLoading from "@/components/loading/center_loading";
+import CreateProductModal from "@/components/modal/create-product-modal";
 import ModalConfirm from "@/components/modal/modal_confirm";
 import Pagination from "@/components/pagination/Pagination";
 import { productHeader } from "@/constants/data/header_table";
@@ -66,6 +67,13 @@ const ProductComponent: React.FC<ProductComponentProps> = ({ initialData }) => {
     <div>
       <div className="p-4 bg-white flex justify-between">
         <h1 className="font-bold text-xl">Product</h1>
+
+        <ButtonCustom
+          className="px-4 h-9 ml-2 font-normal text-xs"
+          onClick={onAddNewClick}
+        >
+          <IoMdAdd className="text-white mr-1" size={18} /> Add New
+        </ButtonCustom>
       </div>
       <div className="mt-4 bg-white min-h-full">
         <div>
