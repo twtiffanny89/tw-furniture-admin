@@ -9,9 +9,16 @@ interface getAllProductParams {
   search?: string;
 }
 
+interface getAllProductSuggestionParams {
+  page?: number;
+  limit?: number;
+  productId?: string;
+}
+
 interface createProductParams {
   name: string;
-  description: string;
+  description?: string;
+  basePrice?: number;
   subcategoryId: string;
 }
 
@@ -53,11 +60,6 @@ interface addVariantValue {
   attributeId: string;
 }
 
-interface addVariantModel {
-  productId: string;
-  data: addVariant;
-}
-
 interface removeVariantModel {
   productId: string;
 }
@@ -67,8 +69,19 @@ interface addVariantImageModel {
   data: FileImageUpload;
 }
 
-interface addVariant {
-  price: string;
+interface addVariantModel {
+  productId: string;
+  data: addVariant;
+}
+
+export interface addVariant {
+  price: number;
+  discount?: number;
+  discountType?: string;
+  discountStartDate?: string;
+  discountEndDate?: string;
+  stock?: number;
+  sku?: string;
 }
 
 interface getByProductIdModel {
@@ -121,6 +134,27 @@ export async function getProductByIdService({
   try {
     const response = await axiosServerWithAuth.get(
       `/v1/admin/product/${productId}`
+    );
+    return {
+      success: true,
+      data: response.data.data,
+    };
+  } catch {
+    return {
+      success: false,
+      data: null,
+    };
+  }
+}
+
+export async function getProductSuggestionService({
+  page = 1,
+  limit = 15,
+  productId,
+}: getAllProductSuggestionParams) {
+  try {
+    const response = await axiosServerWithAuth.get(
+      `/v1/admin/product/${productId}/get-suggestion?page=${page}&limit=${limit}`
     );
     return {
       success: true,
@@ -246,12 +280,13 @@ export async function addVariantValueProductService({
   productId,
 }: addVariantValueModel) {
   try {
-    await axiosServerWithAuth.post(
+    const response = await axiosServerWithAuth.post(
       `/v1/admin/product/${productId}/add-variant-value`,
       data
     );
     return {
       success: true,
+      data: response.data,
       message: "Variant value add successfully!",
     };
   } catch {

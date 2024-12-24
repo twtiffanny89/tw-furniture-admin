@@ -60,7 +60,7 @@ interface Image {
   imageUrl: string;
 }
 
-interface Variant {
+export interface Variant {
   id: string;
   productId: string;
   price: string;
@@ -69,7 +69,7 @@ interface Variant {
   discountStartDate?: string;
   discountEndDate?: string;
   stock: number;
-  sku: any;
+  sku: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

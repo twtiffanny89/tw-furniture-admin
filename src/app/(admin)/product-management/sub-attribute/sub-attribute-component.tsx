@@ -18,7 +18,7 @@ import {
   onUpdateAttribute,
 } from "@/redux/action/product-management/attribute-service";
 import {
-  createSubAttributeService,
+  createAttributeValueService,
   deletedSubAttributeService,
   getSubAttributeService,
   onUpdateSubAttribute,
@@ -105,7 +105,7 @@ const SubAttributeComponent: React.FC<AttributeComponentProps> = ({
       }
     } else {
       const filter = initialAttribute.data.find((item) => item.name === "Size");
-      const response = await createSubAttributeService({
+      const response = await createAttributeValueService({
         label: data,
         value: data,
         attributeId: filter?.id,

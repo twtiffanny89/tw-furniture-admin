@@ -53,6 +53,19 @@ export async function getSubCategoryService({
   }
 }
 
+export async function getSubCategoryDetailService({
+  subCategoryId,
+}: deleteSubParams) {
+  try {
+    const response = await axiosServerWithAuth.get(
+      `/v1/admin/subcategory/${subCategoryId}`
+    );
+    return response.data.data;
+  } catch {
+    return null;
+  }
+}
+
 export async function createSubCategory(data: createSubParams) {
   try {
     const response = await axiosServerWithAuth.post(

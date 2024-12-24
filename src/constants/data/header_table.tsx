@@ -94,6 +94,13 @@ export const productHeader: string[] = [
   "Action",
 ];
 
+export const productSuggestionHeader: string[] = [
+  "No",
+  "Product Id",
+  "Name",
+  "Action",
+];
+
 export const colorHeader: string[] = [
   "No",
   "Image Button",
@@ -101,5 +108,26 @@ export const colorHeader: string[] = [
   "Type",
   "Price",
   "Image Cover",
+  "Action",
+];
+
+export const attribudeHeader: string[] = [
+  "No",
+  "Image",
+  "Label",
+  "Created At",
+  "Action",
+];
+
+export const variantsHeader: string[] = [
+  "No",
+  "Name",
+  "Price",
+  "Stock",
+  "Discount StartDate",
+  "Discount EndDate",
+  "Sku",
+  "Image Cover",
+  "Created At",
   "Action",
 ];

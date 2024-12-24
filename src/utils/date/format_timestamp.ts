@@ -1,6 +1,6 @@
 // utils.ts
 
-export function formatTimestamp(timestamp: string): string {
+export function formatTimestamp(timestamp: string | null | undefined): string {
   if (timestamp) {
     const date = new Date(timestamp);
 

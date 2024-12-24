@@ -11,7 +11,7 @@ interface createdParams {
   value?: string;
   label?: string;
   attributeId?: string;
-  valueType: string;
+  valueType?: string;
 }
 
 interface updateParams {
@@ -43,7 +43,7 @@ export async function getSubAttributeService({
   }
 }
 
-export async function createSubAttributeService(data: createdParams) {
+export async function createAttributeValueService(data: createdParams) {
   try {
     const response = await axiosServerWithAuth.post(
       "/v1/admin/attribute-value",

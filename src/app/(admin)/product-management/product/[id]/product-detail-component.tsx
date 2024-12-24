@@ -20,7 +20,7 @@ import {
   createProductService,
   getProductByIdService,
 } from "@/redux/action/product-management/product-service";
-import { createSubAttributeService } from "@/redux/action/product-management/sub-attribude-service";
+import { createAttributeValueService } from "@/redux/action/product-management/sub-attribude-service";
 import { getSubCategoryService } from "@/redux/action/product-management/sub_category_service";
 import { CategorySelect } from "@/redux/model/category/category_model";
 import { ProductDetailModel } from "@/redux/model/product/product-detail";
@@ -114,7 +114,7 @@ const ProductDetailComponet: React.FC<ProductDetailComponentProps> = ({
 
   async function onCreateProduct() {
     const responseProduct = await getProductByIdService({
-      productId: "cm4sm7mtg0057pj0rksm432es",
+      productId: "cm4xwul9q0033s00q99clccsq",
     });
     console.log("### ===hahaah", responseProduct.data);
     if (responseProduct.success) {
@@ -161,11 +161,11 @@ const ProductDetailComponet: React.FC<ProductDetailComponentProps> = ({
       console.log("#### === Attribute Filtered", filter);
 
       // Create Sub-Attribute
-      const createResponse = await createSubAttributeService({
+      const createResponse = await createAttributeValueService({
         label: value.attribudeValueName,
         value: value.attribudeValueName,
         attributeId: filter.id,
-        valueType: "SIZE",
+        valueType: "COLOR",
       });
 
       if (!createResponse.success) {
@@ -196,15 +196,15 @@ const ProductDetailComponet: React.FC<ProductDetailComponentProps> = ({
 
       // Upload Attribute Image
       // For button
-      // await addAttributeValueImageProductService({
-      //   productId: productItem!.id,
-      //   data: {
-      //     attributeId: createdAttribute.attributeId,
-      //     attributeValueId: createdAttribute.id,
-      //     fileContent: value.image.base64.replace(base64Cut.cutHead, ""),
-      //     fileExtension: value.image.type,
-      //   },
-      // });
+      await addAttributeValueImageProductService({
+        productId: productItem!.id,
+        data: {
+          attributeId: createdAttribute.attributeId,
+          attributeValueId: createdAttribute.id,
+          fileContent: value.image.base64.replace(base64Cut.cutHead, ""),
+          fileExtension: value.image.type,
+        },
+      });
 
       console.log("#### === Image Uploaded");
 
@@ -232,12 +232,136 @@ const ProductDetailComponet: React.FC<ProductDetailComponentProps> = ({
       });
 
       // Add Variant Value
-      await addVariantValueProductService({
-        productId: createdAttribute.id,
+      // await addVariantValueProductService({
+      //   productId: createdAttribute.id,
+      //   data: {
+      //     attributeId: createdAttribute.attributeId,
+      //     attributeValueId: createdAttribute.id,
+      //     variantId: "cm4smatfn005jpj0rgu8plq1o",
+      //   },
+      // });
+
+      console.log("#### === Variant Value Added");
+
+      // Upload Variant Images
+      const imageUploadPromises = value.imagesList.map((image: any) =>
+        addVariantImageProductService({
+          variantId,
+          data: {
+            fileContent: image.base64.replace(base64Cut.cutHead, ""),
+            fileExtension: image.type,
+          },
+        })
+      );
+
+      const uploadResults = await Promise.all(imageUploadPromises);
+
+      onCreateProduct();
+      console.log("#### === Variant Images Uploaded", uploadResults);
+    } catch {
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function onConfirmCreateSize(value: any) {
+    try {
+      console.log("#### === Starting Create Color", value);
+      setModalCreateColor(false);
+      setLoading(true);
+
+      // Fetch attributes and find "Color"
+      const responseAttribute = await getAttributeService({});
+      const filter = responseAttribute.data.find(
+        (item: any) => item.name === modalType
+      );
+
+      if (!filter) {
+        throw new Error("Color attribute not found");
+      }
+
+      console.log("#### === Attribute Filtered", filter);
+
+      // Create Sub-Attribute
+      const createResponse = await createAttributeValueService({
+        label: value.attribudeValueName,
+        value: value.attribudeValueName,
+        attributeId: filter.id,
+        valueType: "TEXT",
+      });
+
+      console.log("#### === Sub-Attribute Attribute", createResponse);
+
+      if (!createResponse.success) {
+        throw new Error("Failed to create sub-attribute");
+      }
+
+      // "2m"
+
+      const createdAttributeSize = createResponse.data[0];
+
+      console.log("#### === Sub-Attribute Created", createdAttributeSize);
+
+      // Add Price
+      await addAttributeProductService({
+        productId: productItem!.id,
         data: {
-          attributeId: createdAttribute.attributeId,
-          attributeValueId: createdAttribute.id,
-          variantId: "cm4smatfn005jpj0rgu8plq1o",
+          attributeId: createdAttributeSize.attributeId,
+          attributeValues: [
+            {
+              id: createdAttributeSize.id,
+              attributeId: createdAttributeSize.attributeId,
+            },
+          ],
+        },
+      });
+
+      console.log("#### === Price Added");
+
+      // Upload Attribute Image
+      // For button
+      await addAttributeValueImageProductService({
+        productId: productItem!.id,
+        data: {
+          attributeId: createdAttributeSize.attributeId,
+          attributeValueId: createdAttributeSize.id,
+          fileContent: value.image.base64.replace(base64Cut.cutHead, ""),
+          fileExtension: value.image.type,
+        },
+      });
+
+      console.log("#### === Image Uploaded");
+
+      // Add Variant
+      const responseVariant = await addVariantProductService({
+        productId: productItem!.id,
+        data: { price: value.price },
+      });
+
+      if (!responseVariant.success) {
+        throw new Error("Failed to create variant");
+      }
+
+      const variantId = responseVariant.data.id;
+
+      console.log("#### === Variant Created", responseVariant);
+
+      await addVariantValueProductService({
+        productId: productItem!.id,
+        data: {
+          variantId,
+          attributeId: createdAttributeSize.attributeId,
+          attributeValueId: createdAttributeSize.id,
+        },
+      });
+
+      // Add Variant Value
+      await addVariantValueProductService({
+        productId: productItem!.id,
+        data: {
+          variantId: "cm4xww7j50039s00q93hyipzk",
+          attributeId: createdAttributeSize.attributeId,
+          attributeValueId: createdAttributeSize.id,
         },
       });
 
@@ -499,7 +623,7 @@ const ProductDetailComponet: React.FC<ProductDetailComponentProps> = ({
         isOpen={modalCreateColor}
         onClose={() => setModalCreateColor(false)}
         title={`Create ${modalType}`}
-        onConfirm={onConfirmCreateColor}
+        onConfirm={onConfirmCreateSize}
       />
     </div>
   );

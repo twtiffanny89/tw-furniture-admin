@@ -15,12 +15,14 @@ interface DateRangePickerProps {
   onDateChange: (date: string) => void;
   initialDate?: string; // Optional prop to set the initial date
   title?: string; // Optional prop to set the initial date
+  className?: string; // Optional prop to set the initial date
 }
 
 export function DateRangePicker({
   onDateChange,
   initialDate,
   title = "",
+  className = "",
 }: DateRangePickerProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
@@ -43,10 +45,13 @@ export function DateRangePicker({
   };
 
   return (
-    <div className="flex space-x-4">
+    <div className="flex space-x-4 ">
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="text-left w-[200px]">
+          <Button
+            variant="outline"
+            className={`text-left w-[200px] ${className}`}
+          >
             {selectedDate && !isNaN(selectedDate.getTime())
               ? format(selectedDate, "PPP")
               : title}
