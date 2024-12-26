@@ -54,6 +54,15 @@ interface addVariantValueModel {
   data: addVariantValue;
 }
 
+interface addProductSuggestModel {
+  productId: string;
+  data: suggestion;
+}
+
+interface suggestion {
+  toId: string;
+}
+
 interface addVariantValue {
   variantId: string;
   attributeValueId: string;
@@ -286,13 +295,39 @@ export async function addVariantValueProductService({
     );
     return {
       success: true,
-      data: response.data,
+      data: response.data.data,
       message: "Variant value add successfully!",
     };
   } catch {
     return {
       success: false,
       message: "Failed to add Variant value. Please try again!",
+    };
+  }
+}
+
+export async function addProductSuggestionService({
+  data,
+  productId,
+}: addProductSuggestModel) {
+  try {
+    const response = await axiosServerWithAuth.post(
+      `/v1/admin/product/${productId}/add-product-suggestion`,
+      data
+    );
+
+    return {
+      success: true,
+      message: "Suggestion product added successfully!",
+      data: response.data, // Include server response for additional context
+    };
+  } catch (error: any) {
+    console.error("##Error adding product suggestion:", error); // Log for debugging
+
+    return {
+      success: false,
+      error: error.response?.data || error.toString(), // Fixed typo from `test` to `error`
+      message: "##Failed to add suggestion product. Please try again!",
     };
   }
 }

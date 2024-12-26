@@ -23,6 +23,7 @@ import { base64Cut } from "@/constants/image/base64_cut";
 import {
   addAttributeProductService,
   addAttributeValueImageProductService,
+  addProductSuggestionService,
   addVariant,
   addVariantImageProductService,
   addVariantProductService,
@@ -37,7 +38,7 @@ import {
   getSubCategoryService,
 } from "@/redux/action/product-management/sub_category_service";
 import { ProductDetailModel } from "@/redux/model/product/product-detail";
-import { ProductListModel } from "@/redux/model/product/product-model";
+import { Product, ProductListModel } from "@/redux/model/product/product-model";
 import {
   Subcategory,
   SubCategoryListModel,
@@ -278,6 +279,17 @@ const CreateProductComponent: React.FC<ProductDetailComponentProps> = ({
       },
     });
 
+    if (data.selectedAttributes?.Size?.id) {
+      await addVariantValueProductService({
+        productId: productDetail!.id,
+        data: {
+          variantId: response.data.variant.id,
+          attributeId: data.selectedAttributes.Size.attributeId,
+          attributeValueId: data.selectedAttributes.Size.id,
+        },
+      });
+    }
+
     const imageUploadPromises = data.imagesList.map((image) =>
       addVariantImageProductService({
         variantId,
@@ -290,7 +302,19 @@ const CreateProductComponent: React.FC<ProductDetailComponentProps> = ({
     await Promise.all(imageUploadPromises);
   }
 
-  function onConfirmSuggestion() {}
+  async function onConfirmSuggestion(val: Product) {
+    console.log("## ==aa", productDetail!.id, val.id);
+    const response = await addProductSuggestionService({
+      productId: productDetail!.id,
+      data: { toId: val.id },
+    });
+    if (response.success) {
+      showToast(response.message, "success");
+    } else {
+      console.log("###ajja", response.test);
+      showToast(response.message, "error");
+    }
+  }
   return (
     <div>
       <div className="p-4 bg-white flex justify-between">

@@ -8,21 +8,22 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useInView } from "react-intersection-observer";
 import Input from "../custom/Input";
-import { Subcategory } from "@/redux/model/sub-category/sub_categpry_model";
+import { Product } from "@/redux/model/product/product-model";
 
 interface CustomSelectProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClearSearch: () => void;
-  onItemSelect: (value: Subcategory) => void;
+  onItemSelect: (value: Product) => void;
   value: string;
   label: string;
-  dataList: Subcategory[];
+  dataList: Product[];
   onLoadMore?: () => void;
   isLoading?: boolean;
-  selectedOption: Subcategory | null;
+  noNext?: boolean;
+  selectedOption: Product | null;
 }
 
-const DropDownSubCategory = ({
+const DropDownProduct = ({
   label,
   dataList,
   onChange,
@@ -32,11 +33,12 @@ const DropDownSubCategory = ({
   onClearSearch,
   onItemSelect,
   selectedOption,
+  noNext,
 }: CustomSelectProps) => {
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   const { ref: endOfListRef, inView } = useInView({
-    threshold: 1.0,
+    threshold: 0.1,
     triggerOnce: false,
   });
 
@@ -105,7 +107,7 @@ const DropDownSubCategory = ({
                   key={index}
                   className="cursor-pointer hover:bg-gray-200"
                 >
-                  <span className="text-sm">{option.name}</span>
+                  <span className="text-sm max-w-96">{option.name}</span>
                 </DropdownMenuItem>
               ))
             ) : (
@@ -113,7 +115,7 @@ const DropDownSubCategory = ({
                 No options found
               </span>
             )}
-            {isLoading && (
+            {noNext && (
               <div
                 ref={endOfListRef}
                 className="text-center py-2 flex justify-center"
@@ -131,4 +133,4 @@ const DropDownSubCategory = ({
   );
 };
 
-export default DropDownSubCategory;
+export default DropDownProduct;

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Dialog,
   DialogContent,
@@ -5,18 +6,20 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import React, { useEffect, useState } from "react";
-import Input from "../custom/Input";
-import MessgaeError from "../error-handle/message_error";
+import React, { useCallback, useEffect, useState } from "react";
 import ButtonCustom from "../custom/ButtonCustom";
-import { SubAttributeModel } from "@/redux/model/sub-attribute-model/sub-attribute-model";
+import { Product, ProductListModel } from "@/redux/model/product/product-model";
+import { debounce } from "@/utils/debounce/debounce";
+import { getAllProductService } from "@/redux/action/product-management/product-service";
+import DropDownProduct from "../drop-down/drop-down-product";
+import MessgaeError from "../error-handle/message_error";
 
 interface SubAttributeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (data: string) => void;
+  onConfirm: (data: Product | null) => void;
   title: string;
-  initialData?: SubAttributeModel | null;
+  initialData?: Product | null;
 }
 
 const AddSuggestionModal = ({
@@ -26,16 +29,23 @@ const AddSuggestionModal = ({
   title,
   onConfirm,
 }: SubAttributeModalProps) => {
-  const [name, setName] = useState("");
+  const [productItem, setProductItem] = useState<Product | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [searchAdd, setSearchAdd] = useState("");
+  const [productList, setProductList] = useState<ProductListModel>();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (initialData) {
-      setName(initialData.label);
+      setProductItem(initialData);
     } else {
       resetForm();
     }
   }, [initialData, isOpen]);
+
+  useEffect(() => {
+    onCallApi({});
+  }, []);
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
     if (event.key === "Enter") {
@@ -45,23 +55,74 @@ const AddSuggestionModal = ({
 
   const handleConfirm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!name) newErrors.name = "Name is required.";
-
-    if (Object.keys(newErrors).length > 0) {
+    if (!productItem) newErrors.product = "Product is required.";
+    if (Object.keys(newErrors).length > 0 || !productItem) {
       setErrors(newErrors);
       return;
     }
-    onConfirm(name);
+    onConfirm(productItem);
   };
 
   const resetForm = () => {
-    setName("");
+    setProductItem(null);
     setErrors({});
   };
 
   async function onCloseFrom() {
     onClose();
   }
+
+  function onItemSelect(value: Product) {
+    setProductItem(value);
+  }
+
+  function onClearSearch() {
+    setSearchAdd("");
+  }
+
+  function onChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setSearchAdd(e.target.value);
+    onSearchCategory(e.target.value);
+  }
+
+  const onSearchCategory = useCallback(
+    debounce(async (query: string) => {
+      if (query && query.length > 0) {
+        onCallApi({ search: query });
+      } else {
+        onCallApi({ search: "" });
+      }
+    }),
+    []
+  );
+
+  async function onCallApi({
+    page = 1,
+    search = "",
+  }: {
+    page?: number;
+    search?: string;
+  }) {
+    const response = await getAllProductService({ page, search });
+    setProductList(response);
+  }
+
+  const onLoadMore = async () => {
+    setLoading(true);
+    if (
+      productList?.pagination &&
+      productList.pagination!.currentPage < productList.pagination!.totalPages
+    ) {
+      const result = await getAllProductService({
+        page: productList?.pagination!.currentPage + 1,
+      });
+      setProductList((prev) => ({
+        data: [...prev!.data, ...result.data],
+        pagination: result.pagination,
+      }));
+    }
+    setLoading(false);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onCloseFrom}>
@@ -73,24 +134,21 @@ const AddSuggestionModal = ({
           </DialogDescription>
         </DialogHeader>
         <form onKeyDown={handleKeyPress}>
-          <div className="my-4 ">
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Name
-              <span className="text-red-500 ml-1">*</span>
-            </label>
-            <Input
-              type="text"
-              placeholder="Input attribute name..."
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                setErrors((prev) => ({ ...prev, name: "" }));
-              }}
-              required
-              className="h-11"
-            />
-            {errors.name && <MessgaeError message={errors.name} type="error" />}
-          </div>
+          <DropDownProduct
+            onItemSelect={onItemSelect}
+            onClearSearch={onClearSearch}
+            value={searchAdd}
+            dataList={productList?.data || []}
+            onChange={onChange}
+            label="Product"
+            onLoadMore={onLoadMore}
+            isLoading={loading}
+            selectedOption={productItem}
+            noNext={productList?.pagination?.nextPage != null}
+          />
+          {errors.product && (
+            <MessgaeError message={errors.product} type="error" />
+          )}
 
           <div className="flex justify-end space-x-2 mt-8">
             <ButtonCustom
