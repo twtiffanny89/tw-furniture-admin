@@ -12,6 +12,7 @@ import AddSuggestionModal from "@/components/modal/add-sugestion-modal";
 import AddVarantsModal, {
   FormData,
 } from "@/components/modal/add-variants-modal";
+import ConfirmationModal from "@/components/modal/comfirmation-modal";
 import Pagination from "@/components/pagination/Pagination";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -29,15 +30,22 @@ import {
   addVariantProductService,
   addVariantValueProductService,
   createProductService,
+  deleteProductSuggestionService,
+  editProductService,
   getProductByIdService,
   getProductSuggestionService,
+  removeAttribudeProductService,
+  removeVariantProductService,
 } from "@/redux/action/product-management/product-service";
 import { createAttributeValueService } from "@/redux/action/product-management/sub-attribude-service";
 import {
   getSubCategoryDetailService,
   getSubCategoryService,
 } from "@/redux/action/product-management/sub_category_service";
-import { ProductDetailModel } from "@/redux/model/product/product-detail";
+import {
+  ProductDetailModel,
+  Value,
+} from "@/redux/model/product/product-detail";
 import { Product, ProductListModel } from "@/redux/model/product/product-model";
 import {
   Subcategory,
@@ -69,6 +77,11 @@ const CreateProductComponent: React.FC<ProductDetailComponentProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [modalSuggestion, setModalSuggestion] = useState<boolean>(false);
   const [modalCreateVariant, setModalCreateVariant] = useState<boolean>(false);
+  const [modalRemoveAttribude, setModalRemoveAttribude] =
+    useState<boolean>(false);
+  const [modalSuggestionOpen, setModalSuggestionOpen] =
+    useState<boolean>(false);
+  const [modalVariantOpen, setModalVariangOpen] = useState<boolean>(false);
   const [modalCreateAttribude, setModalCreateAttribude] =
     useState<boolean>(false);
   const [subCategory, setSubCategory] =
@@ -76,6 +89,9 @@ const CreateProductComponent: React.FC<ProductDetailComponentProps> = ({
   const [subCategoryItem, setSubCategoryItem] = useState<Subcategory | null>(
     null
   );
+  const [productIdDelete, setProductIdDelete] = useState<string | null>(null);
+  const [productAttribudeDelete, setProductAttribudeDelete] =
+    useState<Value | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const productId = searchParams.get("id");
@@ -182,6 +198,24 @@ const CreateProductComponent: React.FC<ProductDetailComponentProps> = ({
     }
   }
 
+  async function editProduct() {
+    const response = await editProductService({
+      productId: productDetail?.id || "",
+      data: {
+        name: nameProduct,
+        description: description,
+        subcategoryId: subCategoryItem?.id || "",
+        basePrice: parseInt(priceProduct, 10),
+      },
+    });
+
+    if (response.success) {
+      showToast(response.message, "success");
+    } else {
+      showToast(response.message, "error");
+    }
+  }
+
   async function onCreateAttribude(item: any) {
     setModalCreateAttribude(false);
     setLoading(true);
@@ -204,8 +238,7 @@ const CreateProductComponent: React.FC<ProductDetailComponentProps> = ({
     const createdAttributeValue = response.data[0];
 
     if (item.selectedAttribute.name == "Color") {
-      console.log("### ===ahaha", item.image);
-      const res = await addAttributeValueImageProductService({
+      await addAttributeValueImageProductService({
         productId: productDetail!.id,
         data: {
           attributeId: createdAttributeValue.attributeId,
@@ -214,7 +247,6 @@ const CreateProductComponent: React.FC<ProductDetailComponentProps> = ({
           fileExtension: item.image.type,
         },
       });
-      console.log("### ===ahahares", res);
     }
 
     await addAttributeProductService({
@@ -251,6 +283,7 @@ const CreateProductComponent: React.FC<ProductDetailComponentProps> = ({
   }
 
   async function onSubmidVarants(data: FormData) {
+    setLoading(true);
     const variantData: addVariant = {
       price: parseInt(data.price),
       discount: data.discount ? parseFloat(data.discount) : undefined,
@@ -300,20 +333,80 @@ const CreateProductComponent: React.FC<ProductDetailComponentProps> = ({
       })
     );
     await Promise.all(imageUploadPromises);
+    getProductDetail();
+    setLoading(false);
   }
 
-  async function onConfirmSuggestion(val: Product) {
-    console.log("## ==aa", productDetail!.id, val.id);
+  async function onConfirmSuggestion(val: Product | null) {
     const response = await addProductSuggestionService({
       productId: productDetail!.id,
-      data: { toId: val.id },
+      data: { toId: val?.id || "" },
     });
     if (response.success) {
+      getProductSuggestion({});
       showToast(response.message, "success");
     } else {
-      console.log("###ajja", response.test);
       showToast(response.message, "error");
     }
+
+    setModalSuggestion(false);
+  }
+
+  async function handleApprove() {
+    setModalSuggestionOpen(false);
+    setLoading(true);
+    const response = await deleteProductSuggestionService({
+      productId: productDetail?.id || "",
+      data: { toId: productIdDelete || "" },
+    });
+    if (response.success) {
+      getProductSuggestion({});
+      showToast(response.message, "success");
+    } else {
+      showToast(response.message, "error");
+    }
+    setProductIdDelete(null);
+    setLoading(false);
+  }
+
+  async function handleApproveVariant() {
+    setModalVariangOpen(false);
+    setLoading(true);
+    const response = await removeVariantProductService({
+      productId: productIdDelete || "",
+    });
+    if (response.success) {
+      getProductDetail();
+      showToast(response.message, "success");
+    } else {
+      showToast(response.message, "error");
+    }
+    setProductIdDelete(null);
+    setLoading(false);
+  }
+
+  async function handleDeleteAttribude() {
+    setModalVariangOpen(false);
+    setLoading(true);
+    const response = await removeAttribudeProductService({
+      productId: productIdDelete || "",
+      data: {
+        attributeId: productAttribudeDelete?.attributeId || "",
+        attributeValueId: productAttribudeDelete?.id || "",
+      },
+    });
+    if (response.success) {
+      getProductDetail();
+      showToast(response.message, "success");
+    } else {
+      showToast(response.message, "error");
+    }
+    setProductIdDelete(null);
+    setLoading(false);
+  }
+
+  function onEditVariants(value: any) {
+    console.log("### ===value", value);
   }
   return (
     <div>
@@ -337,6 +430,17 @@ const CreateProductComponent: React.FC<ProductDetailComponentProps> = ({
         </TabsList>
         <TabsContent value="tab1" className="min-h-screen">
           <div className="h-4 bg-[#F7F8FA] mb-4" />
+          <div className=" flex justify-end">
+            {productId ? (
+              <ButtonCustom onClick={editProduct} className="px-4 h-9">
+                Edit Product
+              </ButtonCustom>
+            ) : (
+              <ButtonCustom onClick={createProduct} className="px-4 h-9">
+                Create Product
+              </ButtonCustom>
+            )}
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">
@@ -388,12 +492,6 @@ const CreateProductComponent: React.FC<ProductDetailComponentProps> = ({
               border: "1px solid #ccc",
             }}
           />
-
-          <div className="mt-8 flex justify-end">
-            <ButtonCustom onClick={createProduct} className="px-4 h-9">
-              Create Color
-            </ButtonCustom>
-          </div>
         </TabsContent>
 
         {/*  */}
@@ -442,7 +540,13 @@ const CreateProductComponent: React.FC<ProductDetailComponentProps> = ({
                             <ButtonCustom className="w-6 h-6 ">
                               <FiEdit size={14} className="text-white" />
                             </ButtonCustom>
-                            <button className="w-6 h-6 bg-red-600 rounded flex justify-center items-center">
+                            <button
+                              onClick={() => {
+                                setProductAttribudeDelete(value);
+                                setModalRemoveAttribude(true);
+                              }}
+                              className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"
+                            >
                               <MdDeleteOutline
                                 size={16}
                                 className="text-white"
@@ -509,10 +613,19 @@ const CreateProductComponent: React.FC<ProductDetailComponentProps> = ({
                     <td>{formatTimestamp(value.createdAt)}</td>
                     <td>
                       <div className="flex gap-2">
-                        <ButtonCustom className="w-6 h-6 ">
+                        <ButtonCustom
+                          className="w-6 h-6"
+                          onClick={() => onEditVariants(value)}
+                        >
                           <FiEdit size={14} className="text-white" />
                         </ButtonCustom>
-                        <button className="w-6 h-6 bg-red-600 rounded flex justify-center items-center">
+                        <button
+                          onClick={() => {
+                            setProductIdDelete(value.id);
+                            setModalVariangOpen(true);
+                          }}
+                          className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"
+                        >
                           <MdDeleteOutline size={16} className="text-white" />
                         </button>
                       </div>
@@ -562,10 +675,13 @@ const CreateProductComponent: React.FC<ProductDetailComponentProps> = ({
                         <td>{value.productTo.name}</td>
                         <td>
                           <div className="flex gap-2">
-                            <ButtonCustom className="w-6 h-6 ">
-                              <FiEdit size={14} className="text-white" />
-                            </ButtonCustom>
-                            <button className="w-6 h-6 bg-red-600 rounded flex justify-center items-center">
+                            <button
+                              onClick={() => {
+                                setProductIdDelete(value.productTo.id);
+                                setModalSuggestionOpen(true);
+                              }}
+                              className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"
+                            >
                               <MdDeleteOutline
                                 size={16}
                                 className="text-white"
@@ -610,6 +726,30 @@ const CreateProductComponent: React.FC<ProductDetailComponentProps> = ({
         onClose={() => setModalSuggestion(false)}
         onConfirm={onConfirmSuggestion}
         title="Create product suggestion"
+      />
+      <ConfirmationModal
+        isOpen={modalSuggestionOpen}
+        title="Confirm Delete!"
+        onClose={() => setModalSuggestionOpen(false)}
+        onConfirm={handleApprove}
+        message={`Are you sure you want to delete?`}
+        isNotCancel={true}
+      />
+      <ConfirmationModal
+        isOpen={modalVariantOpen}
+        title="Confirm Delete!"
+        onClose={() => setModalVariangOpen(false)}
+        onConfirm={handleApproveVariant}
+        message={`Are you sure you want to delete?`}
+        isNotCancel={true}
+      />
+      <ConfirmationModal
+        isOpen={modalRemoveAttribude}
+        title="Confirm Delete!"
+        onClose={() => setModalRemoveAttribude(false)}
+        onConfirm={handleDeleteAttribude}
+        message={`Are you sure you want to delete?`}
+        isNotCancel={true}
       />
     </div>
   );

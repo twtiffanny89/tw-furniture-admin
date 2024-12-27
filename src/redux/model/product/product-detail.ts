@@ -43,7 +43,7 @@ interface Attribute2 {
   updatedAt: string;
 }
 
-interface Value {
+export interface Value {
   id: string;
   valueType: string;
   value: string;

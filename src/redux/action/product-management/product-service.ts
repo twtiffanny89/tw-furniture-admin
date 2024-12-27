@@ -2,6 +2,7 @@
 
 import { FileImageUpload } from "@/redux/model/global/file-Image-upload";
 import { axiosServerWithAuth } from "@/utils/api/axios_server";
+import axios from "axios";
 
 interface getAllProductParams {
   page?: number;
@@ -32,6 +33,11 @@ interface PostData {
   attributeId: string;
 }
 
+interface editProduct {
+  data: createProductParams;
+  productId: string;
+}
+
 interface addAttributeModel {
   productId: string;
   data: PostData;
@@ -56,11 +62,7 @@ interface addVariantValueModel {
 
 interface addProductSuggestModel {
   productId: string;
-  data: suggestion;
-}
-
-interface suggestion {
-  toId: string;
+  data: toId;
 }
 
 interface addVariantValue {
@@ -73,6 +75,25 @@ interface removeVariantModel {
   productId: string;
 }
 
+interface removeAttribudeModel {
+  productId: string;
+  data: removeAttribute;
+}
+
+interface removeAttribute {
+  attributeValueId: string;
+  attributeId: string;
+}
+
+interface removeProductSuggestion {
+  productId: string;
+  data: toId;
+}
+
+interface toId {
+  toId: string;
+}
+
 interface addVariantImageModel {
   variantId: string;
   data: FileImageUpload;
@@ -80,6 +101,11 @@ interface addVariantImageModel {
 
 interface addVariantModel {
   productId: string;
+  data: addVariant;
+}
+
+interface editVariantModel {
+  variantId: string;
   data: addVariant;
 }
 
@@ -132,6 +158,26 @@ export async function createProductService(data: createProductParams) {
     return {
       success: false,
       message: "Failed to created Product. Please try again!",
+    };
+  }
+}
+
+// Create product
+export async function editProductService({ productId, data }: editProduct) {
+  try {
+    const response = await axiosServerWithAuth.patch(
+      `/v1/admin/product/${productId}`,
+      data
+    );
+    return {
+      success: true,
+      data: response.data.data,
+      message: "Product edit successfully!",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Failed to edit Product. Please try again!",
     };
   }
 }
@@ -244,12 +290,34 @@ export async function addVariantProductService({
   }
 }
 
+export async function editVariantProductService({
+  data,
+  variantId,
+}: editVariantModel) {
+  try {
+    const response = await axiosServerWithAuth.post(
+      `/v1/admin/product/${variantId}/update-variant`,
+      data
+    );
+    return {
+      success: true,
+      data: response.data.data,
+      message: "Variant updated successfully!",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Failed to updated Variant. Please try again!",
+    };
+  }
+}
+
 export async function removeVariantProductService({
   productId,
 }: removeVariantModel) {
   try {
     await axiosServerWithAuth.delete(
-      `/v1/admin/product/${productId}/remove-variant`
+      `/v1/admin/product/remove-variant/${productId}`
     );
     return {
       success: true,
@@ -259,6 +327,27 @@ export async function removeVariantProductService({
     return {
       success: false,
       message: "Failed to add Deleted. Please try again!",
+    };
+  }
+}
+
+export async function removeAttribudeProductService({
+  productId,
+  data,
+}: removeAttribudeModel) {
+  try {
+    await axiosServerWithAuth.post(
+      `/v1/admin/product/${productId}/remove-attribute-value`,
+      data
+    );
+    return {
+      success: true,
+      message: "Deleted attribute variant successfully!",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Failed to Deleted attribute variant. Please try again!",
     };
   }
 }
@@ -321,13 +410,44 @@ export async function addProductSuggestionService({
       message: "Suggestion product added successfully!",
       data: response.data, // Include server response for additional context
     };
-  } catch (error: any) {
-    console.error("##Error adding product suggestion:", error); // Log for debugging
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response && error.response.status === 409) {
+        return {
+          success: false,
+          message:
+            "This Suggestion product is already taken. Please choose a different name.!",
+        };
+      }
+      return {
+        success: false,
+        message: "Failed to add Suggestion product. Please try again!",
+      };
+    }
+  }
+  return {
+    success: false,
+    message: "Failed to add Suggestion product. Please try again!",
+  };
+}
 
+export async function deleteProductSuggestionService({
+  data,
+  productId,
+}: removeProductSuggestion) {
+  try {
+    await axiosServerWithAuth.post(
+      `/v1/admin/product/${productId}/remove-product-suggestion`,
+      data
+    );
+    return {
+      success: true,
+      message: "Suggestion product deleted successfully!",
+    };
+  } catch {
     return {
       success: false,
-      error: error.response?.data || error.toString(), // Fixed typo from `test` to `error`
-      message: "##Failed to add suggestion product. Please try again!",
+      message: "Failed to deleted Suggestion product. Please try again!",
     };
   }
 }
