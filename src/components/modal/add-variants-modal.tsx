@@ -20,26 +20,18 @@ import { LuImagePlus } from "react-icons/lu";
 import { IoClose } from "react-icons/io5";
 import { Button } from "../ui/button";
 import { DateRangePicker } from "../custom/date_range_picker";
-
-interface AttributeValue {
-  id: string;
-  valueType: string;
-  value: string;
-  label: string;
-  attributeId: string;
-  image?: { imageUrl: string }[];
-}
-
-interface Attribute {
-  attribute: {
-    id: string;
-    name: string;
-  };
-  values: AttributeValue[];
-}
+import {
+  Attribute,
+  MainValue,
+  Variant,
+} from "@/redux/model/product/product-detail";
+import CashImage from "../custom/CashImage";
+import { config } from "@/utils/config/config";
+import { delelteVariantImageValueProductService } from "@/redux/action/product-management/product-service";
+import showToast from "../error-handle/show-toast";
 
 export interface FormData {
-  selectedAttributes: Record<string, AttributeValue>;
+  selectedAttributes: Record<string, MainValue>;
   price: string;
   stock: string;
   sku: string;
@@ -54,7 +46,15 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   attributes: Attribute[];
+  initialData?: Variant | null;
   onSubmit: (data: FormData) => void;
+}
+
+interface SelectedAttribute {
+  attributeValue: {
+    value: string;
+    label: string;
+  };
 }
 
 const AddVariantsModal: React.FC<ModalProps> = ({
@@ -62,15 +62,15 @@ const AddVariantsModal: React.FC<ModalProps> = ({
   onClose,
   attributes,
   onSubmit,
+  initialData,
 }) => {
   const initialSelectedAttributes = attributes.reduce(
     (acc, attr) => ({ ...acc, [attr.attribute.name]: "" }),
     {}
   );
 
-  const [selectedAttributes, setSelectedAttributes] = useState(
-    initialSelectedAttributes
-  );
+  const [selectedAttributes, setSelectedAttributes] = useState<any>({});
+
   const [selectedFromDate, setSelectedFromDate] = useState<string>("");
   const [selectedToDate, setSelectedToDate] = useState<string>("");
   const [stock, setStock] = useState("");
@@ -83,12 +83,9 @@ const AddVariantsModal: React.FC<ModalProps> = ({
   const [imagesList, setImagesList] = useState<ProcessedImage[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleSelectChange = (
-    attributeName: string,
-    selectedValue: AttributeValue
-  ) => {
-    setSelectedAttributes((prev) => ({
-      ...prev,
+  const handleSelectChange = (attributeName: string, selectedValue: any) => {
+    setSelectedAttributes((prevState: any) => ({
+      ...prevState,
       [attributeName]: selectedValue,
     }));
   };
@@ -96,8 +93,49 @@ const AddVariantsModal: React.FC<ModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       clearForm();
+      setDataWhenEdit();
     }
   }, [isOpen]);
+
+  function setDataWhenEdit() {
+    if (initialData) {
+      // Then set this updated value in the state
+      const initialSelected: Record<string, SelectedAttribute> = {}; // Use the correct type here
+      attributes.forEach(({ attribute, values }) => {
+        const selectedValue = initialData.attributes.find(
+          (attr: any) => attr.attributeId === attribute.id
+        );
+        if (selectedValue) {
+          const value = selectedValue.attributeValue.value;
+          initialSelected[attribute.name] = {
+            attributeValue: {
+              value,
+              label: selectedValue.attributeValue.label,
+            },
+          };
+        }
+      });
+      setSelectedAttributes(initialSelected);
+
+      setPrice(initialData.price);
+      setStock(String(initialData.stock)); // Ensure stock is a string
+      setSku(initialData.sku || ""); // Default to empty string if sku is null
+      setDiscount(initialData.discount || "");
+      setDiscountType(
+        initialData.discount ? initialData.discountType : undefined
+      );
+      setSelectedFromDate(initialData.discountStartDate || "");
+      setSelectedToDate(initialData.discountEndDate || "");
+
+      // Handle images
+      const images = initialData?.images?.map((image) => ({
+        base64: image.imageUrl, // Assuming `imageUrl` is the full image path or base64 data
+        id: image.id,
+        type: null, // Extract file extension from file name
+      }));
+      setImagesList(images);
+    }
+  }
 
   const clearForm = () => {
     // Reset all the form fields to their initial values
@@ -118,6 +156,7 @@ const AddVariantsModal: React.FC<ModalProps> = ({
 
     // Price, stock, SKU validation
     if (!price) newErrors.price = "Price is required.";
+    if (!stock) newErrors.price = "Stock is required.";
     if (imagesList.length === 0) {
       newErrors.images = "At least one image is required.";
     }
@@ -135,7 +174,6 @@ const AddVariantsModal: React.FC<ModalProps> = ({
   };
 
   const handleSubmit = () => {
-    console.log("### ==dd");
     if (!validateForm()) return;
 
     const formData = {
@@ -152,11 +190,22 @@ const AddVariantsModal: React.FC<ModalProps> = ({
 
     // Pass the data to the parent component via onSubmit prop
     onSubmit(formData);
-
-    onClose();
   };
 
-  const handleRemoveImageList = (index: number) => {
+  const handleRemoveImageList = async (
+    index: number,
+    imagesData: ProcessedImage
+  ) => {
+    if (imagesData.id) {
+      const response = await delelteVariantImageValueProductService(
+        imagesData.id
+      );
+      if (response.success) {
+        showToast(response.message, "success");
+      } else {
+        showToast(response.message, "error");
+      }
+    }
     setImagesList((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -176,7 +225,6 @@ const AddVariantsModal: React.FC<ModalProps> = ({
 
     try {
       const promises = Array.from(files).map(async (file) => {
-        // Cast the file to File type
         const resizedBase64 = await resizeImageConvertBase64(file as File); // Your resize function
         const fileExtension = `.${(file as File).type.split("/")[1]}`;
         return {
@@ -227,10 +275,15 @@ const AddVariantsModal: React.FC<ModalProps> = ({
                   <span className="text-red-500 ml-1">*</span>
                 </label>
                 <Select
+                  disabled={initialData != null}
+                  value={
+                    selectedAttributes[attribute.name]?.attributeValue?.value ||
+                    ""
+                  }
                   onValueChange={(value) => {
                     // Find the selected value object from the list of values for this attribute
                     const selectedValue = values.find(
-                      (valueObj) => valueObj.value === value
+                      (valueObj) => valueObj.attributeValue.value === value
                     );
                     if (selectedValue) {
                       handleSelectChange(attribute.name, selectedValue); // Pass the full object
@@ -244,9 +297,12 @@ const AddVariantsModal: React.FC<ModalProps> = ({
                     <SelectGroup>
                       <SelectLabel>{attribute.name}</SelectLabel>
                       {values.map((value) => (
-                        <SelectItem key={value.id} value={value.value}>
+                        <SelectItem
+                          key={value.id}
+                          value={value.attributeValue.value}
+                        >
                           <div className="flex items-center gap-2">
-                            {value.label}
+                            {value.attributeValue.label}
                           </div>
                         </SelectItem>
                       ))}
@@ -322,13 +378,21 @@ const AddVariantsModal: React.FC<ModalProps> = ({
             <div className="flex flex-wrap gap-2">
               {imagesList.map((image, index) => (
                 <div key={index} className="relative w-[96px] h-[96px]">
-                  <img
-                    src={image.base64}
-                    alt={`Uploaded Preview ${index + 1}`}
-                    className="w-full h-full object-cover rounded-md border"
-                  />
+                  {image.type ? (
+                    <img
+                      src={image.base64}
+                      alt="Uploaded Preview"
+                      className="w-full h-full object-cover rounded-md border"
+                    />
+                  ) : (
+                    <CashImage
+                      width={96}
+                      height={96}
+                      imageUrl={`${config.BASE_URL}${image.base64}`}
+                    />
+                  )}
                   <button
-                    onClick={() => handleRemoveImageList(index)}
+                    onClick={() => handleRemoveImageList(index, image)}
                     className="absolute top-2 right-2 bg-red-500 text-white px-1 py-1 rounded"
                   >
                     <IoClose />

@@ -4,25 +4,16 @@ import ButtonCustom from "@/components/custom/ButtonCustom";
 import showToast from "@/components/error-handle/show-toast";
 import CenteredLoading from "@/components/loading/center_loading";
 import AttributeModal from "@/components/modal/attribute-modal";
-import ModalConfirm from "@/components/modal/modal_confirm";
 import Pagination from "@/components/pagination/Pagination";
 import { attributeHeader } from "@/constants/data/header_table";
 import {
   createAttributeService,
-  deletedAttributeService,
   getAttributeService,
-  onUpdateAttribute,
 } from "@/redux/action/product-management/attribute-service";
-import {
-  AttributeListModel,
-  AttributeModel,
-} from "@/redux/model/attribute-model/attribute-model";
-
+import { AttributeListModel } from "@/redux/model/attribute-model/attribute-model";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import React, { useState } from "react";
-import { FiEdit } from "react-icons/fi";
 import { IoMdAdd } from "react-icons/io";
-import { MdDeleteOutline } from "react-icons/md";
 
 interface AttributeComponentProps {
   initialData: AttributeListModel;
@@ -32,8 +23,6 @@ const AttributeComponent: React.FC<AttributeComponentProps> = ({
   initialData,
 }) => {
   const [attribute, setAttribute] = useState<AttributeListModel>(initialData);
-  const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
-  const [modelItem, setModelItem] = useState<AttributeModel | null>(null);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -48,52 +37,18 @@ const AttributeComponent: React.FC<AttributeComponentProps> = ({
     setOpenModal(true);
   }
 
-  function onDeleteAttribte(item: AttributeModel) {
-    setModelItem(item);
-    setOpenModalDelete(true);
-  }
-
-  function onEditAttribte(item: AttributeModel) {
-    setModelItem(item);
-    setOpenModal(true);
-  }
-
-  async function onConfirmDelete() {
-    setOpenModalDelete(false);
+  async function onConfirm(data: string) {
+    setOpenModal(false);
     setLoading(true);
-    const response = await deletedAttributeService({ id: modelItem?.id });
+
+    const response = await createAttributeService({ name: data });
     if (response.success) {
       onCallApi({});
       showToast(response.message, "success");
     } else {
       showToast(response.message, "error");
     }
-    setLoading(false);
-  }
 
-  async function onConfirm(data: string) {
-    setOpenModal(false);
-    setLoading(true);
-    if (modelItem) {
-      const response = await onUpdateAttribute({
-        id: modelItem.id,
-        data: { name: data },
-      });
-      if (response.success) {
-        onCallApi({});
-        showToast(response.message, "success");
-      } else {
-        showToast(response.message, "error");
-      }
-    } else {
-      const response = await createAttributeService({ name: data });
-      if (response.success) {
-        onCallApi({});
-        showToast(response.message, "success");
-      } else {
-        showToast(response.message, "error");
-      }
-    }
     setLoading(false);
   }
 
@@ -140,22 +95,6 @@ const AttributeComponent: React.FC<AttributeComponentProps> = ({
                       <td>{value.name}</td>
                       <td>{formatTimestamp(value.createdAt)}</td>
                       <td>{formatTimestamp(value.updatedAt)}</td>
-                      <td>
-                        <div className="flex gap-2">
-                          <ButtonCustom
-                            onClick={() => onEditAttribte(value)}
-                            className="w-6 h-6 "
-                          >
-                            <FiEdit size={14} className="text-white" />
-                          </ButtonCustom>
-                          <button
-                            onClick={() => onDeleteAttribte(value)}
-                            className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"
-                          >
-                            <MdDeleteOutline size={16} className="text-white" />
-                          </button>
-                        </div>
-                      </td>
                     </tr>
                   );
                 })}
@@ -178,14 +117,7 @@ const AttributeComponent: React.FC<AttributeComponentProps> = ({
         isOpen={openModal}
         onConfirm={onConfirm}
         onClose={onClose}
-        title="Create Banner"
-        initialData={modelItem}
-      />
-
-      <ModalConfirm
-        onClose={() => setOpenModalDelete(false)}
-        isOpen={openModalDelete}
-        onConfirm={onConfirmDelete}
+        title="Create Attribude"
       />
 
       <CenteredLoading loading={loading} />

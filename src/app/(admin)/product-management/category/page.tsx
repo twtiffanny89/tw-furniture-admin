@@ -16,7 +16,6 @@ import ButtonCustom from "@/components/custom/ButtonCustom";
 import CategoryModal from "@/components/modal/category_modal";
 import {
   getCategoryService,
-  onDeleteCategory,
   onUpdateCategory,
   uploadCategory,
   uploadImageCategory,
@@ -24,10 +23,10 @@ import {
 import { base64Cut } from "@/constants/image/base64_cut";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
-import { MdDeleteOutline } from "react-icons/md";
 import ModalConfirm from "@/components/modal/modal_confirm";
 import { config } from "@/utils/config/config";
 import CenteredLoading from "@/components/loading/center_loading";
+import { Switch } from "@/components/custom/Switch";
 
 const CategoryComponent = () => {
   const [category, setCategory] = useState<CategoryListModel>();
@@ -35,7 +34,10 @@ const CategoryComponent = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [search, setSearch] = useState("");
-  const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
+  const [loadingUpdate, setLoadingUpdate] = useState({
+    id: "",
+    loading: false,
+  });
 
   useEffect(() => {
     onCallApi({});
@@ -64,11 +66,15 @@ const CategoryComponent = () => {
   }
 
   async function onEditCategory(data: any) {
+    setOpenModal(false);
+    setLoading(true);
+
     if (data.nameCategory != categoryItem?.name) {
       const response = await onUpdateCategory({
         categoryId: categoryItem!.id,
         data: {
           name: data.nameCategory,
+          isPublic: undefined,
         },
       });
 
@@ -93,9 +99,15 @@ const CategoryComponent = () => {
         showToast(responseImage.message, "error");
       }
     }
+
+    setCategoryItem(null);
+    onCallApi({ page: category!.pagination?.currentPage, search: search });
+    setLoading(false);
   }
 
   async function onCreateCategory(data: any) {
+    setOpenModal(false);
+    setLoading(true);
     const response = await uploadCategory({
       name: data.nameCategory,
     });
@@ -116,21 +128,16 @@ const CategoryComponent = () => {
     } else {
       showToast(response.message, "error");
     }
+    onCallApi({});
+    setLoading(false);
   }
 
-  async function onConfirm(data: any) {
-    setOpenModal(false);
-    setLoading(true);
+  function onConfirm(data: any) {
     if (categoryItem) {
       onEditCategory(data);
-      setCategoryItem(null);
-      onCallApi({ page: category!.pagination?.currentPage, search: search });
     } else {
-      await onCreateCategory(data);
-      onCallApi({});
+      onCreateCategory(data);
     }
-
-    setLoading(false);
   }
 
   function onAddCategory() {
@@ -140,22 +147,6 @@ const CategoryComponent = () => {
   function onOpenModalCategory(item: Category) {
     setCategoryItem(item);
     setOpenModal(true);
-  }
-
-  function onDeleteItemCategory(item: Category) {
-    setCategoryItem(item);
-    setOpenModalDelete(true);
-  }
-
-  async function onConfirmDelete() {
-    const resposne = await onDeleteCategory({ categoryId: categoryItem!.id });
-    if (resposne.success) {
-      showToast(resposne.message, "success");
-      onCallApi({ page: category!.pagination?.currentPage, search: search });
-    } else {
-      showToast(resposne.message, "error");
-    }
-    setOpenModalDelete(false);
   }
 
   const onSearchChange = useCallback(
@@ -170,6 +161,33 @@ const CategoryComponent = () => {
     }),
     []
   );
+
+  async function toggleCategoryStatus(value: Category) {
+    setLoadingUpdate({
+      id: value.id,
+      loading: true,
+    });
+
+    const response = await onUpdateCategory({
+      categoryId: value.id,
+      data: {
+        name: undefined,
+        isPublic: !value.isPublic,
+      },
+    });
+
+    if (response.success) {
+      onCallApi({ page: category!.pagination?.currentPage });
+      showToast(response.message, "success");
+    } else {
+      showToast(response?.message ?? "Error", "error");
+    }
+
+    setLoadingUpdate({
+      id: value.id,
+      loading: false,
+    });
+  }
 
   return (
     <div>
@@ -217,7 +235,24 @@ const CategoryComponent = () => {
                       </td>
                       <td>{categories.name}</td>
                       <td>{formatTimestamp(categories.createdAt)}</td>
-                      <td>{formatTimestamp(categories.updatedAt)}</td>
+                      <td>
+                        <div className="flex gap-2 items-center">
+                          <Switch
+                            disable={loadingUpdate.loading}
+                            checked={categories.isPublic}
+                            onChange={() => toggleCategoryStatus(categories)}
+                          />
+                          <span
+                            className={
+                              categories.isPublic
+                                ? "text-green-500"
+                                : "text-red-500"
+                            }
+                          >
+                            {categories.isPublic ? "Active" : "Inactive"}
+                          </span>
+                        </div>
+                      </td>
                       <td>{`${categories._count.subcategories} Items`}</td>
                       <td>{`${categories._count.products} Items`}</td>
                       <td>
@@ -228,12 +263,6 @@ const CategoryComponent = () => {
                           >
                             <FiEdit size={14} className="text-white" />
                           </ButtonCustom>
-                          <button
-                            onClick={() => onDeleteItemCategory(categories)}
-                            className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"
-                          >
-                            <MdDeleteOutline size={16} className="text-white" />
-                          </button>
                         </div>
                       </td>
                     </tr>
@@ -261,11 +290,7 @@ const CategoryComponent = () => {
         onConfirm={onConfirm}
         initialData={categoryItem}
       />
-      <ModalConfirm
-        onClose={() => setOpenModalDelete(false)}
-        isOpen={openModalDelete}
-        onConfirm={onConfirmDelete}
-      />
+
       <CenteredLoading loading={loading} />
     </div>
   );

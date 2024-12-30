@@ -12,6 +12,7 @@ export interface Subcategory {
   createdAt: string;
   updatedAt: string;
   image: Image;
+  isPublic: boolean;
   category: Category;
   _count: Count;
 }

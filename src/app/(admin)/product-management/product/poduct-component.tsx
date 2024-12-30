@@ -1,20 +1,27 @@
 "use client";
 
 import ButtonCustom from "@/components/custom/ButtonCustom";
+import { Switch } from "@/components/custom/Switch";
 import showToast from "@/components/error-handle/show-toast";
 import CenteredLoading from "@/components/loading/center_loading";
-import CreateProductModal from "@/components/modal/create-product-modal";
 import ModalConfirm from "@/components/modal/modal_confirm";
 import Pagination from "@/components/pagination/Pagination";
 import { productHeader } from "@/constants/data/header_table";
+import { routed } from "@/constants/navigation/routed";
 import {
   deletedBannerService,
   getBannerService,
 } from "@/redux/action/event-management/banner_service";
+import {
+  editProductService,
+  getAllProductService,
+} from "@/redux/action/product-management/product-service";
 
 import { Product, ProductListModel } from "@/redux/model/product/product-model";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { FaEye } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi";
 import { IoMdAdd } from "react-icons/io";
 import { MdDeleteOutline } from "react-icons/md";
@@ -25,42 +32,62 @@ interface ProductComponentProps {
 
 const ProductComponent: React.FC<ProductComponentProps> = ({ initialData }) => {
   const [product, setProduct] = useState<ProductListModel>(initialData);
-  const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
-  const [modelItem, setModelItem] = useState<Product | null>(null);
-
+  const [loadingUpdate, setLoadingUpdate] = useState({
+    id: "",
+    loading: false,
+  });
   const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   async function onCallApi({ page = 1 }: { page?: number }) {
-    const response = await getBannerService({
+    const response = await getAllProductService({
       page,
     });
     setProduct(response);
   }
 
-  useEffect(() => {}, []);
-
-  function onAddNewClick() {}
-
-  function onDeleteBanner(item: Product) {
-    setModelItem(item);
-    setOpenModalDelete(true);
+  function onAddNewClick() {
+    router.push(
+      `/${routed.productManagement}/${routed.product}/${routed.create}`
+    );
   }
 
   function onEditBanner(item: Product) {
-    setModelItem(item);
+    router.push(
+      `/${routed.productManagement}/${routed.product}/${routed.create}?id=${item.id}`
+    );
   }
 
-  async function onConfirmDelete() {
-    setOpenModalDelete(false);
-    setLoading(true);
-    const response = await deletedBannerService({ id: modelItem?.id });
+  async function toggleCategoryStatus(value: Product) {
+    setLoadingUpdate({
+      id: value.id,
+      loading: true,
+    });
+
+    const response = await editProductService({
+      productId: value.id,
+      data: {
+        isPublic: !value.isPublic,
+      },
+    });
+
     if (response.success) {
+      onCallApi({ page: product!.pagination?.currentPage });
       showToast(response.message, "success");
-      onCallApi({});
     } else {
-      showToast(response.message, "error");
+      showToast(response?.message ?? "Error", "error");
     }
-    setLoading(false);
+
+    setLoadingUpdate({
+      id: value.id,
+      loading: false,
+    });
+  }
+
+  function onViewProduct(value: Product): void {
+    router.push(
+      `/${routed.productManagement}/${routed.product}/${routed.preview}/${value.id}`
+    );
   }
 
   return (
@@ -97,33 +124,49 @@ const ProductComponent: React.FC<ProductComponentProps> = ({ initialData }) => {
                     ((product.pagination?.currentPage || 1) - 1) * 15 +
                     index +
                     1;
+
                   return (
                     <tr key={value.id} className="hover:bg-gray-200">
                       <td>{displayIndex}</td>
                       <td>{value.id}</td>
                       <td>{value.name}</td>
-                      <td>{value.description}</td>
-                      <td>{value.viewCount}</td>
-                      <td>{value.isPublic ? "true" : "false"}</td>
+                      <td>{value.description || "- - -"}</td>
+                      <td>{`${value.viewCount} Views`}</td>
+                      <td>
+                        <div className="flex gap-2 items-center">
+                          <Switch
+                            disable={loadingUpdate.loading}
+                            checked={value.isPublic}
+                            onChange={() => toggleCategoryStatus(value)}
+                          />
+                          <span
+                            className={
+                              value.isPublic ? "text-green-500" : "text-red-500"
+                            }
+                          >
+                            {value.isPublic ? "Active" : "Inactive"}
+                          </span>
+                        </div>
+                      </td>
+
                       <td>{formatTimestamp(value.createdAt)}</td>
-                      <td>{value.categoryId || "- - -"}</td>
                       <td>{value.category?.name || "- - -"}</td>
-                      <td>{value.subcategoryId || "- - -"}</td>
                       <td>{value.subcategory?.name || "- - -"}</td>
                       <td>
                         <div className="flex gap-2">
+                          <ButtonCustom
+                            variant="cancel"
+                            onClick={() => onViewProduct(value)}
+                            className="w-6 h-6"
+                          >
+                            <FaEye size={14} className="text-white" />
+                          </ButtonCustom>
                           <ButtonCustom
                             onClick={() => onEditBanner(value)}
                             className="w-6 h-6 "
                           >
                             <FiEdit size={14} className="text-white" />
                           </ButtonCustom>
-                          <button
-                            onClick={() => onDeleteBanner(value)}
-                            className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"
-                          >
-                            <MdDeleteOutline size={16} className="text-white" />
-                          </button>
                         </div>
                       </td>
                     </tr>
@@ -143,12 +186,6 @@ const ProductComponent: React.FC<ProductComponentProps> = ({ initialData }) => {
           )}
         </div>
       </div>
-
-      <ModalConfirm
-        onClose={() => setOpenModalDelete(false)}
-        isOpen={openModalDelete}
-        onConfirm={onConfirmDelete}
-      />
 
       <CenteredLoading loading={loading} />
     </div>

@@ -1,42 +1,41 @@
 export const headerAllUser: string[] = [
-  "No",
-  "User Id",
-  "Profile",
-  "Username",
-  "Created at",
-  "Role",
-  "First name",
-  "Last name",
-  "Phone number",
-  "Status",
-  "Action",
+  "NO",
+  "USER_ID",
+  "PROFILE",
+  "USERNAME",
+  "CREATE_AT",
+  "ROLE",
+  "FIRST_NAME",
+  "LAST_NAME",
+  "PHONE_NUMBER",
+  "STATUS",
 ];
 
 export const headerActivityLog: string[] = [
-  "No",
-  "Log Id",
-  "Profile",
-  "Device",
-  "Client IP",
-  "Physical device",
-  "Location",
-  "Created at",
-  "User Id",
-  "First name",
-  "Last name",
-  "Username",
+  "NO",
+  "LOG_ID",
+  "PROFILE",
+  "DEVICE",
+  "CLIENT_IP",
+  "PHYSICAL_DEVICE",
+  "LOCATION",
+  "CREATE_AT",
+  "USER_ID",
+  "FIRST_NAME",
+  "LAST_NAME",
+  "USERNAME",
 ];
 
 export const headerCategory: string[] = [
-  "No",
-  "Categories Id",
-  "Image",
-  "Name",
-  "Created at",
-  "Updated at",
-  "Product In",
-  "Subcategory In",
-  "Action",
+  "NO",
+  "CATEGORIES_ID",
+  "IMAGE",
+  "NAME",
+  "CREATE_AT",
+  "STATUS",
+  "PRODUCT_IN",
+  "SUBCATEGORY_IN",
+  "ACTION",
 ];
 
 export const headerSubCategory: string[] = [
@@ -44,20 +43,18 @@ export const headerSubCategory: string[] = [
   "Subcategory Id",
   "Image",
   "Name",
-  "Product In",
-  "Category Id",
-  "Category name",
   "Created at",
-  "Updated at",
+  "Status",
+  "Product In",
+  "Category name",
   "Action",
 ];
 
 export const eventHeader: string[] = [
-  "No",
-  "Banner Id",
-  "Banner Type",
-  "Image",
-  "Action",
+  "NO",
+  "BANNER_ID",
+  "BANNER_IMAGE",
+  "ACTION",
 ];
 
 export const attributeHeader: string[] = [
@@ -66,7 +63,6 @@ export const attributeHeader: string[] = [
   "Name",
   "Created At",
   "Updated At",
-  "Action",
 ];
 
 export const subAttributeHeader: string[] = [
@@ -76,7 +72,6 @@ export const subAttributeHeader: string[] = [
   "Value Type",
   "Created At",
   "Attribute Id",
-  "Action",
 ];
 
 export const productHeader: string[] = [
@@ -87,9 +82,7 @@ export const productHeader: string[] = [
   "Product View",
   "Status",
   "Created At",
-  "Category Id",
   "Category Name",
-  "Sub-category Id",
   "Sub-category Name",
   "Action",
 ];
@@ -99,6 +92,12 @@ export const productSuggestionHeader: string[] = [
   "Product Id",
   "Name",
   "Action",
+];
+
+export const productPreviewSuggestionHeader: string[] = [
+  "No",
+  "Product Id",
+  "Name",
 ];
 
 export const colorHeader: string[] = [
@@ -116,6 +115,7 @@ export const attribudeHeader: string[] = [
   "Image",
   "Label",
   "Created At",
+  "Status",
   "Action",
 ];
 
@@ -130,4 +130,16 @@ export const variantsHeader: string[] = [
   "Image Cover",
   "Created At",
   "Action",
+];
+
+export const variantsPreviewHeader: string[] = [
+  "No",
+  "Name",
+  "Price",
+  "Stock",
+  "Discount StartDate",
+  "Discount EndDate",
+  "Sku",
+  "Image Cover",
+  "Created At",
 ];

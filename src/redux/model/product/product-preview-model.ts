@@ -1,4 +1,21 @@
-export interface ProductDetailModel {
+import { paginationModel } from "../global/pagination_model";
+
+export interface ProductPreviewListModel {
+  data: ProductPreview[];
+  pagination: paginationModel | null;
+}
+
+export interface ProductPreview {
+  id: string;
+  fromId: string;
+  toId: string;
+  type: string;
+  createdAt: string;
+  updatedAt: string;
+  productTo: ProductTo;
+}
+
+interface ProductTo {
   id: string;
   name: string;
   description: string;
@@ -9,31 +26,13 @@ export interface ProductDetailModel {
   viewCount: number;
   createdAt: string;
   updatedAt: string;
-  category: Category;
-  subcategory: Subcategory;
   attributes: Attribute[];
   variants: Variant[];
 }
 
-interface Category {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Subcategory {
-  id: string;
-  name: string;
-  categoryId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Attribute {
+interface Attribute {
   attribute: Attribute2;
-  values: MainValue[];
+  values: Value[];
 }
 
 interface Attribute2 {
@@ -43,15 +42,18 @@ interface Attribute2 {
   updatedAt: string;
 }
 
-export interface MainValue {
+interface Value {
   id: string;
+  name: string;
   attributeValueId: string;
   productAttributeId: string;
   isPublic: boolean;
-  attributeValue: Value;
+  createdAt: string;
+  updatedAt: string;
+  attributeValue: AttributeValue;
 }
 
-export interface Value {
+interface AttributeValue {
   id: string;
   valueType: string;
   value: string;
@@ -68,7 +70,7 @@ interface Image {
   imageUrl: string;
 }
 
-export interface Variant {
+interface Variant {
   id: string;
   productId: string;
   price: string;
@@ -77,7 +79,7 @@ export interface Variant {
   discountStartDate?: string;
   discountEndDate?: string;
   stock: number;
-  sku: string;
+  sku?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -92,10 +94,10 @@ interface Attribute3 {
   attributeId: string;
   createdAt: string;
   updatedAt: string;
-  attributeValue: AttributeValue;
+  attributeValue: AttributeValue2;
 }
 
-interface AttributeValue {
+interface AttributeValue2 {
   id: string;
   valueType: string;
   value: string;

@@ -10,8 +10,9 @@ interface getSubCategoryParams {
 }
 
 interface createSubParams {
-  name: string;
-  categoryId: string;
+  name?: string;
+  categoryId?: string;
+  isPublic?: boolean;
 }
 
 interface imageCategory {

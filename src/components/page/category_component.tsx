@@ -46,8 +46,8 @@ const CategoryComponent: React.FC<CategoryComponentProps> = ({
     debounce(async () => {
       onCallApi({});
       showToast("Refresh page successfully!", "success");
-    }), // 300ms debounce delay
-    [] // Empty array ensures this function is only created once
+    }),
+    []
   );
 
   async function onCallApi({
@@ -218,7 +218,6 @@ const CategoryComponent: React.FC<CategoryComponentProps> = ({
                       </td>
                       <td>{categories.name}</td>
                       <td>{formatTimestamp(categories.createdAt)}</td>
-                      <td>{formatTimestamp(categories.updatedAt)}</td>
                       <td>{`${categories._count.subcategories} Items`}</td>
                       <td>{`${categories._count.products} Items`}</td>
                       <td>
@@ -229,12 +228,6 @@ const CategoryComponent: React.FC<CategoryComponentProps> = ({
                           >
                             <FiEdit size={14} className="text-white" />
                           </ButtonCustom>
-                          <button
-                            onClick={() => onDeleteItemCategory(categories)}
-                            className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"
-                          >
-                            <MdDeleteOutline size={16} className="text-white" />
-                          </button>
                         </div>
                       </td>
                     </tr>

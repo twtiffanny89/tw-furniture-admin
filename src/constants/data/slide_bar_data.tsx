@@ -1,12 +1,15 @@
 import {
-  FaHome,
-  FaMoneyBillWave,
-  FaCog,
-  FaUserCircle,
+  FaUsers,
+  FaClipboardList,
+  FaBox,
+  FaStream,
+  FaLayerGroup,
+  FaImage,
+  FaThList,
+  FaListAlt,
   FaSignOutAlt,
-  FaFileInvoiceDollar,
+  FaInfoCircle,
 } from "react-icons/fa";
-import { MdGroup, MdPersonAdd } from "react-icons/md";
 import { routed } from "../navigation/routed";
 
 export const slideBarData = [
@@ -14,14 +17,14 @@ export const slideBarData = [
     title: "User Management",
     items: [
       {
-        label: "User listing",
+        label: "User Listing",
         href: `/${routed.userManagement}/${routed.allUser}`,
-        icon: <FaHome />, // Add an icon
+        icon: <FaUsers />,
       },
       {
-        label: "Activity log",
+        label: "Activity Log",
         href: `/${routed.userManagement}/${routed.activityLog}`,
-        icon: <FaCog />, // Add an icon
+        icon: <FaClipboardList />,
       },
     ],
   },
@@ -29,40 +32,39 @@ export const slideBarData = [
     title: "Product Management",
     items: [
       {
-        label: "Product",
+        label: "Products",
         href: `/${routed.productManagement}/${routed.product}`,
-        icon: <FaHome />, // Add an icon
+        icon: <FaBox />,
       },
       {
-        label: "Category",
+        label: "Categories",
         href: `/${routed.productManagement}/${routed.category}`,
-        icon: <FaHome />, // Add an icon
+        icon: <FaThList />, // Distinct icon for categories
       },
       {
-        label: "Sub category",
+        label: "Subcategories",
         href: `/${routed.productManagement}/${routed.subCategory}`,
-        icon: <FaCog />, // Add an icon
+        icon: <FaListAlt />, // Distinct icon for subcategories
       },
       {
-        label: "Attribute",
+        label: "Attributes",
         href: `/${routed.productManagement}/${routed.attribute}`,
-        icon: <FaCog />, // Add an icon
+        icon: <FaStream />, // New icon for attributes
       },
       {
-        label: "Sub attribute",
-        href: `/${routed.productManagement}/${routed.subAttribute}`,
-        icon: <FaCog />, // Add an icon
+        label: "Attribute Values",
+        href: `/${routed.productManagement}/${routed.attributeValue}`,
+        icon: <FaLayerGroup />, // New icon for attribute values
       },
     ],
   },
-
   {
     title: "Order Management",
     items: [
       {
-        label: "Order listing",
+        label: "Order Listing",
         href: `/${routed.orderManagement}/${routed.allOrder}`,
-        icon: <FaHome />, // Add an icon
+        icon: <FaClipboardList />,
       },
     ],
   },
@@ -70,19 +72,19 @@ export const slideBarData = [
     title: "Event Management",
     items: [
       {
-        label: "Banner",
+        label: "Banners",
         href: `/${routed.eventManagement}/${routed.banner}`,
-        icon: <FaHome />, // Add an icon
+        icon: <FaImage />, // New icon for banners
       },
     ],
   },
   {
-    title: "OTHER",
+    title: "Other",
     items: [
       {
-        label: "About us",
+        label: "About Us",
         href: `/${routed.userManagement}/${routed.aboutUs}`,
-        icon: <FaCog />, // Add an
+        icon: <FaInfoCircle />,
       },
       {
         label: "Logout",

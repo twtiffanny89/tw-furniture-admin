@@ -3,6 +3,7 @@ import Head from "next/head";
 import { ToastContainer } from "react-toastify";
 import MenuSidebar from "@/components/root/menu_sidebar";
 import Navbar from "@/components/root/navbar";
+import Footer from "@/components/root/footer";
 
 export default function RootLayout({
   children,
@@ -31,6 +32,7 @@ export default function RootLayout({
           />
           <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%] bg-[#F7F8FA] overflow-y-scroll flex flex-col pt-16 px-4">
             {children}
+            <Footer />
           </div>
         </div>
       </body>

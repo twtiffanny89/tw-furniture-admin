@@ -11,6 +11,7 @@ export interface Category {
   description: string;
   createdAt: string;
   updatedAt: string;
+  isPublic: boolean;
   image: Image;
   _count: Count;
 }

@@ -52,12 +52,12 @@ export async function createAttributeValueService(data: createdParams) {
     return {
       success: true,
       data: response.data.data,
-      message: "Sub-Attribute created successfully!",
+      message: "Attribute value created successfully!",
     };
   } catch {
     return {
       success: false,
-      message: "Failed to created Sub-Attribute. Please try again!",
+      message: "Failed to created Attribute value. Please try again!",
     };
   }
 }
@@ -67,12 +67,12 @@ export async function onUpdateSubAttribute({ id, data }: updateParams) {
     await axiosServerWithAuth.patch(`/v1/admin/attribute-value/${id}`, data);
     return {
       success: true,
-      message: "Sub-Attribute updated successfully!",
+      message: "Attribute value updated successfully!",
     };
   } catch (error) {
     return {
       success: false,
-      message: "Failed to updated Sub-Attribute. Please try again!",
+      message: "Failed to updated Attribute value. Please try again!",
       data: null,
     };
   }
@@ -83,12 +83,12 @@ export async function deletedSubAttributeService({ id }: deletedParams) {
     await axiosServerWithAuth.delete(`/v1/admin/attribute-value/${id}`);
     return {
       success: true,
-      message: "Sub-Attribute deleted successfully!",
+      message: "Attribute value deleted successfully!",
     };
   } catch {
     return {
       success: false,
-      message: "Failed to deleted Sub-Attribute. Please try again!",
+      message: "Failed to deleted Attribute value. Please try again!",
     };
   }
 }

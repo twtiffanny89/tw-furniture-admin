@@ -25,6 +25,9 @@ import { ProcessedImage } from "@/redux/model/global/ProcessedImage";
 import { IoClose } from "react-icons/io5";
 import { LuImagePlus } from "react-icons/lu";
 import { resizeImageConvertBase64 } from "@/utils/security/image_convert";
+import { MainValue } from "@/redux/model/product/product-detail";
+import CashImage from "../custom/CashImage";
+import { config } from "@/utils/config/config";
 
 interface SubAttributeModalProps {
   isOpen: boolean;
@@ -35,7 +38,7 @@ interface SubAttributeModalProps {
     image?: ProcessedImage | null;
   }) => void;
   title: string;
-  initialData?: { label: string; attributeId: string } | null;
+  initialData?: MainValue | null;
 }
 
 const AddAttributeModal = ({
@@ -49,22 +52,20 @@ const AddAttributeModal = ({
   const [selectedValue, setSelectedValue] = useState<AttributeModel | null>(
     null
   );
-  const [image, setImage] = useState<ProcessedImage | undefined>(undefined);
+  const [image, setImage] = useState<ProcessedImage | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [attribute, setAttribute] = useState<AttributeListModel | null>(null);
 
   useEffect(() => {
     if (isOpen) {
-      callApiWhenOpen();
-
+      setName(initialData?.attributeValue?.label || "");
       if (initialData) {
-        // Pre-fill form fields when editing
-        setName(initialData.label);
-        const selectedAttribute = attribute?.data.find(
-          (item) => item.id === initialData.attributeId
-        );
-        setSelectedValue(selectedAttribute || null);
+        setImage({
+          base64: initialData?.attributeValue?.image[0]?.imageUrl || "",
+          type: null,
+        });
       } else {
+        callApiWhenOpen();
         resetForm();
       }
     }
@@ -84,8 +85,10 @@ const AddAttributeModal = ({
   const handleConfirm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!name) newErrors.name = "Name is required.";
-    if (!selectedValue)
-      newErrors.selectedValue = "Attribute selection is required.";
+    if (!initialData) {
+      if (!selectedValue)
+        newErrors.selectedValue = "Attribute selection is required.";
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -102,7 +105,7 @@ const AddAttributeModal = ({
   const resetForm = () => {
     setName("");
     setSelectedValue(null);
-    setImage(undefined); // Clear the image on reset
+    setImage(null); // Clear the image on reset
     setErrors({});
   };
 
@@ -127,7 +130,7 @@ const AddAttributeModal = ({
   };
 
   const handleRemoveImage = () => {
-    setImage(undefined);
+    setImage(null);
   };
 
   return (
@@ -141,30 +144,33 @@ const AddAttributeModal = ({
         </DialogHeader>
         <form onKeyDown={handleKeyPress}>
           {/* Select Attribute */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Select Attribute
-              <span className="text-red-500 ml-1">*</span>
-            </label>
-            <Select
-              onValueChange={handleSelectChange}
-              value={selectedValue?.id || undefined}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Choose an option" />
-              </SelectTrigger>
-              <SelectContent>
-                {attribute?.data.map((option) => (
-                  <SelectItem key={option.id} value={option.id}>
-                    {option.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.selectedValue && (
-              <MessgaeError message={errors.selectedValue} type="error" />
-            )}
-          </div>
+
+          {!initialData && (
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Select Attribute
+                <span className="text-red-500 ml-1">*</span>
+              </label>
+              <Select
+                onValueChange={handleSelectChange}
+                value={selectedValue?.id || undefined}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose an option" />
+                </SelectTrigger>
+                <SelectContent>
+                  {attribute?.data.map((option) => (
+                    <SelectItem key={option.id} value={option.id}>
+                      {option.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.selectedValue && (
+                <MessgaeError message={errors.selectedValue} type="error" />
+              )}
+            </div>
+          )}
 
           {/* Input for Name */}
           <div className="my-4">
@@ -187,18 +193,27 @@ const AddAttributeModal = ({
           </div>
 
           {/* Single Image Upload */}
-          {selectedValue?.name === "Color" && (
+          {(initialData?.attributeValue?.valueType == "COLOR" ||
+            selectedValue?.name === "Color") && (
             <div className="mb-4">
               <label className="block text-xs font-medium text-gray-700 mb-1">
                 Single Image<span className="text-red-500 ml-1">*</span>
               </label>
               {image ? (
                 <div className="relative w-[96px] h-[96px]">
-                  <img
-                    src={image.base64}
-                    alt="Uploaded Preview"
-                    className="w-full h-full object-cover rounded-md border"
-                  />
+                  {image.type ? (
+                    <img
+                      src={image.base64}
+                      alt="Uploaded Preview"
+                      className="w-full h-full object-cover rounded-md border"
+                    />
+                  ) : (
+                    <CashImage
+                      width={96}
+                      height={96}
+                      imageUrl={`${config.BASE_URL}${image.base64}`}
+                    />
+                  )}
                   <button
                     onClick={handleRemoveImage}
                     className="absolute top-2 right-2 bg-red-500 text-white px-1 py-1 rounded"
@@ -225,7 +240,7 @@ const AddAttributeModal = ({
           )}
 
           {/* Action Buttons */}
-          <div className="flex justify-end space-x-2 mt-8">
+          <div className="flex justify-end space-x-4 mt-8">
             <ButtonCustom
               onClick={onClose}
               className="px-4 py-1.5"
@@ -237,7 +252,7 @@ const AddAttributeModal = ({
               onClick={handleConfirm}
               className="px-4 py-1.5 transition"
             >
-              Save
+              {initialData ? "Update" : "Create"}
             </ButtonCustom>
           </div>
         </form>

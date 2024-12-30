@@ -10,7 +10,8 @@ interface getCategoryParams {
 }
 
 interface uploadCategoryParams {
-  name: string;
+  name?: string;
+  isPublic?: boolean;
 }
 
 interface updateCategoryParams {

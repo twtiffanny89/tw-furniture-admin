@@ -3,40 +3,18 @@
 import ButtonCustom from "@/components/custom/ButtonCustom";
 import showToast from "@/components/error-handle/show-toast";
 import CenteredLoading from "@/components/loading/center_loading";
-import AttributeModal from "@/components/modal/attribute-modal";
-import ModalConfirm from "@/components/modal/modal_confirm";
 import SubAttributeModal from "@/components/modal/sub-attribute-modal";
 import Pagination from "@/components/pagination/Pagination";
-import {
-  attributeHeader,
-  subAttributeHeader,
-} from "@/constants/data/header_table";
-import {
-  createAttributeService,
-  deletedAttributeService,
-  getAttributeService,
-  onUpdateAttribute,
-} from "@/redux/action/product-management/attribute-service";
-import {
-  createAttributeValueService,
-  deletedSubAttributeService,
-  getSubAttributeService,
-  onUpdateSubAttribute,
-} from "@/redux/action/product-management/sub-attribude-service";
-import {
-  AttributeListModel,
-  AttributeModel,
-} from "@/redux/model/attribute-model/attribute-model";
-import {
-  SubAttributeModel,
-  SubAttrinuteListModel,
-} from "@/redux/model/sub-attribute-model/sub-attribute-model";
-
+import { subAttributeHeader } from "@/constants/data/header_table";
+import { AttributeListModel } from "@/redux/model/attribute-model/attribute-model";
+import { SubAttrinuteListModel } from "@/redux/model/sub-attribute-model/sub-attribute-model";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import React, { useState } from "react";
-import { FiEdit } from "react-icons/fi";
 import { IoMdAdd } from "react-icons/io";
-import { MdDeleteOutline } from "react-icons/md";
+import {
+  createAttributeValueService,
+  getSubAttributeService,
+} from "@/redux/action/product-management/sub-attribude-service";
 
 interface AttributeComponentProps {
   initialData: SubAttrinuteListModel;
@@ -49,8 +27,6 @@ const SubAttributeComponent: React.FC<AttributeComponentProps> = ({
 }) => {
   const [subAttribute, setSubAttribute] =
     useState<SubAttrinuteListModel>(initialData);
-  const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
-  const [modelItem, setModelItem] = useState<SubAttributeModel | null>(null);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -65,58 +41,23 @@ const SubAttributeComponent: React.FC<AttributeComponentProps> = ({
     setOpenModal(true);
   }
 
-  function onDeleteAttribte(item: SubAttributeModel) {
-    setModelItem(item);
-    setOpenModalDelete(true);
-  }
-
-  function onEditAttribte(item: SubAttributeModel) {
-    setModelItem(item);
-    setOpenModal(true);
-  }
-
-  async function onConfirmDelete() {
-    setOpenModalDelete(false);
+  async function onConfirm(data: string) {
+    setOpenModal(false);
     setLoading(true);
-    const response = await deletedSubAttributeService({ id: modelItem?.id });
+
+    const filter = initialAttribute.data.find((item) => item.name === "Size");
+    const response = await createAttributeValueService({
+      label: data,
+      value: data,
+      attributeId: filter?.id,
+    });
     if (response.success) {
       onCallApi({});
       showToast(response.message, "success");
     } else {
       showToast(response.message, "error");
     }
-    setLoading(false);
-  }
 
-  async function onConfirm(data: string) {
-    setOpenModal(false);
-    setLoading(true);
-    if (modelItem) {
-      const filter = initialAttribute.data.find((item) => item.name === "Size");
-      const response = await onUpdateSubAttribute({
-        id: modelItem.id,
-        data: { attributeId: filter?.id, label: data, value: data },
-      });
-      if (response.success) {
-        onCallApi({});
-        showToast(response.message, "success");
-      } else {
-        showToast(response.message, "error");
-      }
-    } else {
-      const filter = initialAttribute.data.find((item) => item.name === "Size");
-      const response = await createAttributeValueService({
-        label: data,
-        value: data,
-        attributeId: filter?.id,
-      });
-      if (response.success) {
-        onCallApi({});
-        showToast(response.message, "success");
-      } else {
-        showToast(response.message, "error");
-      }
-    }
     setLoading(false);
   }
 
@@ -166,22 +107,6 @@ const SubAttributeComponent: React.FC<AttributeComponentProps> = ({
                       </td>
                       <td>{formatTimestamp(value.createdAt)}</td>
                       <td>{value.attributeId}</td>
-                      <td>
-                        <div className="flex gap-2">
-                          <ButtonCustom
-                            onClick={() => onEditAttribte(value)}
-                            className="w-6 h-6 "
-                          >
-                            <FiEdit size={14} className="text-white" />
-                          </ButtonCustom>
-                          <button
-                            onClick={() => onDeleteAttribte(value)}
-                            className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"
-                          >
-                            <MdDeleteOutline size={16} className="text-white" />
-                          </button>
-                        </div>
-                      </td>
                     </tr>
                   );
                 })}
@@ -204,14 +129,7 @@ const SubAttributeComponent: React.FC<AttributeComponentProps> = ({
         isOpen={openModal}
         onConfirm={onConfirm}
         onClose={onClose}
-        title="Create Sub-Attribute"
-        initialData={modelItem}
-      />
-
-      <ModalConfirm
-        onClose={() => setOpenModalDelete(false)}
-        isOpen={openModalDelete}
-        onConfirm={onConfirmDelete}
+        title="Create Attribute Value"
       />
 
       <CenteredLoading loading={loading} />

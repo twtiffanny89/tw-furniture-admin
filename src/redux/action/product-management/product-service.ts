@@ -17,15 +17,16 @@ interface getAllProductSuggestionParams {
 }
 
 interface createProductParams {
-  name: string;
+  name?: string;
   description?: string;
   basePrice?: number;
-  subcategoryId: string;
+  subcategoryId?: string;
+  isPublic?: boolean;
 }
 
 interface AttributeValue {
-  id: string;
-  attributeId: string;
+  attributeValueId: string;
+  name: string;
 }
 
 interface PostData {
@@ -41,6 +42,11 @@ interface editProduct {
 interface addAttributeModel {
   productId: string;
   data: PostData;
+}
+
+interface remoceAttributeModel {
+  productId: string;
+  attributeId: string;
 }
 
 interface addAttributeValueImageModel {
@@ -72,12 +78,21 @@ interface addVariantValue {
 }
 
 interface removeVariantModel {
-  productId: string;
+  variantId: string;
 }
 
 interface removeAttribudeModel {
   productId: string;
   data: removeAttribute;
+}
+
+interface updateStatusAttribudeValueModel {
+  productAttributeToValueId: string;
+  data: updateAttributeValue;
+}
+
+interface updateAttributeValue {
+  isPublic: boolean;
 }
 
 interface removeAttribute {
@@ -202,6 +217,25 @@ export async function getProductByIdService({
   }
 }
 
+export async function getProductPreviewByIdService({
+  productId,
+}: getByProductIdModel) {
+  try {
+    const response = await axiosServerWithAuth.get(
+      `/v1/admin/product/${productId}/preview`
+    );
+    return {
+      success: true,
+      data: response.data.data,
+    };
+  } catch {
+    return {
+      success: false,
+      data: null,
+    };
+  }
+}
+
 export async function getProductSuggestionService({
   page = 1,
   limit = 15,
@@ -227,7 +261,6 @@ export async function addAttributeProductService({
   productId,
   data,
 }: addAttributeModel) {
-  console.log("### ===dataaaa", data);
   try {
     const response = await axiosServerWithAuth.post(
       `/v1/admin/product/${productId}/add-attribute`,
@@ -236,15 +269,27 @@ export async function addAttributeProductService({
     return {
       success: true,
       data: response.data.data,
-      message: "Attribute add successfully!",
+      message: "Attribute product add successfully!",
     };
-  } catch (e) {
-    return {
-      success: false,
-      data: e,
-      message: "Failed to add Attribute. Please try again!",
-    };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response && error.response.status === 409) {
+        return {
+          success: false,
+          message:
+            "This Attribute is already in product. Please choose a different name.!",
+        };
+      }
+      return {
+        success: false,
+        message: "Failed to add Attribute product. Please try again!",
+      };
+    }
   }
+  return {
+    success: false,
+    message: "Failed to add Attribute product. Please try again!",
+  };
 }
 
 export async function addAttributeValueImageProductService({
@@ -264,6 +309,26 @@ export async function addAttributeValueImageProductService({
     return {
       success: false,
       message: "Failed to add Attribute value image. Please try again!",
+    };
+  }
+}
+
+export async function removeAttributeProductService({
+  productId,
+  attributeId,
+}: remoceAttributeModel) {
+  try {
+    await axiosServerWithAuth.delete(
+      `/v1/admin/product/${productId}/remove-attribute/${attributeId}`
+    );
+    return {
+      success: true,
+      message: "Attribute remove successfully!",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Failed to remove Attribute. Please try again!",
     };
   }
 }
@@ -290,12 +355,12 @@ export async function addVariantProductService({
   }
 }
 
-export async function editVariantProductService({
+export async function updateVariantProductService({
   data,
   variantId,
 }: editVariantModel) {
   try {
-    const response = await axiosServerWithAuth.post(
+    const response = await axiosServerWithAuth.patch(
       `/v1/admin/product/${variantId}/update-variant`,
       data
     );
@@ -313,11 +378,11 @@ export async function editVariantProductService({
 }
 
 export async function removeVariantProductService({
-  productId,
+  variantId,
 }: removeVariantModel) {
   try {
     await axiosServerWithAuth.delete(
-      `/v1/admin/product/remove-variant/${productId}`
+      `/v1/admin/product/remove-variant/${variantId}`
     );
     return {
       success: true,
@@ -331,7 +396,7 @@ export async function removeVariantProductService({
   }
 }
 
-export async function removeAttribudeProductService({
+export async function removeAttribudeValueProductService({
   productId,
   data,
 }: removeAttribudeModel) {
@@ -348,6 +413,27 @@ export async function removeAttribudeProductService({
     return {
       success: false,
       message: "Failed to Deleted attribute variant. Please try again!",
+    };
+  }
+}
+
+export async function updateStatusAttribudeValueProductService({
+  productAttributeToValueId,
+  data,
+}: updateStatusAttribudeValueModel) {
+  try {
+    await axiosServerWithAuth.patch(
+      `/v1/admin/product/update-attribute-value/${productAttributeToValueId}`,
+      data
+    );
+    return {
+      success: true,
+      message: "Updated status attribute variant successfully!",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Failed to Update status attribute variant. Please try again!",
     };
   }
 }
@@ -391,6 +477,24 @@ export async function addVariantValueProductService({
     return {
       success: false,
       message: "Failed to add Variant value. Please try again!",
+    };
+  }
+}
+
+export async function delelteVariantImageValueProductService(imageId: string) {
+  try {
+    const response = await axiosServerWithAuth.delete(
+      `/v1/admin/product/variant-image/${imageId}`
+    );
+    return {
+      success: true,
+      data: response.data.data,
+      message: "Variant image deleted successfully!",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Failed to delete Variant image. Please try again!",
     };
   }
 }

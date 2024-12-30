@@ -12,6 +12,8 @@ export const routed = {
   aboutUs: "about-us",
   banner: "banner",
   attribute: "attribute",
-  subAttribute: "sub-attribute",
+  attributeValue: "attribute-value",
   product: "product",
+  create: "create",
+  preview: "preview",
 };

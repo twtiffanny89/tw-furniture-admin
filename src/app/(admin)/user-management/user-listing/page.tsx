@@ -1,34 +1,19 @@
 "use client";
 
-import ButtonCustom from "@/components/custom/ButtonCustom";
 import CashImage from "@/components/custom/CashImage";
-import { Switch } from "@/components/custom/Switch";
 import showToast from "@/components/error-handle/show-toast";
 import Header from "@/components/header/header";
 import Pagination from "@/components/pagination/Pagination";
 import { headerAllUser } from "@/constants/data/header_table";
 import { getAllUserService } from "@/redux/action/user-management/all_user_service";
-import {
-  UserInfoListModel,
-  UserInfoModel,
-} from "@/redux/model/all-user/user_list_model";
+import { UserInfoListModel } from "@/redux/model/all-user/user_list_model";
 import { config } from "@/utils/config/config";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { FiEdit } from "react-icons/fi";
-
-// interface AllUserComponentProps {
-//   initialData: UserInfoListModel;
-// }
 
 const AllUserComponent = () => {
   const [userData, setUserData] = useState<UserInfoListModel>();
-  const [loadingUpdate, setLoadingUpdate] = useState({
-    id: "",
-    loading: false,
-  });
 
   useEffect(() => {
     onCallApi({});
@@ -63,17 +48,6 @@ const AllUserComponent = () => {
     }),
     []
   );
-
-  async function toggleUserStatus(user: UserInfoModel) {
-    setLoadingUpdate({
-      id: user.id,
-      loading: true,
-    });
-    setLoadingUpdate({
-      id: "",
-      loading: false,
-    });
-  }
 
   return (
     <div>
@@ -123,29 +97,12 @@ const AllUserComponent = () => {
                       <td>{user.firstName || "- - -"}</td>
                       <td>{user.lastName || "- - -"}</td>
                       <td>{user.phoneNumber}</td>
-                      <td>
-                        <div className="flex gap-2 items-center">
-                          <Switch
-                            disable={loadingUpdate.loading}
-                            checked={user.active}
-                            onChange={() => toggleUserStatus(user)}
-                          />
-                          <span
-                            className={
-                              user.active ? "text-green-500" : "text-red-500"
-                            }
-                          >
-                            {user.active ? "Active" : "Inactive"}
-                          </span>
-                        </div>
-                      </td>
-                      <td>
-                        <ButtonCustom
-                          // onClick={() => onOpenModalSub(sub)}
-                          className="w-6 h-6 "
-                        >
-                          <FiEdit size={14} className="text-white" />
-                        </ButtonCustom>
+                      <td
+                        className={
+                          user.active ? "text-green-500" : "text-red-500"
+                        }
+                      >
+                        {user.active ? "Active" : "Inactive"}
                       </td>
                     </tr>
                   );
