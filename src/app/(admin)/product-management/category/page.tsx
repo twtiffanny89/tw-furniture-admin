@@ -192,7 +192,7 @@ const CategoryComponent = () => {
   return (
     <div className="min-h-screen">
       <Header
-        title="Category"
+        title="Categories"
         onRefreshClick={onRefreshClick}
         onSearchChange={onSearchChange}
         showAdd={true}
