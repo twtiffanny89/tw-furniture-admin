@@ -50,7 +50,7 @@ const AllUserComponent = () => {
   );
 
   return (
-    <div>
+    <div className="min-h-screen">
       <Header
         title="User Listing"
         onRefreshClick={onRefreshClick}
@@ -58,7 +58,7 @@ const AllUserComponent = () => {
         placeholder="Search User id, username ..."
       />
 
-      <div className="mt-4 bg-white min-h-full">
+      <div className="mt-4 bg-white">
         <div>
           <div className="overflow-x-auto min-h-[50vh]">
             <table>

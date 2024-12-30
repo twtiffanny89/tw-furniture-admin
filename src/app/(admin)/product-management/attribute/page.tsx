@@ -54,7 +54,7 @@ const AttributeComponent = () => {
     setOpenModal(false);
   }
   return (
-    <div>
+    <div className="min-h-screen">
       <div className="p-4 bg-white flex justify-between">
         <h1 className="font-bold text-xl">Attribute </h1>
         <ButtonCustom

@@ -115,25 +115,26 @@ export const colorHeader: string[] = [
 ];
 
 export const attribudeHeader: string[] = [
-  "No",
-  "Image",
-  "Label",
-  "Created At",
-  "Status",
-  "Action",
+  "NO",
+  "IMAGE",
+  "LABEL",
+  "CREATED_AT",
+  "STATUS",
+  "ACTION",
 ];
 
 export const variantsHeader: string[] = [
-  "No",
-  "Name",
-  "Price",
-  "Stock",
-  "Discount StartDate",
-  "Discount EndDate",
-  "Sku",
-  "Image Cover",
-  "Created At",
-  "Action",
+  "NO",
+  "NAME",
+  "PRICE",
+  "STOCK",
+  "DISCOUNT",
+  "DISCOUNT_TYPE",
+  "DISCOUNT_START_DATE",
+  "DISCOUNT_END_DATE",
+  "IMAGE_COVER",
+  "CREATED_AT",
+  "ACTION",
 ];
 
 export const variantsPreviewHeader: string[] = [

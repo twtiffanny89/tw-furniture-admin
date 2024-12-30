@@ -6,6 +6,7 @@ import MessgaeError from "@/components/error-handle/message_error";
 import showToast from "@/components/error-handle/show-toast";
 import { routed } from "@/constants/navigation/routed";
 import { LoginService } from "@/redux/action/auth/login_service";
+import { setCookieToken } from "@/utils/security/token";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
@@ -20,15 +21,33 @@ const LoginPage = () => {
   const router = useRouter();
 
   const handleLogin = async () => {
-    setLoading(true);
-    const response = await LoginService({ password, username });
-    if (response.success) {
-      showToast(response.data, "success");
-      router.replace(`/${routed.userManagement}/${routed.allUser}`);
-    } else {
-      showToast(response.data, "error");
+    try {
+      if (!username) {
+        setUsernameError("Username is required.");
+        return;
+      }
+      if (!password) {
+        setPasswordError("Password is required.");
+        return;
+      }
+      setLoading(true);
+
+      const response = await LoginService({
+        username,
+        password,
+      });
+
+      if (response.success) {
+        setCookieToken(response.data);
+        showToast(response.message, "success");
+        router.replace(`/${routed.userManagement}/${routed.allUser}`);
+      } else {
+        showToast(response.message, "error");
+      }
+    } catch {
+      setLoading(false);
+      showToast("Login failed. Please try again.", "error");
     }
-    setLoading(false);
   };
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {

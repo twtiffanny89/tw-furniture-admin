@@ -56,7 +56,7 @@ const ActivityLogComponent = () => {
   }
 
   return (
-    <div>
+    <div className="min-h-screen">
       <HeaderCalender
         selectedFromDate={selectedFromDate}
         handleFromDateChange={setSelectedFromDate}
@@ -66,7 +66,7 @@ const ActivityLogComponent = () => {
         title="Actvity log"
         onClearSearchClick={onClearSearchClick}
       />
-      <div className="mt-4 bg-white min-h-full">
+      <div className="mt-4 bg-white">
         <div>
           <div className="overflow-x-auto min-h-[50vh]">
             <table>

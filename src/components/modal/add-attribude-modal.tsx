@@ -76,12 +76,6 @@ const AddAttributeModal = ({
     setAttribute(response);
   }
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-    }
-  };
-
   const handleConfirm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!name) newErrors.name = "Name is required.";
@@ -90,11 +84,14 @@ const AddAttributeModal = ({
         newErrors.selectedValue = "Attribute selection is required.";
     }
 
+    if (selectedValue?.name === "Color" && !image) {
+      newErrors.image = "Image is required.";
+    }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-
     onConfirm({
       name,
       selectedAttribute: selectedValue!,
@@ -142,9 +139,7 @@ const AddAttributeModal = ({
             Please fill in the details below.
           </DialogDescription>
         </DialogHeader>
-        <form onKeyDown={handleKeyPress}>
-          {/* Select Attribute */}
-
+        <form>
           {!initialData && (
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">
@@ -235,6 +230,9 @@ const AddAttributeModal = ({
                   />
                   <LuImagePlus className="text-gray-500 text-2xl rounded" />
                 </label>
+              )}
+              {errors.image && (
+                <MessgaeError message={errors.image} type="error" />
               )}
             </div>
           )}

@@ -18,7 +18,7 @@ import Pagination from "@/components/pagination/Pagination";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   attribudeHeader,
-  productSuggestionHeader,
+  productPreviewSuggestionHeader,
   variantsHeader,
 } from "@/constants/data/header_table";
 import { base64Cut } from "@/constants/image/base64_cut";
@@ -50,10 +50,13 @@ import {
 import {
   MainValue,
   ProductDetailModel,
-  Value,
   Variant,
 } from "@/redux/model/product/product-detail";
 import { Product } from "@/redux/model/product/product-model";
+import {
+  ProductPreview,
+  ProductPreviewListModel,
+} from "@/redux/model/product/product-preview-model";
 import {
   Subcategory,
   SubCategoryListModel,
@@ -64,6 +67,7 @@ import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
+import { FaEye } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi";
 import { MdDeleteOutline } from "react-icons/md";
 
@@ -73,7 +77,8 @@ const CreateProductComponent = () => {
   );
   const [nameProduct, setNameProduct] = useState("");
   const [priceProduct, setPriceProduct] = useState("");
-  const [productSuggestion, setProductSuggestion] = useState<any | null>(null);
+  const [productSuggestion, setProductSuggestion] =
+    useState<ProductPreviewListModel | null>(null);
   const [description, setDescription] = useState("");
   const [searchAdd, setSearchAdd] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -110,12 +115,12 @@ const CreateProductComponent = () => {
     }
   }, [productId]);
 
-  async function getAllSubCategory() {
+  const getAllSubCategory = async () => {
     const response = await getSubCategoryService({});
-    setSubCategory(response.data);
-  }
+    setSubCategory(response);
+  };
 
-  async function getProductDetail() {
+  const getProductDetail = async () => {
     const responseProduct = await getProductByIdService({
       productId: productId!,
     });
@@ -128,35 +133,33 @@ const CreateProductComponent = () => {
       getSubCategory(responseProduct?.data.subcategoryId);
     }
     return responseProduct;
-  }
+  };
 
-  async function getProductSuggestion({ page = 1 }: { page?: number }) {
-    const resposne = await getProductSuggestionService({
+  const getProductSuggestion = async ({ page = 1 }: { page?: number }) => {
+    const response = await getProductSuggestionService({
       productId: productId!,
       page,
     });
+    setProductSuggestion(response.data);
+  };
 
-    console.log("### ==resposne", resposne);
-    setProductSuggestion(resposne.data);
-  }
+  const getSubCategory = async (id: string) => {
+    const response = await getSubCategoryDetailService({ subCategoryId: id });
+    setSubCategoryItem(response);
+  };
 
-  async function getSubCategory(id: string) {
-    const resposne = await getSubCategoryDetailService({ subCategoryId: id });
-    setSubCategoryItem(resposne);
-  }
-
-  function onItemSelect(value: Subcategory) {
+  const onItemSelect = (value: Subcategory) => {
     setSubCategoryItem(value);
-  }
+  };
 
-  function onClearSearch() {
+  const onClearSearch = () => {
     setSearchAdd("");
-  }
+  };
 
-  function onChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchAdd(e.target.value);
     onSearchCategory(e.target.value);
-  }
+  };
 
   const onSearchCategory = useCallback(
     debounce(async (query: string) => {
@@ -169,16 +172,16 @@ const CreateProductComponent = () => {
     []
   );
 
-  async function onCallApi({
+  const onCallApi = async ({
     page = 1,
     search = "",
   }: {
     page?: number;
     search?: string;
-  }) {
+  }) => {
     const response = await getSubCategoryService({ page, search });
     setSubCategory(response);
-  }
+  };
 
   const onLoadMore = async () => {
     if (
@@ -197,7 +200,8 @@ const CreateProductComponent = () => {
     setLoading(false);
   };
 
-  async function createProduct() {
+  const createProduct = async () => {
+    setLoading(true);
     const response = await createProductService({
       name: nameProduct,
       description: description,
@@ -213,9 +217,10 @@ const CreateProductComponent = () => {
     } else {
       showToast(response.message, "error");
     }
-  }
+    setLoading(false);
+  };
 
-  async function editProduct() {
+  const editProduct = async () => {
     const response = await editProductService({
       productId: productDetail?.id || "",
       data: {
@@ -231,16 +236,16 @@ const CreateProductComponent = () => {
     } else {
       showToast(response.message, "error");
     }
-  }
+  };
 
-  function isDuplicateName(attributes: any[], newName: string): boolean {
+  const isDuplicateName = (attributes: any[], newName: string): boolean => {
     const allNames = attributes?.flatMap((attr) =>
       attr.values.map((value: any) => value.name.toLowerCase())
     );
     return allNames.includes(newName.toLowerCase());
-  }
+  };
 
-  async function createAttribudeValue(item: any) {
+  const createAttribudeValue = async (item: any) => {
     if (isDuplicateName(productDetail!.attributes, item.name)) {
       showToast(
         "This Attribute is already in product. Please choose a different name.!",
@@ -300,9 +305,9 @@ const CreateProductComponent = () => {
     }
     getProductDetail();
     setLoading(false);
-  }
+  };
 
-  function onConfirmAttribudeValue(item: any) {
+  const onConfirmAttribudeValue = (item: any) => {
     setModalCreateAttribude(false);
     if (dataAttribudeValueItem) {
       updateAttribudeValue(item);
@@ -311,9 +316,9 @@ const CreateProductComponent = () => {
     }
 
     setDataAttribudeValueItem(null);
-  }
+  };
 
-  async function updateAttribudeValue(item: any) {
+  const updateAttribudeValue = async (item: any) => {
     setLoading(true);
     const response = await onUpdateSubAttribute({
       id: dataAttribudeValueItem?.attributeValue.id || "",
@@ -341,23 +346,21 @@ const CreateProductComponent = () => {
     }
     getProductDetail();
     setLoading(false);
-  }
+  };
 
-  function onOpenModalAttribude() {
+  const onOpenModalAttribude = () => {
     setModalCreateAttribude(true);
-  }
+  };
 
-  function onOpenModalVariants() {
+  const onOpenModalVariants = () => {
     setModalCreateVariant(true);
-  }
+  };
 
-  function onOpenModalSuggestion() {
+  const onOpenModalSuggestion = () => {
     setModalSuggestion(true);
-  }
+  };
 
-  async function onUpdateVarant(data: FormData) {
-    console.log("## ==data", data);
-
+  const onUpdateVarant = async (data: FormData) => {
     const variantData: addVariant = {
       price: parseInt(data.price),
       discount: data.discount ? parseFloat(data.discount) : undefined,
@@ -369,7 +372,6 @@ const CreateProductComponent = () => {
         ? convertToISOString(data.selectedToDate)
         : undefined,
       stock: data.stock ? parseInt(data.stock) : undefined,
-      sku: data.sku || undefined,
     };
 
     setLoading(true);
@@ -400,9 +402,9 @@ const CreateProductComponent = () => {
     await Promise.all(imageUploadPromises);
     getProductDetail();
     setLoading(false);
-  }
+  };
 
-  async function onSubmidModalVarants(data: FormData) {
+  const onSubmidModalVarants = async (data: FormData) => {
     if (dataVariantItem) {
       onUpdateVarant(data);
     } else {
@@ -410,18 +412,17 @@ const CreateProductComponent = () => {
     }
     setModalCreateVariant(false);
     setDataVariantItem(null);
-  }
+  };
 
-  async function onCreateVarant(data: FormData) {
+  const onCreateVarant = async (data: FormData) => {
     const targetLabel =
       (data.selectedAttributes?.Color?.attributeValue?.label || "") +
       (data.selectedAttributes?.Size?.attributeValue?.label || "");
-    const combinedLabelsList = productDetail?.variants.map(
-      (variant) =>
-        variant.attributes.map((attr) => attr.attributeValue.label).join("") // Combine labels without spaces
+    const combinedLabelsList = productDetail?.variants.map((variant) =>
+      variant.attributes.map((attr) => attr.attributeValue.label).join("")
     );
-    const exists = combinedLabelsList?.includes(targetLabel);
 
+    const exists = combinedLabelsList?.includes(targetLabel);
     if (exists) {
       showToast(
         "This Attribute variant is already in product. Please choose a different name.!",
@@ -433,7 +434,7 @@ const CreateProductComponent = () => {
     setLoading(true);
 
     const variantData: addVariant = {
-      price: parseInt(data.price),
+      price: parseInt(data.price) || productDetail?.basePrice || 0,
       discount: data.discount ? parseFloat(data.discount) : undefined,
       discountType: data.discountType ? data.discountType : undefined,
       discountStartDate: data.selectedFromDate
@@ -443,7 +444,6 @@ const CreateProductComponent = () => {
         ? convertToISOString(data.selectedToDate)
         : undefined,
       stock: data.stock ? parseInt(data.stock) : undefined,
-      sku: data.sku || undefined,
     };
 
     const responseVariant = await addVariantProductService({
@@ -489,9 +489,9 @@ const CreateProductComponent = () => {
       getProductDetail();
     }
     setLoading(false);
-  }
+  };
 
-  async function onConfirmSuggestion(val: Product | null) {
+  const onConfirmSuggestion = async (val: Product | null) => {
     setModalSuggestion(false);
     if (val?.id == productDetail?.id) {
       showToast(
@@ -512,34 +512,15 @@ const CreateProductComponent = () => {
       showToast(response.message, "error");
     }
     setLoading(false);
-  }
+  };
 
-  async function handleDeleteSuggestion() {
-    setModalConfirmDeleteOpen(false);
-    setLoading(true);
-    const response = await deleteProductSuggestionService({
-      productId: productDetail?.id || "",
-      data: { toId: productIdDelete || "" },
-    });
-    if (response.success) {
-      getProductSuggestion({});
-      showToast(response.message, "success");
-    } else {
-      showToast(response.message, "error");
-    }
-    setProductIdDelete(null);
-    setLoading(false);
-  }
-
-  async function onApproveDelete() {
+  const onApproveDelete = async () => {
     setModalConfirmDeleteOpen(false);
     setLoading(true);
     if (productIdDelete) {
       const response = await deleteProductSuggestionService({
         productId: productDetail?.id || "",
-        data: {
-          toId: productIdDelete,
-        },
+        data: { toId: productIdDelete },
       });
       if (response.success) {
         getProductSuggestion({});
@@ -549,24 +530,19 @@ const CreateProductComponent = () => {
       }
     }
     setLoading(false);
-  }
+  };
 
-  function onEditVariants(value: Variant) {
+  const onEditVariants = (value: Variant) => {
     setModalCreateVariant(true);
     setDataVariantItem(value);
-  }
+  };
 
-  async function toggleCategoryStatus(value: MainValue) {
-    setLoadingUpdate({
-      id: value.id,
-      loading: true,
-    });
+  const toggleAttritudeStatus = async (value: MainValue) => {
+    setLoadingUpdate({ id: value.id, loading: true });
 
     const response = await updateStatusAttribudeValueProductService({
       productAttributeToValueId: value.id,
-      data: {
-        isPublic: !value.isPublic,
-      },
+      data: { isPublic: !value.isPublic },
     });
 
     if (response.success) {
@@ -575,19 +551,22 @@ const CreateProductComponent = () => {
     } else {
       showToast(response?.message ?? "Error", "error");
     }
-    setLoadingUpdate({
-      id: value.id,
-      loading: false,
-    });
-  }
+    setLoadingUpdate({ id: value.id, loading: false });
+  };
 
-  function onUpdateAttribudeValue(value: MainValue) {
+  const onUpdateAttribudeValue = (value: MainValue) => {
     setModalCreateAttribude(true);
     setDataAttribudeValueItem(value);
+  };
+
+  function onViewProduct(value: ProductPreview): void {
+    router.push(
+      `/${routed.productManagement}/${routed.product}/${routed.preview}/${value.productTo.id}`
+    );
   }
 
   return (
-    <div>
+    <div className="min-h-screen">
       <div className="p-4 bg-white flex justify-between">
         <h1 className="font-bold text-xl">Create Product</h1>
       </div>
@@ -606,9 +585,10 @@ const CreateProductComponent = () => {
             Suggestion
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="tab1" className="min-h-screen">
+
+        <TabsContent value="tab1">
           <div className="h-4 bg-[#F7F8FA] mb-4" />
-          <div className=" flex justify-end">
+          <div className="flex justify-end">
             {productId ? (
               <ButtonCustom onClick={editProduct} className="px-4 h-9">
                 Edit Product
@@ -631,7 +611,6 @@ const CreateProductComponent = () => {
                 className="h-11"
               />
             </div>
-
             <DropDownSubCategory
               onItemSelect={onItemSelect}
               onClearSearch={onClearSearch}
@@ -643,7 +622,6 @@ const CreateProductComponent = () => {
               isLoading={loading}
               selectedOption={subCategoryItem}
             />
-
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">
                 Base price (Optional)
@@ -656,14 +634,13 @@ const CreateProductComponent = () => {
               />
             </div>
           </div>
-
           <textarea
             name="description"
             rows={4}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Type your decri here..."
-            className="w-full p-2 border rounded mt-8"
+            placeholder="Type your description here..."
+            className="w-full p-2 mt-8 rounded border border-gray-300 focus:border-primary focus:outline-none text-base"
             style={{
               fontSize: "16px",
               borderRadius: "5px",
@@ -672,18 +649,18 @@ const CreateProductComponent = () => {
           />
         </TabsContent>
 
-        {/*  */}
-        <TabsContent className="min-h-screen" value="tab2">
+        {/* Tab 2 */}
+        <TabsContent value="tab2">
           <div className="h-4 bg-[#F7F8FA] mb-4" />
           <div className="flex justify-end">
             <ButtonCustom onClick={onOpenModalAttribude} className="px-4 h-9">
-              Create Attibute
+              Create Attribute
             </ButtonCustom>
           </div>
           <div>
             {productDetail?.attributes?.map((attribute) => (
               <div key={attribute.attribute.id}>
-                <h2 className="font-semibold text-lg mb-2 mt-4 ">
+                <h2 className="font-semibold text-lg mb-2 mt-4">
                   {attribute.attribute.name}
                 </h2>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -692,11 +669,10 @@ const CreateProductComponent = () => {
                       {attribudeHeader.map((header, index) => {
                         if (
                           attribute.attribute.name === "Size" &&
-                          header === "Image"
+                          header === "IMAGE"
                         ) {
                           return null; // Skip rendering this header
                         }
-
                         return (
                           <th
                             key={header + index.toString()}
@@ -708,7 +684,6 @@ const CreateProductComponent = () => {
                       })}
                     </tr>
                   </thead>
-
                   <tbody>
                     {attribute.values.map((value, index) => (
                       <tr key={value.id} className="hover:bg-gray-200">
@@ -723,7 +698,6 @@ const CreateProductComponent = () => {
                           </td>
                         )}
                         <td>{value?.attributeValue?.label}</td>
-
                         <td>
                           {formatTimestamp(value?.attributeValue?.createdAt)}
                         </td>
@@ -732,7 +706,7 @@ const CreateProductComponent = () => {
                             <Switch
                               disable={loadingUpdate.loading}
                               checked={value.isPublic}
-                              onChange={() => toggleCategoryStatus(value)}
+                              onChange={() => toggleAttritudeStatus(value)}
                             />
                             <span
                               className={
@@ -749,7 +723,7 @@ const CreateProductComponent = () => {
                           <div className="flex gap-2">
                             <ButtonCustom
                               onClick={() => onUpdateAttribudeValue(value)}
-                              className="w-6 h-6 "
+                              className="w-6 h-6"
                             >
                               <FiEdit size={14} className="text-white" />
                             </ButtonCustom>
@@ -764,6 +738,7 @@ const CreateProductComponent = () => {
           </div>
         </TabsContent>
 
+        {/* Tab 3 */}
         <TabsContent value="tab3">
           <div className="h-4 bg-[#F7F8FA] mb-4" />
           <div className="flex justify-end">
@@ -771,7 +746,7 @@ const CreateProductComponent = () => {
               Create Variants
             </ButtonCustom>
           </div>
-          <div className="mt-4 overflow-x-auto min-h-[50vh]">
+          <div className="mt-4 overflow-x-auto">
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead className="bg-gray-100">
                 <tr>
@@ -798,13 +773,14 @@ const CreateProductComponent = () => {
                     </td>
                     <td>{value.price}</td>
                     <td>{value.stock}</td>
+                    <td>{value.discount || "- - -"}</td>
+                    <td>{value.discountType || "- - -"}</td>
                     <td>
                       {formatTimestamp(value?.discountStartDate) || "- - -"}
                     </td>
                     <td>
                       {formatTimestamp(value?.discountEndDate) || "- - -"}
                     </td>
-                    <td>{value?.sku}</td>
                     <td>
                       <div className="flex gap-2">
                         {value?.images.map((img, index) => (
@@ -832,6 +808,7 @@ const CreateProductComponent = () => {
             </table>
           </div>
         </TabsContent>
+
         <TabsContent value="tab4">
           <div className="h-4 bg-[#F7F8FA] mb-4" />
           <div>
@@ -847,7 +824,7 @@ const CreateProductComponent = () => {
               <table>
                 <thead className="bg-gray-100">
                   <tr>
-                    {productSuggestionHeader.map((header, index) => (
+                    {productPreviewSuggestionHeader.map((header, index) => (
                       <th
                         key={header + index.toString()}
                         className="border border-gray-300 px-4 py-2 text-left"
@@ -858,19 +835,33 @@ const CreateProductComponent = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {productSuggestion?.data.map((value: any, index: number) => {
+                  {productSuggestion?.data.map((value, index: number) => {
                     const displayIndex =
                       ((productSuggestion.pagination?.currentPage || 1) - 1) *
                         15 +
                       index +
                       1;
+
                     return (
                       <tr key={value.id} className="hover:bg-gray-200">
                         <td>{displayIndex}</td>
                         <td>{value.productTo.id}</td>
-                        <td>{value.productTo.name}</td>
+                        <td>{value.productTo.name || "- - -"}</td>
+                        <td>{value.productTo.description || "- - -"}</td>
+                        <td>{value.productTo.viewCount}</td>
+                        <td>
+                          {formatTimestamp(value.productTo.createdAt) ||
+                            "- - -"}
+                        </td>
                         <td>
                           <div className="flex gap-2">
+                            <ButtonCustom
+                              variant="cancel"
+                              onClick={() => onViewProduct(value)}
+                              className="w-6 h-6"
+                            >
+                              <FaEye size={14} className="text-white" />
+                            </ButtonCustom>
                             <button
                               onClick={() => {
                                 setProductIdDelete(value?.toId);
@@ -938,7 +929,7 @@ const CreateProductComponent = () => {
         title="Confirm Delete!"
         onClose={() => setModalConfirmDeleteOpen(false)}
         onConfirm={onApproveDelete}
-        message={`Are you sure you want to delete?`}
+        message="Are you sure you want to delete?"
         isNotCancel={true}
       />
     </div>

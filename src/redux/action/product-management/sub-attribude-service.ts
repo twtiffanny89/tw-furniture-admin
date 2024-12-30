@@ -12,6 +12,7 @@ interface createdParams {
   label?: string;
   attributeId?: string;
   valueType?: string;
+  isActive?: boolean;
 }
 
 interface updateParams {

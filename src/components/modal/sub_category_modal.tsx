@@ -71,12 +71,6 @@ const SubCategoryModal = ({
     }
   }, [initialData, isOpen]);
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-    }
-  };
-
   const handleConfirm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!nameSub) newErrors.nameCategory = "Name Subcategories is required.";
@@ -135,7 +129,7 @@ const SubCategoryModal = ({
             Please fill in the details below.
           </DialogDescription>
         </DialogHeader>
-        <form onKeyDown={handleKeyPress}>
+        <form>
           <div className="my-4 ">
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Name Subcategories

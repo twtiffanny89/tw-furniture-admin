@@ -24,7 +24,17 @@ export const getAllCookies = () => {
 // Function to remove all cookies
 export const removeAllCookies = () => {
   const allCookies = Cookies.get();
-  for (const cookie in allCookies) {
-    Cookies.remove(cookie, { path: "/" });
+  let allRemoved = true;
+
+  for (const cookieName in allCookies) {
+    // Attempt to remove the cookie
+    Cookies.remove(cookieName, { path: "/" });
+
+    // Verify the cookie has been removed
+    if (Cookies.get(cookieName) !== undefined) {
+      allRemoved = false;
+    }
   }
+
+  return allRemoved;
 };

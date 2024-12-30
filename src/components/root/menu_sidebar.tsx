@@ -3,11 +3,20 @@
 import { useState, useEffect } from "react";
 import { slideBarData } from "@/constants/data/slide_bar_data";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import ModalConfirmLogout from "../modal/modal_confirm_logout";
+import { on } from "events";
+import { routed } from "@/constants/navigation/routed";
+import { logout } from "@/utils/security/token_server";
+import { removeAllCookies } from "@/utils/security/token";
+import CenteredLoading from "../loading/center_loading";
 
 const MenuSidebar = () => {
   const pathname = usePathname();
   const [activeHref, setActiveHref] = useState(pathname);
+  const [openModal, setOpenModal] = useState(false);
+  const router = useRouter();
+  const [isLogout, setIsLogout] = useState(false);
 
   useEffect(() => {
     setActiveHref(pathname);
@@ -15,8 +24,17 @@ const MenuSidebar = () => {
 
   function onNavigation(item: string) {
     if (item == "/logout") {
+      setOpenModal(true);
     } else {
       setActiveHref(item);
+    }
+  }
+
+  function onNavigationLogout() {
+    setOpenModal(false);
+    setIsLogout(true);
+    if (removeAllCookies()) {
+      router.replace(`/${routed.login}`);
     }
   }
 
@@ -55,6 +73,13 @@ const MenuSidebar = () => {
           ))}
         </div>
       </div>
+
+      <ModalConfirmLogout
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        onConfirm={onNavigationLogout}
+      />
+      <CenteredLoading loading={isLogout} />
     </div>
   );
 };

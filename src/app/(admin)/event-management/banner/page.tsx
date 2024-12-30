@@ -108,7 +108,7 @@ const BannerComponent = () => {
     setOpenModal(false);
   }
   return (
-    <div>
+    <div className="min-h-screen">
       <div className="p-4 bg-white flex justify-between">
         <h1 className="font-bold text-xl">Banner</h1>
         <ButtonCustom
@@ -118,7 +118,7 @@ const BannerComponent = () => {
           <IoMdAdd className="text-white mr-1" size={18} /> Add New
         </ButtonCustom>
       </div>
-      <div className="mt-4 bg-white min-h-full">
+      <div className="mt-4 bg-white">
         <div>
           <div className="overflow-x-auto min-h-[50vh]">
             <table>

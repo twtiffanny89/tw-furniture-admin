@@ -191,12 +191,25 @@ export async function createProductService(data: createProductParams) {
       data: response.data.data,
       message: "Product created successfully!",
     };
-  } catch {
-    return {
-      success: false,
-      message: "Failed to created Product. Please try again!",
-    };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response && error.response.status === 409) {
+        return {
+          success: false,
+          message:
+            "This product name is already in use. Please choose a different name.",
+        };
+      }
+      return {
+        success: false,
+        message: "Failed to create product. Please try again.",
+      };
+    }
   }
+  return {
+    success: false,
+    message: "Failed to create product. Please try again.",
+  };
 }
 
 // Create product

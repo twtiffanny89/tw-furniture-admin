@@ -34,7 +34,6 @@ export interface FormData {
   selectedAttributes: Record<string, MainValue>;
   price: string;
   stock: string;
-  sku: string;
   discount: string;
   discountType: string | undefined;
   selectedFromDate: string;
@@ -70,11 +69,9 @@ const AddVariantsModal: React.FC<ModalProps> = ({
   );
 
   const [selectedAttributes, setSelectedAttributes] = useState<any>({});
-
   const [selectedFromDate, setSelectedFromDate] = useState<string>("");
   const [selectedToDate, setSelectedToDate] = useState<string>("");
   const [stock, setStock] = useState("");
-  const [sku, setSku] = useState("");
   const [price, setPrice] = useState("");
   const [discount, setDiscount] = useState("");
   const [discountType, setDiscountType] = useState<string | undefined>(
@@ -99,8 +96,7 @@ const AddVariantsModal: React.FC<ModalProps> = ({
 
   function setDataWhenEdit() {
     if (initialData) {
-      // Then set this updated value in the state
-      const initialSelected: Record<string, SelectedAttribute> = {}; // Use the correct type here
+      const initialSelected: Record<string, SelectedAttribute> = {};
       attributes.forEach(({ attribute, values }) => {
         const selectedValue = initialData.attributes.find(
           (attr: any) => attr.attributeId === attribute.id
@@ -118,8 +114,7 @@ const AddVariantsModal: React.FC<ModalProps> = ({
       setSelectedAttributes(initialSelected);
 
       setPrice(initialData.price);
-      setStock(String(initialData.stock)); // Ensure stock is a string
-      setSku(initialData.sku || ""); // Default to empty string if sku is null
+      setStock(String(initialData.stock));
       setDiscount(initialData.discount || "");
       setDiscountType(
         initialData.discount ? initialData.discountType : undefined
@@ -127,36 +122,31 @@ const AddVariantsModal: React.FC<ModalProps> = ({
       setSelectedFromDate(initialData.discountStartDate || "");
       setSelectedToDate(initialData.discountEndDate || "");
 
-      // Handle images
-      const images = initialData?.images?.map((image) => ({
-        base64: image.imageUrl, // Assuming `imageUrl` is the full image path or base64 data
+      const images = initialData.images.map((image) => ({
+        base64: image.imageUrl,
         id: image.id,
-        type: null, // Extract file extension from file name
+        type: null,
       }));
       setImagesList(images);
     }
   }
 
   const clearForm = () => {
-    // Reset all the form fields to their initial values
-    setSelectedAttributes(initialSelectedAttributes); // Reset selected attributes
-    setStock(""); // Reset stock
-    setSku(""); // Reset SKU
-    setPrice(""); // Reset price
-    setDiscount(""); // Reset discount
-    setDiscountType(undefined); // Reset discount type
-    setSelectedFromDate(""); // Reset start date
-    setSelectedToDate(""); // Reset end date
-    setImagesList([]); // Clear the uploaded images
-    setErrors({}); // Clear any validation errors
+    setSelectedAttributes(initialSelectedAttributes);
+    setStock("");
+    setPrice("");
+    setDiscount("");
+    setDiscountType(undefined);
+    setSelectedFromDate("");
+    setSelectedToDate("");
+    setImagesList([]);
+    setErrors({});
   };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    // Price, stock, SKU validation
-    if (!price) newErrors.price = "Price is required.";
-    if (!stock) newErrors.price = "Stock is required.";
+    if (!stock) newErrors.stock = "Stock is required.";
     if (imagesList.length === 0) {
       newErrors.images = "At least one image is required.";
     }
@@ -170,17 +160,16 @@ const AddVariantsModal: React.FC<ModalProps> = ({
 
     setErrors(newErrors);
 
-    return Object.keys(newErrors).length === 0; // If no errors, return true
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = () => {
     if (!validateForm()) return;
 
-    const formData = {
+    const formData: FormData = {
       selectedAttributes,
       price,
       stock,
-      sku,
       discount,
       discountType,
       selectedFromDate,
@@ -188,7 +177,6 @@ const AddVariantsModal: React.FC<ModalProps> = ({
       imagesList,
     };
 
-    // Pass the data to the parent component via onSubmit prop
     onSubmit(formData);
   };
 
@@ -209,12 +197,10 @@ const AddVariantsModal: React.FC<ModalProps> = ({
     setImagesList((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Assuming resizeImageConvertBase64 is defined elsewhere in your code
   const handleImageListUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
-    // Ensure the number of images doesn't exceed 5
     if (imagesList.length + files.length > 5) {
       setErrors((prev) => ({
         ...prev,
@@ -225,7 +211,7 @@ const AddVariantsModal: React.FC<ModalProps> = ({
 
     try {
       const promises = Array.from(files).map(async (file) => {
-        const resizedBase64 = await resizeImageConvertBase64(file as File); // Your resize function
+        const resizedBase64 = await resizeImageConvertBase64(file as File);
         const fileExtension = `.${(file as File).type.split("/")[1]}`;
         return {
           base64: resizedBase64,
@@ -235,10 +221,7 @@ const AddVariantsModal: React.FC<ModalProps> = ({
 
       const processedImages = await Promise.all(promises);
 
-      // Update the imagesList state with the new images
       setImagesList((prevImages) => [...prevImages, ...processedImages]);
-
-      // Clear any previous errors if images were uploaded successfully
       setErrors((prev) => ({ ...prev, images: "" }));
     } catch (error) {
       console.error("Error uploading images:", error);
@@ -281,12 +264,11 @@ const AddVariantsModal: React.FC<ModalProps> = ({
                     ""
                   }
                   onValueChange={(value) => {
-                    // Find the selected value object from the list of values for this attribute
                     const selectedValue = values.find(
                       (valueObj) => valueObj.attributeValue.value === value
                     );
                     if (selectedValue) {
-                      handleSelectChange(attribute.name, selectedValue); // Pass the full object
+                      handleSelectChange(attribute.name, selectedValue);
                     }
                   }}
                 >
@@ -334,7 +316,7 @@ const AddVariantsModal: React.FC<ModalProps> = ({
             </div>
             <div className="flex-1 min-w-[200px]">
               <label className="block text-xs font-medium text-gray-700 mb-1">
-                Stock (Optional)
+                Stock
                 <span className="text-red-500 ml-1">*</span>
               </label>
               <Input
@@ -353,27 +335,9 @@ const AddVariantsModal: React.FC<ModalProps> = ({
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-4">
-            <div className="flex-1 min-w-[200px]">
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                SKU (Optional) <span className="text-red-500 ml-1">*</span>
-              </label>
-              <Input
-                placeholder="Input a Stock Keeping Unit code..."
-                value={sku}
-                onChange={(e) => {
-                  setSku(e.target.value);
-                  setErrors((prev) => ({ ...prev, sku: "" }));
-                }}
-                className="h-11"
-              />
-              {errors.sku && <MessgaeError message={errors.sku} type="error" />}
-            </div>
-          </div>
-
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
-              Multiple Images <span className="text-red-500 ml-1">*</span>
+              Cover Images <span className="text-red-500 ml-1">*</span>
             </label>
             <div className="flex flex-wrap gap-2">
               {imagesList.map((image, index) => (
@@ -422,12 +386,10 @@ const AddVariantsModal: React.FC<ModalProps> = ({
             )}
           </div>
 
-          {/* Discount */}
-
           <div className="flex gap-4">
             <div className="flex-1 min-w-[200px]">
               <label className="block text-xs font-medium text-gray-700 mb-1">
-                Discount <span className="text-red-500 ml-1">*</span>
+                Discount
               </label>
               <Input
                 placeholder="0.0"
@@ -444,7 +406,7 @@ const AddVariantsModal: React.FC<ModalProps> = ({
             </div>
             <div className="w-[150px]">
               <label className="block text-xs font-medium text-gray-700 mb-1">
-                Discount <span className="text-red-500 ml-1">*</span>
+                Discount Type
               </label>
               <Select
                 value={discountType}
@@ -475,7 +437,7 @@ const AddVariantsModal: React.FC<ModalProps> = ({
           <div className="flex flex-wrap gap-4 mt-2">
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">
-                Discount <span className="text-red-500 ml-1">*</span>
+                Discount Start Date
               </label>
               <DateRangePicker
                 initialDate={selectedFromDate}
@@ -489,12 +451,12 @@ const AddVariantsModal: React.FC<ModalProps> = ({
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">
-                Discount <span className="text-red-500 ml-1">*</span>
+                Discount End Date
               </label>
               <DateRangePicker
                 initialDate={selectedToDate}
                 onDateChange={setSelectedToDate}
-                title="Discount To Date"
+                title="Discount End Date"
                 className="h-11"
               />
               {errors.todate && (

@@ -1,5 +1,6 @@
+"use server";
+
 import { axiosNoAuth } from "@/utils/api/axios";
-import { setCookieToken } from "@/utils/security/token";
 
 interface LoginServiceParam {
   username: string;
@@ -9,17 +10,15 @@ interface LoginServiceParam {
 export async function LoginService(data: LoginServiceParam) {
   try {
     const response = await axiosNoAuth.post("/v1/admin/auth/login", data);
-    setCookieToken(response.data.data.accessToken);
     return {
       success: true,
-      test: response.data,
-      data: "Login successful! Welcome back 🎉.",
+      data: response.data.data.accessToken,
+      message: "Login successful! Welcome back 🎉.",
     };
-  } catch (e) {
+  } catch {
     return {
       success: false,
-      test: e,
-      data: "Login failed. Please try again.",
+      message: "Login failed. Please try again.",
     };
   }
 }
