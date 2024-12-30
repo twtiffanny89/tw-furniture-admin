@@ -621,6 +621,12 @@ const CreateProductComponent = () => {
               onLoadMore={onLoadMore}
               isLoading={loading}
               selectedOption={subCategoryItem}
+              hasNext={
+                (subCategory?.pagination &&
+                  subCategory.pagination!.currentPage <
+                    subCategory.pagination!.totalPages) ||
+                false
+              }
             />
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">

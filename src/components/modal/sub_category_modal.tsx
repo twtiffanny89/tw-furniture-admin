@@ -35,6 +35,7 @@ interface SubCategoryModalProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClearSearch: () => void;
   value: string;
+  hasNext?: boolean;
 }
 
 type ProcessedImage = {
@@ -55,6 +56,7 @@ const SubCategoryModal = ({
   onChange,
   onClearSearch,
   value,
+  hasNext,
 }: SubCategoryModalProps) => {
   const [nameSub, setNameSub] = useState("");
   const [image, setImage] = useState<ProcessedImage | null>(null);
@@ -161,6 +163,7 @@ const SubCategoryModal = ({
             onLoadMore={onLoadMore}
             isLoading={isLoading}
             selectedOption={categoryItem}
+            hasNext={hasNext}
           />
 
           <div className="mb-4 mt-4">

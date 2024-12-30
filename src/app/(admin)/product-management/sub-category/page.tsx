@@ -347,6 +347,12 @@ const SubCategoryComponent = () => {
         onChange={onChange}
         value={searchAdd}
         onClearSearch={onClearSearch}
+        hasNext={
+          (category?.pagination &&
+            category.pagination!.currentPage <
+              category.pagination!.totalPages) ||
+          false
+        }
       />
 
       <CenteredLoading loading={loading} />

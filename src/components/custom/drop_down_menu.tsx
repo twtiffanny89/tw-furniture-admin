@@ -20,6 +20,7 @@ interface CustomSelectProps {
   onLoadMore?: () => void;
   isLoading?: boolean;
   selectedOption: CategorySelect | null;
+  hasNext?: boolean;
 }
 
 const DropDownMenu = ({
@@ -32,6 +33,7 @@ const DropDownMenu = ({
   onClearSearch,
   onItemSelect,
   selectedOption,
+  hasNext,
 }: CustomSelectProps) => {
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -105,7 +107,7 @@ const DropDownMenu = ({
                   key={index}
                   className="cursor-pointer hover:bg-gray-200"
                 >
-                  <span className="text-sm">{option.name}</span>
+                  <span className="text-sm min-w-96">{option.name}</span>
                 </DropdownMenuItem>
               ))
             ) : (
@@ -113,7 +115,7 @@ const DropDownMenu = ({
                 No options found
               </span>
             )}
-            {isLoading && (
+            {hasNext && (
               <div
                 ref={endOfListRef}
                 className="text-center py-2 flex justify-center"

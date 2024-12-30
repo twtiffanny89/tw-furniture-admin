@@ -19,6 +19,7 @@ interface CustomSelectProps {
   dataList: Subcategory[];
   onLoadMore?: () => void;
   isLoading?: boolean;
+  hasNext?: boolean;
   selectedOption: Subcategory | null;
 }
 
@@ -32,6 +33,7 @@ const DropDownSubCategory = ({
   onClearSearch,
   onItemSelect,
   selectedOption,
+  hasNext = false,
 }: CustomSelectProps) => {
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -105,7 +107,7 @@ const DropDownSubCategory = ({
                   key={index}
                   className="cursor-pointer hover:bg-gray-200"
                 >
-                  <span className="text-sm">{option.name}</span>
+                  <span className="text-sm min-w-96">{option.name}</span>
                 </DropdownMenuItem>
               ))
             ) : (
@@ -113,7 +115,7 @@ const DropDownSubCategory = ({
                 No options found
               </span>
             )}
-            {isLoading && (
+            {hasNext && (
               <div
                 ref={endOfListRef}
                 className="text-center py-2 flex justify-center"

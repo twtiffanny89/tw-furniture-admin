@@ -107,7 +107,7 @@ const DropDownProduct = ({
                   key={index}
                   className="cursor-pointer hover:bg-gray-200"
                 >
-                  <span className="text-sm max-w-96">{option.name}</span>
+                  <span className="text-sm min-w-96">{option.name}</span>
                 </DropdownMenuItem>
               ))
             ) : (
