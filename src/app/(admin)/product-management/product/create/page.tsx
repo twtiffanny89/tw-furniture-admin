@@ -565,10 +565,19 @@ const CreateProductComponent = () => {
     );
   }
 
+  function onPreviewProduct(): void {
+    router.push(
+      `/${routed.productManagement}/${routed.product}/${routed.preview}/${productDetail?.id}`
+    );
+  }
+
   return (
     <div>
       <div className="p-4 bg-white flex justify-between">
         <h1 className="font-bold text-xl">Create Product</h1>
+        <ButtonCustom onClick={onPreviewProduct} className="px-4 h-9">
+          Preview Product
+        </ButtonCustom>
       </div>
       <Tabs defaultValue="tab1" className="w-full bg-white mt-4">
         <TabsList className="bg-[#F1F5F9] my-4 mx-4 py-6">
