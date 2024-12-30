@@ -1,4 +1,3 @@
-// middleware.ts
 import { NextRequest, NextResponse } from "next/server";
 import { keyStorage } from "./constants/storage/key_storage";
 import { routed } from "./constants/navigation/routed";
