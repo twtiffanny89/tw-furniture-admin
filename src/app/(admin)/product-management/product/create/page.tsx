@@ -488,6 +488,12 @@ const CreateProductComponent = () => {
       await Promise.all(imageUploadPromises);
       getProductDetail();
     }
+
+    if (responseVariant.success) {
+      showToast(responseVariant.message, "success");
+    } else {
+      showToast(responseVariant.message, "error");
+    }
     setLoading(false);
   };
 
