@@ -111,7 +111,7 @@ const DropDownProduct = ({
                 </DropdownMenuItem>
               ))
             ) : (
-              <span className="block text-sm py-4 px-2 text-gray-600">
+              <span className="block min-w-96 text-sm py-4 px-2 text-gray-600">
                 No options found
               </span>
             )}
