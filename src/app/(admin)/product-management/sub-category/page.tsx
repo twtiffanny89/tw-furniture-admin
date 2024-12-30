@@ -7,7 +7,6 @@ import { Switch } from "@/components/custom/Switch";
 import showToast from "@/components/error-handle/show-toast";
 import Header from "@/components/header/header";
 import CenteredLoading from "@/components/loading/center_loading";
-import ModalConfirm from "@/components/modal/modal_confirm";
 import SubCategoryModal from "@/components/modal/sub_category_modal";
 import Pagination from "@/components/pagination/Pagination";
 import { headerSubCategory } from "@/constants/data/header_table";
@@ -16,7 +15,6 @@ import { getCategoryService } from "@/redux/action/product-management/category_s
 import {
   createSubCategory,
   getSubCategoryService,
-  onDeleteSubCategory,
   updatedSubCategory,
   uploadImageSubCategory,
 } from "@/redux/action/product-management/sub_category_service";

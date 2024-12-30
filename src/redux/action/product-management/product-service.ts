@@ -160,6 +160,28 @@ export async function getAllProductService({
   }
 }
 
+// Get All
+export async function getAllProductPromotionService({
+  page = 1,
+  limit = 15,
+  search = "",
+}: getAllProductParams) {
+  try {
+    const response = await axiosServerWithAuth.get(
+      `/v1/admin/product/discount?page=${page}&limit=${limit}&search=${search}`
+    );
+    return {
+      data: response.data.data.data,
+      pagination: response.data.data.pageInfo,
+    };
+  } catch {
+    return {
+      data: [],
+      pagination: null,
+    };
+  }
+}
+
 // Create product
 export async function createProductService(data: createProductParams) {
   try {

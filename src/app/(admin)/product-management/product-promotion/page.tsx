@@ -3,53 +3,38 @@
 import ButtonCustom from "@/components/custom/ButtonCustom";
 import { Switch } from "@/components/custom/Switch";
 import showToast from "@/components/error-handle/show-toast";
-import CenteredLoading from "@/components/loading/center_loading";
-import ModalConfirm from "@/components/modal/modal_confirm";
 import Pagination from "@/components/pagination/Pagination";
 import { productHeader } from "@/constants/data/header_table";
 import { routed } from "@/constants/navigation/routed";
 import {
-  deletedBannerService,
-  getBannerService,
-} from "@/redux/action/event-management/banner_service";
-import {
   editProductService,
+  getAllProductPromotionService,
   getAllProductService,
 } from "@/redux/action/product-management/product-service";
-
 import { Product, ProductListModel } from "@/redux/model/product/product-model";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { FaEye } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi";
-import { IoMdAdd } from "react-icons/io";
-import { MdDeleteOutline } from "react-icons/md";
 
-interface ProductComponentProps {
-  initialData: ProductListModel;
-}
-
-const ProductComponent: React.FC<ProductComponentProps> = ({ initialData }) => {
-  const [product, setProduct] = useState<ProductListModel>(initialData);
+const ProductPromotionPage = () => {
+  const [product, setProduct] = useState<ProductListModel>();
   const [loadingUpdate, setLoadingUpdate] = useState({
     id: "",
     loading: false,
   });
-  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
+  useEffect(() => {
+    onCallApi({});
+  }, []);
+
   async function onCallApi({ page = 1 }: { page?: number }) {
-    const response = await getAllProductService({
+    const response = await getAllProductPromotionService({
       page,
     });
     setProduct(response);
-  }
-
-  function onAddNewClick() {
-    router.push(
-      `/${routed.productManagement}/${routed.product}/${routed.create}`
-    );
   }
 
   function onEditBanner(item: Product) {
@@ -93,14 +78,7 @@ const ProductComponent: React.FC<ProductComponentProps> = ({ initialData }) => {
   return (
     <div>
       <div className="p-4 bg-white flex justify-between">
-        <h1 className="font-bold text-xl">Product</h1>
-
-        <ButtonCustom
-          className="px-4 h-9 ml-2 font-normal text-xs"
-          onClick={onAddNewClick}
-        >
-          <IoMdAdd className="text-white mr-1" size={18} /> Add New
-        </ButtonCustom>
+        <h1 className="font-bold text-xl">Product Promotions</h1>
       </div>
       <div className="mt-4 bg-white min-h-full">
         <div>
@@ -175,7 +153,7 @@ const ProductComponent: React.FC<ProductComponentProps> = ({ initialData }) => {
               </tbody>
             </table>
           </div>
-          {product.data.length > 0 && (
+          {product && product?.data.length > 0 && (
             <div className="flex justify-end mr-8 mt-8">
               <Pagination
                 currentPage={product.pagination?.currentPage || 1}
@@ -186,10 +164,8 @@ const ProductComponent: React.FC<ProductComponentProps> = ({ initialData }) => {
           )}
         </div>
       </div>
-
-      <CenteredLoading loading={loading} />
     </div>
   );
 };
 
-export default ProductComponent;
+export default ProductPromotionPage;

@@ -39,15 +39,15 @@ export const headerCategory: string[] = [
 ];
 
 export const headerSubCategory: string[] = [
-  "No",
-  "Subcategory Id",
-  "Image",
-  "Name",
-  "Created at",
-  "Status",
-  "Product In",
-  "Category name",
-  "Action",
+  "NO",
+  "SUBCATEGORY_ID",
+  "IMAGE",
+  "NAME",
+  "CREATE_AT",
+  "STATUS",
+  "PRODUCT_IN",
+  "CATEGORIES_NAME",
+  "ACTION",
 ];
 
 export const eventHeader: string[] = [
@@ -58,11 +58,11 @@ export const eventHeader: string[] = [
 ];
 
 export const attributeHeader: string[] = [
-  "No",
-  "Attribute Id",
-  "Name",
-  "Created At",
-  "Updated At",
+  "NO",
+  "ATTRIBUDE_ID",
+  "NAME",
+  "CREATE_AT",
+  "UPDATE_AT",
 ];
 
 export const subAttributeHeader: string[] = [
@@ -75,16 +75,16 @@ export const subAttributeHeader: string[] = [
 ];
 
 export const productHeader: string[] = [
-  "No",
-  "Product Id",
-  "Name",
-  "Description",
-  "Product View",
-  "Status",
-  "Created At",
-  "Category Name",
-  "Sub-category Name",
-  "Action",
+  "NO",
+  "PRODUCT_ID",
+  "NAME",
+  "DESCRIPTION",
+  "PRODUCT_VIEW",
+  "STATUS",
+  "CREATED_AT",
+  "CATEGORIES_NAME",
+  "SUB_CATEGORIES_NAME",
+  "ACTION",
 ];
 
 export const productSuggestionHeader: string[] = [
@@ -95,9 +95,13 @@ export const productSuggestionHeader: string[] = [
 ];
 
 export const productPreviewSuggestionHeader: string[] = [
-  "No",
-  "Product Id",
-  "Name",
+  "NO",
+  "PRODUCT_ID",
+  "NAME",
+  "DESCRIPTION",
+  "PRODUCT_VIEW",
+  "CREATED_AT",
+  "ACTION",
 ];
 
 export const colorHeader: string[] = [
@@ -133,13 +137,14 @@ export const variantsHeader: string[] = [
 ];
 
 export const variantsPreviewHeader: string[] = [
-  "No",
-  "Name",
-  "Price",
-  "Stock",
-  "Discount StartDate",
-  "Discount EndDate",
-  "Sku",
-  "Image Cover",
-  "Created At",
+  "NO",
+  "NAME",
+  "PRICE",
+  "STOCK",
+  "DISCOUNT",
+  "DISCOUNT_TYPE",
+  "DISCOUNT_START_DATE",
+  "DISCOUNT_END_DATE",
+  "IMAGE_COVER",
+  "CREATED_AT",
 ];

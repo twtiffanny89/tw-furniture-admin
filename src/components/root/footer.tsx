@@ -2,9 +2,9 @@ import React from "react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-
   return (
     <footer
+      className="left-0 right-0 bottom-0"
       style={{
         textAlign: "center",
         padding: "1rem",

@@ -60,13 +60,35 @@ export async function updateImageAboutUsService({
     );
     return {
       success: true,
-      data: response.data.imageUrl,
+      data: response.data.data,
       message: "Image updated successfully!",
     };
   } catch {
     return {
       success: false,
       message: "Failed to updated Image. Please try again!",
+    };
+  }
+}
+
+export async function updateImageQRAboutUsService({
+  aboutUsId,
+  data,
+}: updateImageParams) {
+  try {
+    const response = await axiosServerWithAuth.post(
+      `/v1/admin/about-us/${aboutUsId}/qr-image`,
+      data
+    );
+    return {
+      success: true,
+      data: response.data.data,
+      message: "Image QR code updated successfully!",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Failed to updated Image QR code. Please try again!",
     };
   }
 }

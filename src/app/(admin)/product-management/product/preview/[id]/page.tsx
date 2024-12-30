@@ -1,19 +1,27 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
+import ButtonCustom from "@/components/custom/ButtonCustom";
 import CashImage from "@/components/custom/CashImage";
 import {
   productPreviewSuggestionHeader,
   variantsPreviewHeader,
 } from "@/constants/data/header_table";
+import { routed } from "@/constants/navigation/routed";
 import {
   getProductPreviewByIdService,
   getProductSuggestionService,
 } from "@/redux/action/product-management/product-service";
 import { ProductDetailModel } from "@/redux/model/product/product-detail";
-import { ProductPreviewListModel } from "@/redux/model/product/product-preview-model";
+import {
+  ProductPreview,
+  ProductPreviewListModel,
+} from "@/redux/model/product/product-preview-model";
 import { config } from "@/utils/config/config";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { FaEye } from "react-icons/fa";
 
 const PreveiwPage = ({ params }: { params: { id: string } }) => {
   const [productDetail, setProductDetail] = useState<ProductDetailModel | null>(
@@ -22,6 +30,7 @@ const PreveiwPage = ({ params }: { params: { id: string } }) => {
   const [productSuggestion, setProductSuggestion] =
     useState<ProductPreviewListModel | null>(null);
   const productId = params.id;
+  const router = useRouter();
 
   useEffect(() => {
     getProductDetail();
@@ -49,6 +58,12 @@ const PreveiwPage = ({ params }: { params: { id: string } }) => {
     (attr) => attr.attribute.name === "Color"
   );
 
+  function onViewProduct(value: ProductPreview): void {
+    router.push(
+      `/${routed.productManagement}/${routed.product}/${routed.preview}/${value.productTo.id}`
+    );
+  }
+
   return (
     <div>
       <div className="p-4 bg-white flex justify-between">
@@ -59,43 +74,43 @@ const PreveiwPage = ({ params }: { params: { id: string } }) => {
         <div className="h-[1px] my-4 w-full bg-slate-400" />
         <div className="flex flex-col gap-1">
           <div className="flex space-x-8 items-center">
-            <h6 className="text-gray-500 flex-[1]">Name</h6>
+            <h6 className="opacity-50 text-sm flex-[1]">Name</h6>
             <p className="flex-[4] text-sm">{productDetail?.name}</p>
           </div>
           <div className="flex space-x-8 items-center">
-            <h6 className="text-gray-500 flex-[1]">Category</h6>
+            <h6 className="opacity-50 text-sm flex-[1]">Category</h6>
             <p className="flex-[4] text-sm">{productDetail?.category?.name}</p>
           </div>
           <div className="flex space-x-8 items-center">
-            <h6 className="text-gray-500 flex-[1]">Sub-Category</h6>
+            <h6 className="opacity-50 text-sm flex-[1]">Sub-Category</h6>
             <p className="flex-[4] text-sm">
               {productDetail?.subcategory?.name}
             </p>
           </div>
           <div className="flex space-x-8 items-center">
-            <h6 className="text-gray-500 flex-[1]">Base Price</h6>
+            <h6 className="opacity-50 text-sm flex-[1]">Base Price</h6>
             <p className="flex-[4] text-sm">{productDetail?.basePrice}</p>
           </div>
           <div className="flex space-x-8 items-center">
-            <h6 className="text-gray-500 flex-[1]">Decription</h6>
+            <h6 className="opacity-50 text-sm flex-[1]">Decription</h6>
             <p className="flex-[4] text-sm">
               {productDetail?.description || "- - -"}
             </p>
           </div>
           <div className="flex space-x-8 items-center">
-            <h6 className="text-gray-500 flex-[1]">Product View</h6>
+            <h6 className="opacity-50 text-sm flex-[1]">Product View</h6>
             <p className="flex-[4] text-sm">
               {productDetail?.viewCount + " Viewers"}
             </p>
           </div>
           <div className="flex space-x-8 items-center">
-            <h6 className="text-gray-500 flex-[1]">Status</h6>
+            <h6 className="opacity-50 text-sm flex-[1]">Status</h6>
             <p className="flex-[4] text-sm">
               {productDetail?.isPublic ? "Active" : "InActive"}
             </p>
           </div>
           <div className="flex space-x-8 items-center">
-            <h6 className="text-gray-500 flex-[1]">Create At</h6>
+            <h6 className="opacity-50 text-sm flex-[1]">Create At</h6>
             <p className="flex-[4] text-sm">
               {formatTimestamp(productDetail?.createdAt)}
             </p>
@@ -154,11 +169,12 @@ const PreveiwPage = ({ params }: { params: { id: string } }) => {
                   </td>
                   <td>{value.price}</td>
                   <td>{value.stock}</td>
+                  <td>{value.discount || "- - -"}</td>
+                  <td>{value.discountType || "- - -"}</td>
                   <td>
                     {formatTimestamp(value?.discountStartDate) || "- - -"}
                   </td>
                   <td>{formatTimestamp(value?.discountEndDate) || "- - -"}</td>
-                  <td>{value?.sku || "- - -"}</td>
                   <td>
                     <div className="flex gap-2">
                       {value?.images.map((img, index) => (
@@ -177,44 +193,61 @@ const PreveiwPage = ({ params }: { params: { id: string } }) => {
         </div>
       </div>
 
-      <div className="mt-4 bg-white p-4">
-        <h3>Product Suggestion</h3>
-        <div className="h-[1px] my-4 w-full bg-slate-400" />
-        <div>
-          <div className="overflow-x-auto min-h-[50vh]">
-            <table>
-              <thead className="bg-gray-100">
-                <tr>
-                  {productPreviewSuggestionHeader.map((header, index) => (
-                    <th
-                      key={header + index.toString()}
-                      className="border border-gray-300 px-4 py-2 text-left"
-                    >
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {productSuggestion?.data.map((value, index: number) => {
-                  const displayIndex =
-                    ((productSuggestion.pagination?.currentPage || 1) - 1) *
-                      15 +
-                    index +
-                    1;
-                  return (
-                    <tr key={value.id} className="hover:bg-gray-200">
-                      <td>{displayIndex}</td>
-                      <td>{value.productTo.id}</td>
-                      <td>{value.productTo.name}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+      {productSuggestion && productSuggestion?.data.length > 0 && (
+        <div className="mt-4 bg-white p-4">
+          <h3>Product Suggestion</h3>
+          <div className="h-[1px] my-4 w-full bg-slate-400" />
+          <div>
+            <div className="overflow-x-auto">
+              <table>
+                <thead className="bg-gray-100">
+                  <tr>
+                    {productPreviewSuggestionHeader.map((header, index) => (
+                      <th
+                        key={header + index.toString()}
+                        className="border border-gray-300 px-4 py-2 text-left"
+                      >
+                        {header}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {productSuggestion?.data.map((value, index: number) => {
+                    const displayIndex =
+                      ((productSuggestion.pagination?.currentPage || 1) - 1) *
+                        15 +
+                      index +
+                      1;
+                    return (
+                      <tr key={value.id} className="hover:bg-gray-200">
+                        <td>{displayIndex}</td>
+                        <td>{value.productTo.id}</td>
+                        <td>{value.productTo.name}</td>
+                        <td>{value.productTo.description}</td>
+                        <td>{value.productTo.viewCount}</td>
+                        <td>
+                          {formatTimestamp(value.productTo.createdAt) ||
+                            "- - -"}
+                        </td>
+                        <td>
+                          <ButtonCustom
+                            variant="cancel"
+                            onClick={() => onViewProduct(value)}
+                            className="w-6 h-6"
+                          >
+                            <FaEye size={14} className="text-white" />
+                          </ButtonCustom>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

@@ -15,7 +15,7 @@ export interface AboutUsModel {
   twitterUrl: string;
   createdAt: string;
   updatedAt: string;
-  abaQrImageUrl: string;
+  abaQrImage: Image | null;
   image: Image;
 }
 

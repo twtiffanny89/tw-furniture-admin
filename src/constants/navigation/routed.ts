@@ -14,6 +14,7 @@ export const routed = {
   attribute: "attribute",
   attributeValue: "attribute-value",
   product: "product",
+  productPromotion: "product-promotion",
   create: "create",
   preview: "preview",
 };

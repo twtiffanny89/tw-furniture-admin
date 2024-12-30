@@ -3,12 +3,12 @@ import {
   FaClipboardList,
   FaBox,
   FaStream,
-  FaLayerGroup,
   FaImage,
   FaThList,
   FaListAlt,
   FaSignOutAlt,
   FaInfoCircle,
+  FaTags,
 } from "react-icons/fa";
 import { routed } from "../navigation/routed";
 
@@ -32,11 +32,6 @@ export const slideBarData = [
     title: "Product Management",
     items: [
       {
-        label: "Products",
-        href: `/${routed.productManagement}/${routed.product}`,
-        icon: <FaBox />,
-      },
-      {
         label: "Categories",
         href: `/${routed.productManagement}/${routed.category}`,
         icon: <FaThList />, // Distinct icon for categories
@@ -47,14 +42,19 @@ export const slideBarData = [
         icon: <FaListAlt />, // Distinct icon for subcategories
       },
       {
+        label: "Products",
+        href: `/${routed.productManagement}/${routed.product}`,
+        icon: <FaBox />,
+      },
+      {
+        label: "Products Promotion",
+        href: `/${routed.productManagement}/${routed.productPromotion}`,
+        icon: <FaTags />, // Or use FaGift, FaBullhorn, or FaPercent
+      },
+      {
         label: "Attributes",
         href: `/${routed.productManagement}/${routed.attribute}`,
         icon: <FaStream />, // New icon for attributes
-      },
-      {
-        label: "Attribute Values",
-        href: `/${routed.productManagement}/${routed.attributeValue}`,
-        icon: <FaLayerGroup />, // New icon for attribute values
       },
     ],
   },

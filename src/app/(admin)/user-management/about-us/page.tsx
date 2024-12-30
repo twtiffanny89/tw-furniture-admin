@@ -11,6 +11,7 @@ import {
   getAboutUsService,
   updateAboutUsService,
   updateImageAboutUsService,
+  updateImageQRAboutUsService,
 } from "@/redux/action/user-management/about_us_service";
 import { AboutUsModel } from "@/redux/model/about-us/about_us_model";
 import { UpdateAboutUsModel } from "@/redux/model/about-us/update_about_us_model";
@@ -66,9 +67,9 @@ const AboutUsComponent = () => {
       description: resposne?.description || "",
     });
     setImageQRData(
-      resposne?.abaQrImageUrl
+      resposne?.abaQrImage
         ? {
-            base64: resposne?.abaQrImageUrl,
+            base64: resposne?.abaQrImage?.imageUrl,
             type: null,
           }
         : null
@@ -107,6 +108,20 @@ const AboutUsComponent = () => {
     }
   };
 
+  const handleImagQReUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const resizedBase64 = await resizeImageConvertBase64(file);
+      const fileExtension = `.${file.type.split("/")[1]}`;
+      setImageQRData({
+        base64: resizedBase64,
+        type: fileExtension,
+      });
+    }
+  };
+
   const handleRemoveImage = () => {
     setImageData(null); // Clear the image state
   };
@@ -129,19 +144,45 @@ const AboutUsComponent = () => {
     }
 
     if (imageData?.type) {
-      const response = await updateImageAboutUsService({
+      const responseImg = await updateImageAboutUsService({
         aboutUsId: aboutUsData?.id || "",
         data: {
           fileContent: imageData.base64.replace(base64Cut.cutHead, ""),
           fileExtension: imageData.type,
         },
       });
-      if (response.success) {
-        showToast(response.message, "success");
+      if (responseImg.success) {
+        setImageData((prev) => ({
+          ...prev,
+          base64: responseImg.data?.imageUrl, // Ensure base64 is a string
+          type: null,
+        }));
+        showToast(responseImg.message, "success");
       } else {
-        showToast(response.message, "error");
+        showToast(responseImg.message, "error");
       }
     }
+
+    if (imageQRData?.type) {
+      const responseQR = await updateImageQRAboutUsService({
+        aboutUsId: aboutUsData?.id || "",
+        data: {
+          fileContent: imageQRData.base64.replace(base64Cut.cutHead, ""),
+          fileExtension: imageQRData.type,
+        },
+      });
+      if (responseQR.success) {
+        setImageQRData((prev) => ({
+          ...prev,
+          base64: responseQR.data?.imageUrl || "",
+          type: null,
+        }));
+        showToast(responseQR.message, "success");
+      } else {
+        showToast(responseQR.message, "error");
+      }
+    }
+
     setLoading(false);
   };
 
@@ -259,7 +300,7 @@ const AboutUsComponent = () => {
                   id="fileInput"
                   type="file"
                   accept="image/*"
-                  onChange={handleImageUpload}
+                  onChange={handleImagQReUpload}
                   className="hidden"
                 />
                 <LuImagePlus className="text-gray-500 text-2xl rounded" />

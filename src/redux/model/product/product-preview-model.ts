@@ -15,7 +15,7 @@ export interface ProductPreview {
   productTo: ProductTo;
 }
 
-interface ProductTo {
+export interface ProductTo {
   id: string;
   name: string;
   description: string;
