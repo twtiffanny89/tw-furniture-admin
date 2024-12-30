@@ -244,7 +244,7 @@ const SubCategoryComponent = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div>
       <Header
         title="Sub categories"
         onRefreshClick={onRefreshClick}

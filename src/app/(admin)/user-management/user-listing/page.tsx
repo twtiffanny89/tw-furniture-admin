@@ -50,7 +50,7 @@ const AllUserComponent = () => {
   );
 
   return (
-    <div className="min-h-screen">
+    <div>
       <Header
         title="User Listing"
         onRefreshClick={onRefreshClick}

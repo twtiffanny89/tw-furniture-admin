@@ -190,7 +190,7 @@ const CategoryComponent = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div>
       <Header
         title="Categories"
         onRefreshClick={onRefreshClick}

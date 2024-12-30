@@ -56,7 +56,7 @@ const ActivityLogComponent = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div>
       <HeaderCalender
         selectedFromDate={selectedFromDate}
         handleFromDateChange={setSelectedFromDate}

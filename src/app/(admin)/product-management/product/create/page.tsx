@@ -566,7 +566,7 @@ const CreateProductComponent = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div>
       <div className="p-4 bg-white flex justify-between">
         <h1 className="font-bold text-xl">Create Product</h1>
       </div>
