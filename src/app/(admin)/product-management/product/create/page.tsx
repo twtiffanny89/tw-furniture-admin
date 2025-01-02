@@ -898,7 +898,7 @@ const CreateProductComponent = () => {
                   <tbody>
                     {attribute.values.map((value, index) => (
                       <tr key={value.id} className="hover:bg-gray-200">
-                        <td>{index}</td>
+                        <td>{index + 1}</td>
                         {attribute.attribute.name !== "Size" && (
                           <td>
                             <CashImage
@@ -979,7 +979,7 @@ const CreateProductComponent = () => {
               <tbody>
                 {productDetail?.variants?.map((value, index) => (
                   <tr key={value.id} className="hover:bg-gray-200">
-                    <td>{index}</td>
+                    <td>{index + 1}</td>
                     <td>
                       {value?.attributes?.map((attribute, index) =>
                         index === value.attributes.length - 1
@@ -1060,7 +1060,7 @@ const CreateProductComponent = () => {
 
                     return (
                       <tr key={value.id} className="hover:bg-gray-200">
-                        <td>{displayIndex}</td>
+                        <td>{displayIndex + 1}</td>
                         <td className="max-w-72">{value.productTo.id}</td>
                         <td>{value.productTo.name || "- - -"}</td>
                         <td>{value.productTo.description || "- - -"}</td>
