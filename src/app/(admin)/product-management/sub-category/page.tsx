@@ -26,6 +26,7 @@ import {
 import { config } from "@/utils/config/config";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
+import { set } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 
@@ -51,10 +52,12 @@ const SubCategoryComponent = () => {
   }, []);
 
   async function onCallFirstApi() {
+    setLoading(true);
     const responseCategory = await getCategoryService({});
     setCategory(responseCategory);
     const response = await getSubCategoryService({});
     setSubCategories(response);
+    setLoading(false);
   }
 
   const onRefreshClick = useCallback(

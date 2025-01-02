@@ -13,7 +13,6 @@ import { config } from "@/utils/config/config";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
 import { openGoogleMap } from "@/utils/google-map/open_google_map";
-import { set } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 
 const ActivityLogComponent = () => {
