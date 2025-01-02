@@ -49,13 +49,6 @@ const ProductComponent = () => {
     setLoading(false);
   }
 
-  async function onCallApi({ page = 1 }: { page?: number }) {
-    const response = await getAllProductService({
-      page,
-    });
-    setProduct(response);
-  }
-
   function onAddNewClick() {
     router.push(
       `/${routed.productManagement}/${routed.product}/${routed.create}`
