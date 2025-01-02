@@ -247,7 +247,7 @@ const CreateProductComponent = () => {
     });
 
     await uploadMainImageProductService({
-      productId: productDetail?.id || "",
+      productId: response.data?.id || "",
       data: {
         fileContent: image?.base64.replace(base64Cut.cutHead, ""),
         fileExtension: image?.type || "",
