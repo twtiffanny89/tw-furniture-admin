@@ -1,6 +1,7 @@
 "use client";
 
 import ButtonCustom from "@/components/custom/ButtonCustom";
+import CashImage from "@/components/custom/CashImage";
 import { Switch } from "@/components/custom/Switch";
 import showToast from "@/components/error-handle/show-toast";
 import Pagination from "@/components/pagination/Pagination";
@@ -11,6 +12,7 @@ import {
   getAllProductService,
 } from "@/redux/action/product-management/product-service";
 import { Product, ProductListModel } from "@/redux/model/product/product-model";
+import { config } from "@/utils/config/config";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -50,6 +52,14 @@ const ProductComponent = () => {
   }
 
   async function toggleCategoryStatus(value: Product) {
+    if (product) {
+      setProduct({
+        ...product,
+        data: product.data.map((cat) =>
+          cat.id === value.id ? { ...cat, isPublic: !value.isPublic } : cat
+        ),
+      });
+    }
     setLoadingUpdate({
       id: value.id,
       loading: true,
@@ -63,10 +73,17 @@ const ProductComponent = () => {
     });
 
     if (response.success) {
-      onCallApi({ page: product!.pagination?.currentPage });
       showToast(response.message, "success");
     } else {
       showToast(response?.message ?? "Error", "error");
+      if (product) {
+        setProduct({
+          ...product,
+          data: product.data.map((cat) =>
+            cat.id === value.id ? { ...cat, isPublic: value.isPublic } : cat
+          ),
+        });
+      }
     }
 
     setLoadingUpdate({
@@ -119,7 +136,14 @@ const ProductComponent = () => {
                   return (
                     <tr key={value.id} className="hover:bg-gray-200">
                       <td>{displayIndex}</td>
-                      <td>{value.id}</td>
+                      <td className="max-w-72">{value.id}</td>
+                      <td>
+                        <CashImage
+                          width={32}
+                          height={32}
+                          imageUrl={`${config.BASE_URL}${value.mainImage[0]?.imageUrl}`}
+                        />
+                      </td>
                       <td>{value.name}</td>
                       <td>{value.description || "- - -"}</td>
                       <td>{`${value.viewCount} Views`}</td>

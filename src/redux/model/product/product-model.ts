@@ -17,6 +17,7 @@ export interface Product {
   createdAt: string;
   updatedAt: string;
   category: Category;
+  mainImage: Image[];
   subcategory: Subcategory;
   attributes: Attribute[];
   variants: Variant[];

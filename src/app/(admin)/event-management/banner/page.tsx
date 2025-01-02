@@ -143,7 +143,7 @@ const BannerComponent = () => {
                   return (
                     <tr key={value.id} className="hover:bg-gray-200">
                       <td>{displayIndex}</td>
-                      <td>{value.id}</td>
+                      <td className="max-w-72">{value.id}</td>
                       <td className="max-w-full">
                         <CashImage
                           width={361}

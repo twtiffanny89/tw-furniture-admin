@@ -28,10 +28,10 @@ import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
 import { useCallback, useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
-import { MdDeleteOutline } from "react-icons/md";
 
 const SubCategoryComponent = () => {
-  const [subCategory, setSubCategory] = useState<SubCategoryListModel | null>();
+  const [subCategories, setSubCategories] =
+    useState<SubCategoryListModel | null>();
   const [category, setCategory] = useState<CategoryListModel>();
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [subCategoryItem, setSubCategoryItem] = useState<Subcategory | null>(
@@ -54,7 +54,7 @@ const SubCategoryComponent = () => {
     const responseCategory = await getCategoryService({});
     setCategory(responseCategory);
     const response = await getSubCategoryService({});
-    setSubCategory(response);
+    setSubCategories(response);
   }
 
   const onRefreshClick = useCallback(
@@ -73,7 +73,7 @@ const SubCategoryComponent = () => {
     search?: string;
   }) {
     const response = await getSubCategoryService({ page, search });
-    setSubCategory(response);
+    setSubCategories(response);
   }
 
   function onAddCategory() {
@@ -141,7 +141,10 @@ const SubCategoryComponent = () => {
     if (subCategoryItem) {
       await onEditCategory(data);
       setSubCategoryItem(null);
-      onCallApi({ page: subCategory?.pagination?.currentPage, search: search });
+      onCallApi({
+        page: subCategories?.pagination?.currentPage,
+        search: search,
+      });
     } else {
       await onCreateCategory(data);
       onCallApi({});
@@ -218,6 +221,14 @@ const SubCategoryComponent = () => {
   }
 
   async function toggleCategoryStatus(value: Subcategory) {
+    if (subCategories) {
+      setSubCategories({
+        ...subCategories,
+        data: subCategories.data.map((cat) =>
+          cat.id === value.id ? { ...cat, isPublic: !value.isPublic } : cat
+        ),
+      });
+    }
     setLoadingUpdate({
       id: value.id,
       loading: true,
@@ -231,10 +242,17 @@ const SubCategoryComponent = () => {
     });
 
     if (response.success) {
-      onCallApi({ page: category!.pagination?.currentPage });
       showToast(response.message, "success");
     } else {
       showToast(response?.message ?? "Error", "error");
+      if (subCategories) {
+        setSubCategories({
+          ...subCategories,
+          data: subCategories.data.map((cat) =>
+            cat.id === value.id ? { ...cat, isPublic: value.isPublic } : cat
+          ),
+        });
+      }
     }
 
     setLoadingUpdate({
@@ -271,15 +289,15 @@ const SubCategoryComponent = () => {
                 </tr>
               </thead>
               <tbody>
-                {subCategory?.data.map((sub, index) => {
+                {subCategories?.data.map((sub, index) => {
                   const displayIndex =
-                    ((subCategory.pagination?.currentPage || 1) - 1) * 15 +
+                    ((subCategories.pagination?.currentPage || 1) - 1) * 15 +
                     index +
                     1;
                   return (
                     <tr key={sub.id} className="hover:bg-gray-200">
                       <td>{displayIndex}</td>
-                      <td>{sub.id}</td>
+                      <td className="max-w-72">{sub.id}</td>
                       <td>
                         <CashImage
                           width={32}
@@ -323,12 +341,12 @@ const SubCategoryComponent = () => {
               </tbody>
             </table>
           </div>
-          {subCategory && subCategory.data.length > 0 && (
+          {subCategories && subCategories.data.length > 0 && (
             <div className="flex justify-end mr-8 mt-8">
               <Pagination
-                currentPage={subCategory.pagination?.currentPage || 1}
+                currentPage={subCategories.pagination?.currentPage || 1}
                 onPageChange={(val) => onCallApi({ page: val })}
-                totalPages={subCategory.pagination?.totalPages || 1}
+                totalPages={subCategories.pagination?.totalPages || 1}
               />
             </div>
           )}

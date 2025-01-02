@@ -23,13 +23,12 @@ import {
 import { base64Cut } from "@/constants/image/base64_cut";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
-import ModalConfirm from "@/components/modal/modal_confirm";
 import { config } from "@/utils/config/config";
 import CenteredLoading from "@/components/loading/center_loading";
 import { Switch } from "@/components/custom/Switch";
 
 const CategoryComponent = () => {
-  const [category, setCategory] = useState<CategoryListModel>();
+  const [category, setCategory] = useState<CategoryListModel | null>(null);
   const [categoryItem, setCategoryItem] = useState<Category | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -163,6 +162,14 @@ const CategoryComponent = () => {
   );
 
   async function toggleCategoryStatus(value: Category) {
+    if (category) {
+      setCategory({
+        ...category,
+        data: category.data.map((cat) =>
+          cat.id === value.id ? { ...cat, isPublic: !value.isPublic } : cat
+        ),
+      });
+    }
     setLoadingUpdate({
       id: value.id,
       loading: true,
@@ -177,12 +184,18 @@ const CategoryComponent = () => {
     });
 
     if (response.success) {
-      onCallApi({ page: category!.pagination?.currentPage });
       showToast(response.message, "success");
     } else {
       showToast(response?.message ?? "Error", "error");
+      if (category) {
+        setCategory({
+          ...category,
+          data: category.data.map((cat) =>
+            cat.id === value.id ? { ...cat, isPublic: value.isPublic } : cat
+          ),
+        });
+      }
     }
-
     setLoadingUpdate({
       id: value.id,
       loading: false,
@@ -225,7 +238,7 @@ const CategoryComponent = () => {
                   return (
                     <tr key={categories.id} className="hover:bg-gray-200">
                       <td>{displayIndex}</td>
-                      <td>{categories.id}</td>
+                      <td className="max-w-72">{categories.id}</td>
                       <td>
                         <CashImage
                           width={32}

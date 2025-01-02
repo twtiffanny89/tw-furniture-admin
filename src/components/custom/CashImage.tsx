@@ -36,13 +36,16 @@ const CashImage: React.FC<CashImageProps> = ({
 
   return (
     <div
-      className={`relative overflow-hidden flex items-center justify-center ${
+      className={`relative overflow-hidden flex cursor-pointer items-center justify-center ${
         hasError ? "bg-red-500" : "bg-transparent"
       }`}
       style={{
         width: `${width}px`,
         height: `${height}px`,
         borderRadius: `${borderRadius}px`,
+      }}
+      onClick={() => {
+        window.open(imageUrl, "_blank");
       }}
     >
       {/* Placeholder or Loading Spinner */}

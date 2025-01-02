@@ -135,7 +135,7 @@ export async function updatedSubCategory({
     );
     return {
       success: true,
-      message: "Subcategory updated successfully!",
+      message: "Subcategories updated successfully!",
       data: response.data.data,
     };
   } catch (error) {
@@ -144,19 +144,19 @@ export async function updatedSubCategory({
         return {
           success: false,
           message:
-            "This Subcategory name is already taken. Please choose a different name.!",
+            "This Subcategories name is already taken. Please choose a different name.!",
           data: null,
         };
       }
       return {
         success: false,
-        message: "Failed to updated Subcategory. Please try again!",
+        message: "Failed to updated Subcategories. Please try again!",
         data: null,
       };
     }
     return {
       success: false,
-      message: "Failed to updated Subcategory. Please try again!",
+      message: "Failed to updated Subcategories. Please try again!",
       data: null,
     };
   }

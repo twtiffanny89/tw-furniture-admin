@@ -77,6 +77,7 @@ export const subAttributeHeader: string[] = [
 export const productHeader: string[] = [
   "NO",
   "PRODUCT_ID",
+  "IMAGE",
   "NAME",
   "DESCRIPTION",
   "PRODUCT_VIEW",

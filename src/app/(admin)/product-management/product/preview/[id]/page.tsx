@@ -3,6 +3,7 @@
 
 import ButtonCustom from "@/components/custom/ButtonCustom";
 import CashImage from "@/components/custom/CashImage";
+import CenteredLoading from "@/components/loading/center_loading";
 import {
   productPreviewSuggestionHeader,
   variantsPreviewHeader,
@@ -30,6 +31,7 @@ const PreveiwPage = ({ params }: { params: { id: string } }) => {
   const [productSuggestion, setProductSuggestion] =
     useState<ProductPreviewListModel | null>(null);
   const productId = params.id;
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -48,10 +50,12 @@ const PreveiwPage = ({ params }: { params: { id: string } }) => {
   }
 
   async function getProductDetail() {
+    setLoading(true);
     const response = await getProductPreviewByIdService({
       productId: productId,
     });
     setProductDetail(response.data);
+    setLoading(false);
   }
 
   const colorAttribute = productDetail?.attributes?.find(
@@ -74,9 +78,20 @@ const PreveiwPage = ({ params }: { params: { id: string } }) => {
         <div className="h-[1px] my-4 w-full bg-slate-400" />
         <div className="flex flex-col gap-1">
           <div className="flex space-x-8 items-center">
-            <h6 className="opacity-50 text-sm flex-[1]">Name</h6>
+            <h6 className="opacity-50 text-sm flex-[1]">Product Name</h6>
             <p className="flex-[4] text-sm">{productDetail?.name}</p>
           </div>
+          <div className="flex space-x-8 items-end">
+            <h6 className="opacity-50 text-sm flex-[1]">Main Image</h6>
+            <div className="flex-[4]">
+              <CashImage
+                width={64}
+                height={64}
+                imageUrl={`${config.BASE_URL}${productDetail?.mainImage[0]?.imageUrl}`}
+              />
+            </div>
+          </div>
+
           <div className="flex space-x-8 items-center">
             <h6 className="opacity-50 text-sm flex-[1]">Category</h6>
             <p className="flex-[4] text-sm">{productDetail?.category?.name}</p>
@@ -91,7 +106,7 @@ const PreveiwPage = ({ params }: { params: { id: string } }) => {
             <h6 className="opacity-50 text-sm flex-[1]">Base Price</h6>
             <p className="flex-[4] text-sm">{productDetail?.basePrice}</p>
           </div>
-          <div className="flex space-x-8 items-center">
+          <div className="flex space-x-8 items-start">
             <h6 className="opacity-50 text-sm flex-[1]">Decription</h6>
             <p className="flex-[4] text-sm">
               {productDetail?.description || "- - -"}
@@ -128,8 +143,8 @@ const PreveiwPage = ({ params }: { params: { id: string } }) => {
               className="flex flex-col items-center justify-center  border rounded-md"
             >
               <CashImage
-                width={96}
-                height={96}
+                width={64}
+                height={64}
                 imageUrl={`${config.BASE_URL}${value.attributeValue?.image[0]?.imageUrl}`}
               />
               <span className="mt-1 text-sm font-bold">
@@ -222,10 +237,10 @@ const PreveiwPage = ({ params }: { params: { id: string } }) => {
                     return (
                       <tr key={value.id} className="hover:bg-gray-200">
                         <td>{displayIndex}</td>
-                        <td>{value.productTo.id}</td>
+                        <td className="max-w-72">{value.productTo.id}</td>
                         <td>{value.productTo.name}</td>
                         <td>{value.productTo.description}</td>
-                        <td>{value.productTo.viewCount}</td>
+                        <td>{`${value.productTo.viewCount} Views`}</td>
                         <td>
                           {formatTimestamp(value.productTo.createdAt) ||
                             "- - -"}
@@ -248,6 +263,8 @@ const PreveiwPage = ({ params }: { params: { id: string } }) => {
           </div>
         </div>
       )}
+
+      <CenteredLoading loading={loading} />
     </div>
   );
 };

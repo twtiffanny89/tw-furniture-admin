@@ -83,7 +83,7 @@ const AllUserComponent = () => {
                   return (
                     <tr key={user.id} className="hover:bg-gray-200">
                       <td>{displayIndex}</td>
-                      <td>{user.id}</td>
+                      <td className="max-w-72">{user.id}</td>
                       <td>
                         <CashImage
                           width={32}

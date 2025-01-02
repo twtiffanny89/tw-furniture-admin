@@ -12,6 +12,7 @@ export interface ProductDetailModel {
   category: Category;
   subcategory: Subcategory;
   attributes: Attribute[];
+  mainImage: Image[];
   variants: Variant[];
 }
 

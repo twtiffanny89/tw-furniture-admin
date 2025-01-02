@@ -46,7 +46,7 @@ const DropDownProduct = ({
     if (searchInputRef.current) {
       searchInputRef.current.focus();
     }
-  }, [value, dataList]);
+  }, [dataList]);
 
   // Debugging: Check if inView is triggered
   useEffect(() => {
@@ -80,12 +80,12 @@ const DropDownProduct = ({
           </button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="w-full border border-gray-300 rounded-md shadow-lg bg-white">
+        <DropdownMenuContent className="w-96 border border-gray-300 rounded-md shadow-lg bg-white">
           <div className="flex items-center border-b border-gray-300 py-1 ">
             <Input
               ref={searchInputRef}
               type="text"
-              className="w-full px-2 py-0.5 border-[0px] bg-transparent"
+              className="px-2 py-0.5 border-[0px] bg-transparent"
               placeholder="Search..."
               value={value}
               onChange={onChange}
@@ -107,11 +107,11 @@ const DropDownProduct = ({
                   key={index}
                   className="cursor-pointer hover:bg-gray-200"
                 >
-                  <span className="text-sm min-w-96">{option.name}</span>
+                  <span className="text-sm">{option.name}</span>
                 </DropdownMenuItem>
               ))
             ) : (
-              <span className="block min-w-96 text-sm py-4 px-2 text-gray-600">
+              <span className="block text-sm py-4 px-2 text-gray-600">
                 No options found
               </span>
             )}

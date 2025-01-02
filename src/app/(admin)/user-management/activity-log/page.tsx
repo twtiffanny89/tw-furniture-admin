@@ -91,7 +91,7 @@ const ActivityLogComponent = () => {
                   return (
                     <tr key={activity.id} className="hover:bg-gray-200">
                       <td>{displayIndex}</td>
-                      <td>{activity.id}</td>
+                      <td className="max-w-72">{activity.id}</td>
                       <td>
                         <CashImage
                           width={32}

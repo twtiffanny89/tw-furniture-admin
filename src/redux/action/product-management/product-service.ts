@@ -54,6 +54,17 @@ interface addAttributeValueImageModel {
   data: PostImageData;
 }
 
+interface addMainImageModel {
+  productId: string;
+  data: ImageUpload;
+}
+
+interface ImageUpload {
+  fileContent?: string;
+  fileExtension: string;
+  imageId?: string;
+}
+
 interface PostImageData {
   fileContent: string;
   fileExtension: string;
@@ -210,6 +221,27 @@ export async function createProductService(data: createProductParams) {
     success: false,
     message: "Failed to create product. Please try again.",
   };
+}
+
+export async function uploadMainImageProductService({
+  productId,
+  data,
+}: addMainImageModel) {
+  try {
+    await axiosServerWithAuth.post(
+      `/v1/admin/product/${productId}/product-image`,
+      data
+    );
+    return {
+      success: true,
+      message: "Product image upload successfully!",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Failed to upload Product image. Please try again!",
+    };
+  }
 }
 
 // Create product

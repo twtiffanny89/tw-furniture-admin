@@ -115,7 +115,7 @@ export async function onUpdateCategory({
     await axiosServerWithAuth.patch(`/v1/admin/category/${categoryId}`, data);
     return {
       success: true,
-      message: "Category updated successfully!",
+      message: "Categories updated successfully!",
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -123,13 +123,13 @@ export async function onUpdateCategory({
         return {
           success: false,
           message:
-            "This category name is already taken. Please choose a different name.!",
+            "This categories name is already taken. Please choose a different name.!",
           data: null,
         };
       }
       return {
         success: false,
-        message: "Failed to updated Category. Please try again!",
+        message: "Failed to updated Categories. Please try again!",
         data: null,
       };
     }

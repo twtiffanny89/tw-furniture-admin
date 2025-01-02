@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
@@ -38,6 +39,7 @@ import {
   getProductSuggestionService,
   updateStatusAttribudeValueProductService,
   updateVariantProductService,
+  uploadMainImageProductService,
 } from "@/redux/action/product-management/product-service";
 import {
   createAttributeValueService,
@@ -47,6 +49,7 @@ import {
   getSubCategoryDetailService,
   getSubCategoryService,
 } from "@/redux/action/product-management/sub_category_service";
+import { ProcessedImage } from "@/redux/model/global/ProcessedImage";
 import {
   MainValue,
   ProductDetailModel,
@@ -65,10 +68,13 @@ import { config } from "@/utils/config/config";
 import { convertToISOString } from "@/utils/date/convert_data";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
+import { resizeImageConvertBase64 } from "@/utils/security/image_convert";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 import { FaEye } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi";
+import { IoClose } from "react-icons/io5";
+import { LuImagePlus } from "react-icons/lu";
 import { MdDeleteOutline } from "react-icons/md";
 
 const CreateProductComponent = () => {
@@ -103,6 +109,7 @@ const CreateProductComponent = () => {
   const [dataAttribudeValueItem, setDataAttribudeValueItem] =
     useState<MainValue | null>(null);
   const [dataVariantItem, setDataVariantItem] = useState<Variant | null>(null);
+  const [image, setImage] = useState<ProcessedImage | null>(null);
 
   useEffect(() => {
     getAllSubCategory();
@@ -110,7 +117,7 @@ const CreateProductComponent = () => {
 
   useEffect(() => {
     if (productId) {
-      getProductDetail();
+      getProductFirstDetail();
       getProductSuggestion({});
     }
   }, [productId]);
@@ -118,6 +125,28 @@ const CreateProductComponent = () => {
   const getAllSubCategory = async () => {
     const response = await getSubCategoryService({});
     setSubCategory(response);
+  };
+
+  const getProductFirstDetail = async () => {
+    setLoading(true);
+    const responseProduct = await getProductByIdService({
+      productId: productId!,
+    });
+
+    if (responseProduct.success) {
+      setNameProduct(responseProduct?.data.name);
+      setPriceProduct(responseProduct?.data.basePrice);
+      setDescription(responseProduct?.data.description);
+      setProductDetail(responseProduct.data);
+      getSubCategory(responseProduct?.data.subcategoryId);
+      if (responseProduct?.data.mainImage[0]?.imageUrl) {
+        setImage({
+          base64: responseProduct?.data.mainImage[0]?.imageUrl || "",
+          type: null,
+        });
+      }
+    }
+    setLoading(false);
   };
 
   const getProductDetail = async () => {
@@ -131,8 +160,13 @@ const CreateProductComponent = () => {
       setDescription(responseProduct?.data.description);
       setProductDetail(responseProduct.data);
       getSubCategory(responseProduct?.data.subcategoryId);
+      if (responseProduct?.data.mainImage[0]?.imageUrl) {
+        setImage({
+          base64: responseProduct?.data.mainImage[0]?.imageUrl || "",
+          type: null,
+        });
+      }
     }
-    return responseProduct;
   };
 
   const getProductSuggestion = async ({ page = 1 }: { page?: number }) => {
@@ -168,7 +202,7 @@ const CreateProductComponent = () => {
       } else {
         onCallApi({ search: "" });
       }
-    }),
+    }, 700),
     []
   );
 
@@ -201,12 +235,23 @@ const CreateProductComponent = () => {
   };
 
   const createProduct = async () => {
+    if (!validateForm()) {
+      return;
+    }
     setLoading(true);
     const response = await createProductService({
       name: nameProduct,
       description: description,
       subcategoryId: subCategoryItem?.id || "",
       basePrice: parseInt(priceProduct, 10),
+    });
+
+    await uploadMainImageProductService({
+      productId: productDetail?.id || "",
+      data: {
+        fileContent: image?.base64.replace(base64Cut.cutHead, ""),
+        fileExtension: image?.type || "",
+      },
     });
 
     if (response.success) {
@@ -221,6 +266,10 @@ const CreateProductComponent = () => {
   };
 
   const editProduct = async () => {
+    if (!validateForm()) {
+      return;
+    }
+    setLoading(true);
     const response = await editProductService({
       productId: productDetail?.id || "",
       data: {
@@ -231,12 +280,58 @@ const CreateProductComponent = () => {
       },
     });
 
+    if (productDetail?.mainImage[0]?.imageUrl) {
+      if (image?.type) {
+        await uploadMainImageProductService({
+          productId: productDetail?.id || "",
+          data: {
+            fileContent: image?.base64.replace(base64Cut.cutHead, ""),
+            fileExtension: image?.type || "",
+            imageId: productDetail?.mainImage[0].id,
+          },
+        });
+      }
+    } else {
+      await uploadMainImageProductService({
+        productId: productDetail?.id || "",
+        data: {
+          fileContent: image?.base64.replace(base64Cut.cutHead, ""),
+          fileExtension: image?.type || "",
+        },
+      });
+    }
+
     if (response.success) {
       showToast(response.message, "success");
     } else {
       showToast(response.message, "error");
     }
+    setLoading(false);
   };
+
+  function validateForm(): boolean {
+    if (!nameProduct) {
+      showToast("Name Product is required", "error");
+      return false;
+    }
+
+    if (!priceProduct) {
+      showToast("Price Product is required", "error");
+      return false;
+    }
+
+    if (!subCategoryItem) {
+      showToast("Sub-category is required", "error");
+      return false;
+    }
+
+    if (!image) {
+      showToast("Main Image is required", "error");
+      return false;
+    }
+
+    return true;
+  }
 
   const isDuplicateName = (attributes: any[], newName: string): boolean => {
     const allNames = attributes?.flatMap((attr) =>
@@ -543,7 +638,11 @@ const CreateProductComponent = () => {
     setDataVariantItem(value);
   };
 
-  const toggleAttritudeStatus = async (value: MainValue) => {
+  const toggleAttritudeStatus = async (
+    value: MainValue,
+    attributeName: string
+  ) => {
+    updateAttributeVisibility(attributeName, value.id, !value.isPublic);
     setLoadingUpdate({ id: value.id, loading: true });
 
     const response = await updateStatusAttribudeValueProductService({
@@ -552,12 +651,39 @@ const CreateProductComponent = () => {
     });
 
     if (response.success) {
-      getProductDetail();
       showToast(response.message, "success");
     } else {
       showToast(response?.message ?? "Error", "error");
+      updateAttributeVisibility(attributeName, value.id, value.isPublic);
     }
     setLoadingUpdate({ id: value.id, loading: false });
+  };
+
+  const updateAttributeVisibility = (
+    attributeName: string,
+    valueId: string,
+    isPublic: boolean
+  ) => {
+    setProductDetail((prevProduct) => {
+      if (!prevProduct) return null;
+
+      // Find the Color attribute
+      const updatedAttributes = prevProduct.attributes.map((attribute) => {
+        if (attribute.attribute.name == attributeName) {
+          const updatedValues = attribute.values.map((value) => {
+            if (value.id === valueId) {
+              // Update isPublic based on the valueId
+              return { ...value, isPublic };
+            }
+            return value;
+          });
+          return { ...attribute, values: updatedValues };
+        }
+        return attribute;
+      });
+
+      return { ...prevProduct, attributes: updatedAttributes };
+    });
   };
 
   const onUpdateAttribudeValue = (value: MainValue) => {
@@ -576,6 +702,24 @@ const CreateProductComponent = () => {
       `/${routed.productManagement}/${routed.product}/${routed.preview}/${productDetail?.id}`
     );
   }
+
+  const handleRemoveImage = () => {
+    setImage(null);
+  };
+
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const resizedBase64 = await resizeImageConvertBase64(file);
+      const fileExtension = `.${file.type.split("/")[1]}`;
+      setImage({
+        base64: resizedBase64,
+        type: fileExtension,
+      });
+    }
+  };
 
   return (
     <div>
@@ -614,45 +758,91 @@ const CreateProductComponent = () => {
               </ButtonCustom>
             )}
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Name Product
-                <span className="text-red-500 ml-1">*</span>
-              </label>
-              <Input
-                value={nameProduct}
-                onChange={(e) => setNameProduct(e.target.value)}
-                className="h-11"
-              />
+          <div className="flex">
+            <div className="mr-8">
+              <div className="mb-4">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Main Image<span className="text-red-500 ml-1">*</span>
+                </label>
+                {image ? (
+                  <div className="relative w-[96px] h-[96px]">
+                    {image.type ? (
+                      <img
+                        src={image.base64}
+                        alt="Uploaded Preview"
+                        className="w-full h-full object-cover rounded-md border"
+                      />
+                    ) : (
+                      <CashImage
+                        width={96}
+                        height={96}
+                        imageUrl={`${config.BASE_URL}${image.base64}`}
+                      />
+                    )}
+                    <button
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 bg-red-500 text-white px-1 py-1 rounded"
+                    >
+                      <IoClose />
+                    </button>
+                  </div>
+                ) : (
+                  <label
+                    htmlFor="singleFileInput"
+                    className="flex items-center justify-center w-[96px] h-[96px] bg-[#00000026] rounded-md cursor-pointer relative"
+                  >
+                    <input
+                      id="singleFileInput"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <LuImagePlus className="text-gray-500 text-2xl rounded" />
+                  </label>
+                )}
+              </div>
             </div>
-            <DropDownSubCategory
-              onItemSelect={onItemSelect}
-              onClearSearch={onClearSearch}
-              value={searchAdd}
-              dataList={subCategory?.data || []}
-              onChange={onChange}
-              label="Sub-category"
-              onLoadMore={onLoadMore}
-              isLoading={loading}
-              selectedOption={subCategoryItem}
-              hasNext={
-                (subCategory?.pagination &&
-                  subCategory.pagination!.currentPage <
-                    subCategory.pagination!.totalPages) ||
-                false
-              }
-            />
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Base price (Optional)
-                <span className="text-red-500 ml-1">*</span>
-              </label>
-              <Input
-                value={priceProduct}
-                onChange={(e) => setPriceProduct(e.target.value)}
-                className="h-11"
+            <div className="grid grid-cols-2 gap-4 flex-1">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Name Product
+                  <span className="text-red-500 ml-1">*</span>
+                </label>
+                <Input
+                  value={nameProduct}
+                  onChange={(e) => setNameProduct(e.target.value)}
+                  className="h-11"
+                />
+              </div>
+              <DropDownSubCategory
+                onItemSelect={onItemSelect}
+                onClearSearch={onClearSearch}
+                value={searchAdd}
+                dataList={subCategory?.data || []}
+                onChange={onChange}
+                label="Sub-category"
+                onLoadMore={onLoadMore}
+                isLoading={loading}
+                selectedOption={subCategoryItem}
+                hasNext={
+                  (subCategory?.pagination &&
+                    subCategory.pagination!.currentPage <
+                      subCategory.pagination!.totalPages) ||
+                  false
+                }
               />
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Base price (Optional)
+                  <span className="text-red-500 ml-1">*</span>
+                </label>
+                <Input
+                  value={priceProduct}
+                  onChange={(e) => setPriceProduct(e.target.value)}
+                  className="h-11"
+                />
+              </div>
             </div>
           </div>
           <textarea
@@ -727,7 +917,12 @@ const CreateProductComponent = () => {
                             <Switch
                               disable={loadingUpdate.loading}
                               checked={value.isPublic}
-                              onChange={() => toggleAttritudeStatus(value)}
+                              onChange={() =>
+                                toggleAttritudeStatus(
+                                  value,
+                                  attribute.attribute.name
+                                )
+                              }
                             />
                             <span
                               className={
@@ -866,7 +1061,7 @@ const CreateProductComponent = () => {
                     return (
                       <tr key={value.id} className="hover:bg-gray-200">
                         <td>{displayIndex}</td>
-                        <td>{value.productTo.id}</td>
+                        <td className="max-w-72">{value.productTo.id}</td>
                         <td>{value.productTo.name || "- - -"}</td>
                         <td>{value.productTo.description || "- - -"}</td>
                         <td>{value.productTo.viewCount}</td>

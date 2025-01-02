@@ -89,7 +89,7 @@ const AttributeComponent = () => {
                   return (
                     <tr key={value.id} className="hover:bg-gray-200">
                       <td>{displayIndex}</td>
-                      <td>{value.id}</td>
+                      <td className="max-w-72">{value.id}</td>
                       <td>{value.name}</td>
                       <td>{formatTimestamp(value.createdAt)}</td>
                       <td>{formatTimestamp(value.updatedAt)}</td>
