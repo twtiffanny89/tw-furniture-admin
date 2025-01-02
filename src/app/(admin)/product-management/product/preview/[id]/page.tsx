@@ -190,7 +190,7 @@ const PreveiwPage = ({ params }: { params: { id: string } }) => {
                     {formatTimestamp(value?.discountStartDate) || "- - -"}
                   </td>
                   <td>{formatTimestamp(value?.discountEndDate) || "- - -"}</td>
-                  <td>
+                  <td className="max-w-[380px]">
                     <div className="flex gap-2">
                       {value?.images.map((img, index) => (
                         <CashImage

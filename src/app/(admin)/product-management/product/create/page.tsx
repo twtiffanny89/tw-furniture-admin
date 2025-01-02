@@ -996,7 +996,7 @@ const CreateProductComponent = () => {
                     <td>
                       {formatTimestamp(value?.discountEndDate) || "- - -"}
                     </td>
-                    <td>
+                    <td className="max-w-[380px]">
                       <div className="flex gap-2">
                         {value?.images.map((img, index) => (
                           <CashImage
