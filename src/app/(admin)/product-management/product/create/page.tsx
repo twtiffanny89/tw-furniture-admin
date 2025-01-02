@@ -262,7 +262,6 @@ const CreateProductComponent = () => {
     } else {
       showToast(response.message, "error");
     }
-    setLoading(false);
   };
 
   const editProduct = async () => {
