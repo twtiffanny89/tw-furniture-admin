@@ -47,13 +47,6 @@ const ProductPromotionPage = () => {
     setLoading(false);
   }
 
-  async function onCallApi({ page = 1 }: { page?: number }) {
-    const response = await getAllProductPromotionService({
-      page,
-    });
-    setProduct(response);
-  }
-
   function onEditBanner(item: Product) {
     router.push(
       `/${routed.productManagement}/${routed.product}/${routed.create}?id=${item.id}`
