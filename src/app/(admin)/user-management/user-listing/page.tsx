@@ -3,6 +3,7 @@
 import CashImage from "@/components/custom/CashImage";
 import showToast from "@/components/error-handle/show-toast";
 import Header from "@/components/header/header";
+import CenteredLoading from "@/components/loading/center_loading";
 import Pagination from "@/components/pagination/Pagination";
 import { headerAllUser } from "@/constants/data/header_table";
 import { getAllUserService } from "@/redux/action/user-management/all_user_service";
@@ -14,9 +15,10 @@ import { useCallback, useEffect, useState } from "react";
 
 const AllUserComponent = () => {
   const [userData, setUserData] = useState<UserInfoListModel>();
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    onCallApi({});
+    onCallFirstApi({});
   }, []);
 
   const onRefreshClick = useCallback(
@@ -26,6 +28,19 @@ const AllUserComponent = () => {
     }),
     []
   );
+
+  async function onCallFirstApi({
+    page = 1,
+    search = "",
+  }: {
+    page?: number;
+    search?: string;
+  }) {
+    setLoading(true);
+    const response = await getAllUserService({ page, search });
+    setUserData(response);
+    setLoading(false);
+  }
 
   async function onCallApi({
     page = 1,
@@ -121,6 +136,7 @@ const AllUserComponent = () => {
           )}
         </div>
       </div>
+      <CenteredLoading loading={loading} />
     </div>
   );
 };

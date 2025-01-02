@@ -7,7 +7,7 @@ import CenteredLoading from "@/components/loading/center_loading";
 import BannerModal from "@/components/modal/banner_modal";
 import ModalConfirm from "@/components/modal/modal_confirm";
 import Pagination from "@/components/pagination/Pagination";
-import { eventHeader, headerCategory } from "@/constants/data/header_table";
+import { eventHeader } from "@/constants/data/header_table";
 import { base64Cut } from "@/constants/image/base64_cut";
 import {
   deletedBannerService,
@@ -34,8 +34,17 @@ const BannerComponent = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    onCallApi({});
+    onCallFirstApi({});
   }, []);
+
+  async function onCallFirstApi({ page = 1 }: { page?: number }) {
+    setLoading(true);
+    const response = await getBannerService({
+      page,
+    });
+    setBanner(response);
+    setLoading(false);
+  }
 
   async function onCallApi({ page = 1 }: { page?: number }) {
     const response = await getBannerService({

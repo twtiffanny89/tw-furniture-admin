@@ -39,7 +39,7 @@ const CategoryComponent = () => {
   });
 
   useEffect(() => {
-    onCallApi({});
+    onCallFirstApi({});
   }, []);
 
   const onRefreshClick = useCallback(
@@ -49,6 +49,22 @@ const CategoryComponent = () => {
     }),
     []
   );
+
+  async function onCallFirstApi({
+    page = 1,
+    search = "",
+  }: {
+    page?: number;
+    search?: string;
+  }) {
+    setLoading(true);
+    const response = await getCategoryService({
+      page,
+      search,
+    });
+    setCategory(response);
+    setLoading(false);
+  }
 
   async function onCallApi({
     page = 1,
@@ -288,7 +304,7 @@ const CategoryComponent = () => {
             <div className="flex justify-end mr-8 mt-8">
               <Pagination
                 currentPage={category.pagination?.currentPage || 1}
-                onPageChange={(page) => onCallApi({ page })}
+                onPageChange={(page) => onCallFirstApi({ page })}
                 totalPages={category.pagination?.totalPages || 1}
               />
             </div>

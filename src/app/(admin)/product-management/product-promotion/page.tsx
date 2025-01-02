@@ -4,6 +4,7 @@ import ButtonCustom from "@/components/custom/ButtonCustom";
 import CashImage from "@/components/custom/CashImage";
 import { Switch } from "@/components/custom/Switch";
 import showToast from "@/components/error-handle/show-toast";
+import CenteredLoading from "@/components/loading/center_loading";
 import Pagination from "@/components/pagination/Pagination";
 import { productHeader } from "@/constants/data/header_table";
 import { routed } from "@/constants/navigation/routed";
@@ -25,6 +26,7 @@ const ProductPromotionPage = () => {
     id: "",
     loading: false,
   });
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const pageId = searchParams.get("page") || "1";
@@ -32,9 +34,18 @@ const ProductPromotionPage = () => {
   useEffect(() => {
     const parsedPageId = parseInt(pageId, 10) || 1;
     if (parsedPageId && !product) {
-      onCallApi({ page: parsedPageId });
+      onCallProApi({ page: parsedPageId });
     }
   }, [pageId, product]);
+
+  async function onCallProApi({ page = 1 }: { page?: number }) {
+    setLoading(true);
+    const response = await getAllProductPromotionService({
+      page,
+    });
+    setProduct(response);
+    setLoading(false);
+  }
 
   async function onCallApi({ page = 1 }: { page?: number }) {
     const response = await getAllProductPromotionService({
@@ -193,7 +204,7 @@ const ProductPromotionPage = () => {
                   router.push(
                     `/${routed.productManagement}/${routed.product}?page=${page}`
                   );
-                  onCallApi({ page });
+                  onCallProApi({ page });
                 }}
                 totalPages={product.pagination?.totalPages || 1}
               />
@@ -201,6 +212,8 @@ const ProductPromotionPage = () => {
           )}
         </div>
       </div>
+
+      <CenteredLoading loading={loading} />
     </div>
   );
 };

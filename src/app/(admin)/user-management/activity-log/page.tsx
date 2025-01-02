@@ -4,6 +4,7 @@
 import CashImage from "@/components/custom/CashImage";
 import showToast from "@/components/error-handle/show-toast";
 import HeaderCalender from "@/components/header/HeaderCalender";
+import CenteredLoading from "@/components/loading/center_loading";
 import Pagination from "@/components/pagination/Pagination";
 import { headerActivityLog } from "@/constants/data/header_table";
 import { getActivityLogService } from "@/redux/action/user-management/activity_log_service";
@@ -12,6 +13,7 @@ import { config } from "@/utils/config/config";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
 import { openGoogleMap } from "@/utils/google-map/open_google_map";
+import { set } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 
 const ActivityLogComponent = () => {
@@ -19,9 +21,10 @@ const ActivityLogComponent = () => {
     useState<ActivityLogListModel | null>();
   const [selectedFromDate, setSelectedFromDate] = useState<string>("");
   const [selectedToDate, setSelectedToDate] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    onCallApi({});
+    onCallFirstApi({});
   }, []);
 
   const onSearchClick = useCallback(
@@ -34,6 +37,21 @@ const ActivityLogComponent = () => {
 
   function openMap(lat: string, lng: string) {
     openGoogleMap(lat, lng);
+  }
+
+  async function onCallFirstApi({
+    page = 1,
+    dateFrom = "",
+    dateTo = "",
+  }: {
+    page?: number;
+    dateFrom?: string;
+    dateTo?: string;
+  }) {
+    setLoading(true);
+    const response = await getActivityLogService({ page, dateFrom, dateTo });
+    setActivityData(response);
+    setLoading(false);
   }
 
   async function onCallApi({
@@ -135,13 +153,15 @@ const ActivityLogComponent = () => {
             <div className="flex justify-end mr-8 mt-8">
               <Pagination
                 currentPage={activityData.pagination?.currentPage || 1}
-                onPageChange={(page) => onCallApi({ page })}
+                onPageChange={(page) => onCallFirstApi({ page })}
                 totalPages={activityData.pagination?.totalPages || 1}
               />
             </div>
           )}
         </div>
       </div>
+
+      <CenteredLoading loading={loading} />
     </div>
   );
 };
