@@ -20,7 +20,7 @@ import { FaEye } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi";
 
 const ProductPromotionPage = () => {
-  const [product, setProduct] = useState<ProductListModel>();
+  const [product, setProduct] = useState<ProductListModel | null>(null);
   const [loadingUpdate, setLoadingUpdate] = useState({
     id: "",
     loading: false,
@@ -31,10 +31,10 @@ const ProductPromotionPage = () => {
 
   useEffect(() => {
     const parsedPageId = parseInt(pageId, 10) || 1;
-    if (parsedPageId) {
+    if (parsedPageId && !product) {
       onCallApi({ page: parsedPageId });
     }
-  }, [pageId]);
+  }, [pageId, product]);
 
   async function onCallApi({ page = 1 }: { page?: number }) {
     const response = await getAllProductPromotionService({
@@ -193,6 +193,7 @@ const ProductPromotionPage = () => {
                   router.push(
                     `/${routed.productManagement}/${routed.product}?page=${page}`
                   );
+                  onCallApi({ page });
                 }}
                 totalPages={product.pagination?.totalPages || 1}
               />

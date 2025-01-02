@@ -21,7 +21,7 @@ import { FiEdit } from "react-icons/fi";
 import { IoMdAdd } from "react-icons/io";
 
 const ProductComponent = () => {
-  const [product, setProduct] = useState<ProductListModel>();
+  const [product, setProduct] = useState<ProductListModel | null>(null);
   const [loadingUpdate, setLoadingUpdate] = useState({
     id: "",
     loading: false,
@@ -33,10 +33,10 @@ const ProductComponent = () => {
 
   useEffect(() => {
     const parsedPageId = parseInt(pageId, 10) || 1;
-    if (parsedPageId) {
+    if (parsedPageId && !product) {
       onCallApi({ page: parsedPageId });
     }
-  }, [pageId]);
+  }, [pageId, product]);
 
   async function onCallApi({ page = 1 }: { page?: number }) {
     const response = await getAllProductService({
@@ -206,6 +206,7 @@ const ProductComponent = () => {
                   router.push(
                     `/${routed.productManagement}/${routed.product}?page=${page}`
                   );
+                  onCallApi({ page });
                 }}
                 totalPages={product.pagination?.totalPages || 1}
               />
