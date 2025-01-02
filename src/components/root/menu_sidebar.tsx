@@ -5,9 +5,7 @@ import { slideBarData } from "@/constants/data/slide_bar_data";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import ModalConfirmLogout from "../modal/modal_confirm_logout";
-import { on } from "events";
 import { routed } from "@/constants/navigation/routed";
-import { logout } from "@/utils/security/token_server";
 import { removeAllCookies } from "@/utils/security/token";
 import CenteredLoading from "../loading/center_loading";
 

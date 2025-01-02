@@ -775,7 +775,7 @@ const CreateProductComponent = () => {
                       <CashImage
                         width={96}
                         height={96}
-                        imageUrl={`${config.BASE_URL}${image.base64}`}
+                        imageUrl={`${config.BASE_URL}${image?.base64}`}
                       />
                     )}
                     <button

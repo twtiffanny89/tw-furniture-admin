@@ -14,7 +14,7 @@ import {
 import { Product, ProductListModel } from "@/redux/model/product/product-model";
 import { config } from "@/utils/config/config";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { FaEye } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi";
@@ -26,10 +26,15 @@ const ProductPromotionPage = () => {
     loading: false,
   });
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pageId = searchParams.get("page") || "1";
 
   useEffect(() => {
-    onCallApi({});
-  }, []);
+    const parsedPageId = parseInt(pageId, 10) || 1;
+    if (parsedPageId) {
+      onCallApi({ page: parsedPageId });
+    }
+  }, [pageId]);
 
   async function onCallApi({ page = 1 }: { page?: number }) {
     const response = await getAllProductPromotionService({
@@ -127,7 +132,11 @@ const ProductPromotionPage = () => {
                         <CashImage
                           width={32}
                           height={32}
-                          imageUrl={`${config.BASE_URL}${value.mainImage[0]?.imageUrl}`}
+                          imageUrl={`${config.BASE_URL}${
+                            value?.mainImage
+                              ? value?.mainImage[0]?.imageUrl
+                              : ""
+                          }`}
                         />
                       </td>
                       <td>{value.name}</td>
@@ -180,7 +189,11 @@ const ProductPromotionPage = () => {
             <div className="flex justify-end mr-8 mt-8">
               <Pagination
                 currentPage={product.pagination?.currentPage || 1}
-                onPageChange={(page) => onCallApi({ page })}
+                onPageChange={(page) => {
+                  router.push(
+                    `/${routed.productManagement}/${routed.product}?page=${page}`
+                  );
+                }}
                 totalPages={product.pagination?.totalPages || 1}
               />
             </div>
