@@ -900,12 +900,14 @@ const CreateProductComponent = () => {
                         <td>{index + 1}</td>
                         <td
                           onClick={() => {
-                            navigator.clipboard.writeText(value?.id || "");
+                            navigator.clipboard.writeText(
+                              value?.attributeValue?.id || ""
+                            );
                             showToast("Copied to clipboard", "success");
                           }}
                           className="cursor-pointer"
                         >
-                          {value?.id || ""}
+                          {value?.attributeValue?.id || ""}
                         </td>
 
                         {attribute.attribute.name !== "Size" && (
