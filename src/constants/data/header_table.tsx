@@ -117,6 +117,7 @@ export const colorHeader: string[] = [
 
 export const attribudeHeader: string[] = [
   "NO",
+  "ID",
   "IMAGE",
   "LABEL",
   "CREATED_AT",
@@ -126,6 +127,7 @@ export const attribudeHeader: string[] = [
 
 export const variantsHeader: string[] = [
   "NO",
+  "ID",
   "NAME",
   "PRICE",
   "STOCK",

@@ -881,7 +881,7 @@ const CreateProductComponent = () => {
                           attribute.attribute.name === "Size" &&
                           header === "IMAGE"
                         ) {
-                          return null; // Skip rendering this header
+                          return null;
                         }
                         return (
                           <th
@@ -898,6 +898,18 @@ const CreateProductComponent = () => {
                     {attribute.values.map((value, index) => (
                       <tr key={value.id} className="hover:bg-gray-200">
                         <td>{index + 1}</td>
+                        <td
+                          onClick={() => {
+                            navigator.clipboard.writeText(
+                              attribute.attribute?.id || ""
+                            );
+                            showToast("Copied to clipboard", "success");
+                          }}
+                          className="cursor-pointer"
+                        >
+                          {attribute.attribute?.id || ""}
+                        </td>
+
                         {attribute.attribute.name !== "Size" && (
                           <td>
                             <CashImage
@@ -979,6 +991,15 @@ const CreateProductComponent = () => {
                 {productDetail?.variants?.map((value, index) => (
                   <tr key={value.id} className="hover:bg-gray-200">
                     <td>{index + 1}</td>
+                    <td
+                      onClick={() => {
+                        navigator.clipboard.writeText(value.id || "");
+                        showToast("Copied to clipboard", "success");
+                      }}
+                      className="cursor-pointer"
+                    >
+                      {value.id || ""}
+                    </td>
                     <td>
                       {value?.attributes?.map((attribute, index) =>
                         index === value.attributes.length - 1
