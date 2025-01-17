@@ -11,6 +11,20 @@ export const headerAllUser: string[] = [
   "STATUS",
 ];
 
+export const headerAllOrder: string[] = [
+  "NO",
+  "ORDER_ID",
+  "PHONE_NUMBER",
+  "CUSTOMER_NAME",
+  "PAYMENT_METHOD",
+  "PAYMENT_STATUS",
+  "TOTAL_AMOUNT",
+  "ORDER_STATUS",
+  "CREATED_AT",
+  "ITEMS",
+  "ACTION",
+];
+
 export const headerActivityLog: string[] = [
   "NO",
   "LOG_ID",
