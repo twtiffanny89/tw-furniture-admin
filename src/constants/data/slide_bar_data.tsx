@@ -10,12 +10,18 @@ import {
   FaInfoCircle,
   FaTags,
 } from "react-icons/fa";
+import { MdDashboard } from "react-icons/md";
 import { routed } from "../navigation/routed";
 
 export const slideBarData = [
   {
     title: "User Management",
     items: [
+      {
+        label: "Dashboard",
+        href: `/${routed.userManagement}/${routed.dashboard}`,
+        icon: <MdDashboard />,
+      },
       {
         label: "User Listing",
         href: `/${routed.userManagement}/${routed.allUser}`,

@@ -39,7 +39,7 @@ const MenuSidebar = () => {
   return (
     <div className="bg-black w-20 lg:w-[16%] xl:w-[14%] overflow-y-scroll px-4 pt-20  scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
       <div className=" ">
-        <div className="text-sm flex flex-col space-y-4 text-gray-300">
+        <div className="text-sm flex flex-col space-y-4 text-gray-300 pb-20">
           {slideBarData.map((section, index) => (
             <div className="flex flex-col gap-2" key={section.title + index}>
               <span className="hidden lg:block text-white font-light overflow-hidden whitespace-nowrap overflow-ellipsis">

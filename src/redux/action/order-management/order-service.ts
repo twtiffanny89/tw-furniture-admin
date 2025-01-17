@@ -43,3 +43,32 @@ export async function getProductOrderDetailService({
     return null;
   }
 }
+
+export async function updateProductOrderDetailService({
+  orderId,
+  status,
+  paymentStatus,
+}: {
+  orderId: string;
+  status?: string;
+  paymentStatus?: string;
+}) {
+  try {
+    const response = await axiosServerWithAuth.post(
+      `/v1/admin/order/${orderId}`,
+      {
+        status,
+        paymentStatus,
+      }
+    );
+    return {
+      success: true,
+      data: response.data.data,
+    };
+  } catch {
+    return {
+      success: false,
+      data: null,
+    };
+  }
+}

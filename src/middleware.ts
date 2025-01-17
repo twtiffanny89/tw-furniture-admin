@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
 
   if (request.url.includes("/login") && token) {
     return NextResponse.redirect(
-      new URL("/" + routed.userManagement + "/" + routed.allUser, request.url)
+      new URL("/" + routed.userManagement + "/" + routed.dashboard, request.url)
     );
   }
 

@@ -17,4 +17,5 @@ export const routed = {
   productPromotion: "product-promotion",
   create: "create",
   preview: "preview",
+  dashboard: "dashboard",
 };

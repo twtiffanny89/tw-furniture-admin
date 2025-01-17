@@ -1,7 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import ButtonCustom from "@/components/custom/ButtonCustom";
 import CashImage from "@/components/custom/CashImage";
+import Input from "@/components/custom/Input";
 import { Switch } from "@/components/custom/Switch";
 import showToast from "@/components/error-handle/show-toast";
 import CenteredLoading from "@/components/loading/center_loading";
@@ -15,10 +17,12 @@ import {
 import { Product, ProductListModel } from "@/redux/model/product/product-model";
 import { config } from "@/utils/config/config";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
+import { debounce } from "@/utils/debounce/debounce";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FaEye } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi";
+import { HiRefresh } from "react-icons/hi";
 
 const ProductPromotionPage = () => {
   const [product, setProduct] = useState<ProductListModel | null>(null);
@@ -100,10 +104,49 @@ const ProductPromotionPage = () => {
     );
   }
 
+  const onRefreshClick = useCallback(
+    debounce(async () => {
+      onCallProApi({});
+      showToast("Refresh page successfully!", "success");
+    }),
+    []
+  );
+
+  async function onSearchChange(value: string) {
+    onSearchClick(value);
+  }
+
+  const onSearchClick = useCallback(
+    debounce(async (value: string) => {
+      const response = await getAllProductPromotionService({
+        page: pageId ? parseInt(pageId, 10) : 1,
+        search: value,
+      });
+      setProduct(response);
+    }),
+    [pageId]
+  );
+
   return (
     <div>
-      <div className="p-4 bg-white flex justify-between">
-        <h1 className="font-bold text-xl">Product Promotions</h1>
+      <div className="p-4 bg-white">
+        <div className="flex">
+          <h1 className="font-bold text-xl">Product Listing</h1>
+        </div>
+        <div className="flex mt-2 ">
+          <div className="flex flex-1 gap-2">
+            <Input
+              className="max-w-md h-9"
+              placeholder={"Search Product id, name ..."}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                onSearchChange?.(e.target.value)
+              }
+            />
+            <ButtonCustom className="w-9 h-9" onClick={onRefreshClick}>
+              <HiRefresh size={20} />
+            </ButtonCustom>
+          </div>
+        </div>
       </div>
       <div className="mt-4 bg-white">
         <div>

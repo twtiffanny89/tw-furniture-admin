@@ -40,7 +40,7 @@ const LoginPage = () => {
       if (response.success) {
         setCookieToken(response.data);
         showToast(response.message, "success");
-        router.replace(`/${routed.userManagement}/${routed.allUser}`);
+        router.replace(`/${routed.userManagement}/${routed.dashboard}`);
       } else {
         showToast(response.message, "error");
       }

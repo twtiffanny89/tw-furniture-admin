@@ -25,6 +25,18 @@ export const headerAllOrder: string[] = [
   "ACTION",
 ];
 
+export const headerProductOrder: string[] = [
+  "NO",
+  "MAIN_PRODUCT_ID",
+  "NAME",
+  "ORDER_ID",
+  "IMAGE",
+  "QUANTITY",
+  "PRICE",
+  "PROMOTION",
+  "TOTAL",
+];
+
 export const headerActivityLog: string[] = [
   "NO",
   "LOG_ID",

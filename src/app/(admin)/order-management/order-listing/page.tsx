@@ -7,6 +7,7 @@ import showToast from "@/components/error-handle/show-toast";
 import CenteredLoading from "@/components/loading/center_loading";
 import Pagination from "@/components/pagination/Pagination";
 import { headerAllOrder } from "@/constants/data/header_table";
+import { PaymentStatus } from "@/constants/enum/order-status";
 import { routed } from "@/constants/navigation/routed";
 import { getAllProductOrderService } from "@/redux/action/order-management/order-service";
 import { getAllProductService } from "@/redux/action/product-management/product-service";
@@ -17,7 +18,7 @@ import {
 import { config } from "@/utils/config/config";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 import { FaEye } from "react-icons/fa";
 import { HiRefresh } from "react-icons/hi";
@@ -26,6 +27,8 @@ const AllOrderPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [orderData, setOrderData] = useState<OrderListModel | null>(null);
   const rounter = useRouter();
+  const searchParams = useSearchParams();
+  const pageId = searchParams.get("page") || "1";
 
   async function onCallApi({
     page = 1,
@@ -52,7 +55,23 @@ const AllOrderPage = () => {
     []
   );
 
-  function onSearchChange(value: string) {}
+  function onSearchChange(value: string) {
+    rounter.push(
+      `/${routed.orderManagement}/${routed.allOrder}?search=${value}`
+    );
+    onSearchClick(value);
+  }
+
+  const onSearchClick = useCallback(
+    debounce(async (value: string) => {
+      const response = await getAllProductOrderService({
+        page: pageId ? parseInt(pageId, 10) : 1,
+        search: value,
+      });
+      setOrderData(response);
+    }),
+    [pageId]
+  );
 
   function onViewProduct(value: OrderDetailModel) {
     rounter.push(`/${routed.orderManagement}/${routed.allOrder}/${value.id}`);
@@ -66,7 +85,7 @@ const AllOrderPage = () => {
           <div className="flex flex-1 gap-2">
             <Input
               className="max-w-md h-9"
-              placeholder={""}
+              placeholder={"Search order by id..."}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 onSearchChange?.(e.target.value)
               }
@@ -116,9 +135,20 @@ const AllOrderPage = () => {
                             "- - -"}
                         </td>
                         <td>{value.paymentMethod || "- - -"}</td>
-                        <td>{value.paymentStatus || "- - -"}</td>
-                        <td>{value.status || "- - -"}</td>
-                        <td>{value.totalAmount || "- - -"}</td>
+                        <td
+                          className={
+                            value.paymentStatus === PaymentStatus.PAID
+                              ? "text-primary"
+                              : "text-red-500"
+                          }
+                        >
+                          {value.paymentStatus || "- - -"}
+                        </td>
+                        <td>${value.totalAmount || "- - -"}</td>
+                        <td className="text-primary font-semibold">
+                          {value.status || "- - -"}
+                        </td>
+
                         <td>{formatTimestamp(value.createdAt)}</td>
                         <td className="max-w-[380px]">
                           <div className="flex gap-2">

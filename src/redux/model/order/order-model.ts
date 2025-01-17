@@ -73,7 +73,7 @@ interface User {
   isActive: boolean;
 }
 
-interface ProductOrderModel {
+export interface ProductOrderModel {
   id: string;
   orderId: string;
   variantId: string;
