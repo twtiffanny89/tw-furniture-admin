@@ -6,16 +6,29 @@ interface getAllProductParams {
   page?: number;
   limit?: number;
   search?: string;
+  filterBy?: string;
+  paymentStatus?: string;
 }
 
 export async function getAllProductOrderService({
   page = 1,
   limit = 15,
-  search = "",
+  search,
+  filterBy,
+  paymentStatus,
 }: getAllProductParams) {
   try {
+    const params = new URLSearchParams();
+
+    // Add parameters only if they are defined
+    if (page) params.append("page", page.toString());
+    if (limit) params.append("limit", limit.toString());
+    if (search) params.append("search", search);
+    if (filterBy) params.append("filterBy", filterBy);
+    if (paymentStatus) params.append("paymentStatus", paymentStatus);
+
     const response = await axiosServerWithAuth.get(
-      `/v1/admin/order?page=${page}&limit=${limit}&search=${search}`
+      `/v1/admin/order?${params.toString()}`
     );
     return {
       data: response.data.data.data,

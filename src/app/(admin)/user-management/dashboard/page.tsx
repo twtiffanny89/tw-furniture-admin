@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
+import { FilterOrderStatus } from "@/constants/enum/order-status";
+import { getAllProductOrderService } from "@/redux/action/order-management/order-service";
 import { getCategoryService } from "@/redux/action/product-management/category_service";
 import {
   getAllProductPromotionService,
@@ -19,10 +21,12 @@ const Page = () => {
   const [totalViewApp, setTotalViewApp] = useState(0);
   const [totalSubcategories, setTotalSubcategories] = useState(0);
   const [totalCategories, setTotalCategories] = useState(0);
+  const [totalOrderProcess, setTotalOrderProcess] = useState(0);
+  const [totalOrderSuccess, setTotalOrderSuccess] = useState(0);
+  const [totalOrderFail, setTotalOrderFail] = useState(0);
   const rounter = useRouter();
 
   useEffect(() => {
-    // Call API here
     onCallApi();
   }, []);
 
@@ -33,6 +37,9 @@ const Page = () => {
     callGetViewAppToday();
     callGetAllCategories();
     callGetAllSubcategories();
+    callGetAllOrderProcess();
+    callGetAllOrderSuccess();
+    callGetAllOrderFail();
   }
 
   async function callGetUser() {
@@ -70,6 +77,30 @@ const Page = () => {
     setTotalSubcategories(resposne.pagination?.total || 0);
   }
 
+  async function callGetAllOrderProcess() {
+    const resposne = await getAllProductOrderService({
+      limit: 1,
+      filterBy: FilterOrderStatus.PROCESS,
+    });
+    setTotalOrderProcess(resposne.pagination?.total || 0);
+  }
+
+  async function callGetAllOrderSuccess() {
+    const resposne = await getAllProductOrderService({
+      limit: 1,
+      filterBy: FilterOrderStatus.SUCCESS,
+    });
+    setTotalOrderSuccess(resposne.pagination?.total || 0);
+  }
+
+  async function callGetAllOrderFail() {
+    const resposne = await getAllProductOrderService({
+      limit: 1,
+      filterBy: FilterOrderStatus.FAIL,
+    });
+    setTotalOrderFail(resposne.pagination?.total || 0);
+  }
+
   return (
     <div>
       <div className="p-4 bg-white">
@@ -99,14 +130,20 @@ const Page = () => {
           },
           {
             title: "Total Orders Processing",
-            count: 20,
+            count: totalOrderProcess,
             icon: "🔄",
             link: "/order-management/order-listing",
           },
           {
             title: "Total Completed Order",
-            count: 20,
+            count: totalOrderSuccess,
             icon: "✅",
+            link: "/order-management/order-listing",
+          },
+          {
+            title: "Total Fail Order",
+            count: totalOrderFail,
+            icon: "❌",
             link: "/order-management/order-listing",
           },
           {
