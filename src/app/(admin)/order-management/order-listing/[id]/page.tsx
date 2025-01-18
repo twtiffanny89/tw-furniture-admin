@@ -78,7 +78,10 @@ const Page = ({ params }: { params: { id: string } }) => {
           size={28}
           onClick={() => rounter.back()}
         />
-        <h1 className="font-bold text-xl ml-4">Order Detail (#0123)</h1>
+        <div className="flex items-center">
+          <h1 className="font-bold text-xl ml-4">Order Detail</h1>
+          <h1 className="font-bold text-xl ml-1">{orderDetail?.id ?? ""}</h1>
+        </div>
       </div>
 
       <div className="p-4 mt-4 bg-white">
