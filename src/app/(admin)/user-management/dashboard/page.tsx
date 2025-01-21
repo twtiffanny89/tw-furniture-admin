@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getAllDashboardService } from "@/redux/action/user-management/dashboard_service";
 import { useRouter } from "next/navigation";
+import CenteredLoading from "@/components/loading/center_loading";
 
 interface DashboardItem {
   title: string;
@@ -44,17 +45,16 @@ const getLinkForTitle = (title: string) => {
 export default function Home() {
   const [dashboardData, setDashboardData] = useState<DashboardItem[]>([]);
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulating API call. Replace with actual API endpoint
-
     fetchData();
   }, []);
 
   const fetchData = async () => {
+    setIsLoading(true);
     const response = await getAllDashboardService(); // Adjust API endpoint
 
-    // Map API response to include icons and links
     const mappedData = response.map((item: DashboardItem) => ({
       ...item,
       icon: getIconForTitle(item.title),
@@ -62,6 +62,7 @@ export default function Home() {
     }));
 
     setDashboardData(mappedData);
+    setIsLoading(false);
   };
 
   return (
@@ -81,6 +82,8 @@ export default function Home() {
           </div>
         </div>
       ))}
+
+      <CenteredLoading loading={isLoading} />
     </div>
   );
 }
