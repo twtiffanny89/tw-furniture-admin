@@ -1,4 +1,4 @@
 export const config = {
-  BASE_URL: "https://dev.twfurniturekh.com",
-  DEV: "development",
+  BASE_URL: process.env.BASE_URL,
+  DEV: process.env.DEV,
 };
