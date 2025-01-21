@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import CashImage from "../custom/CashImage";
-import { IoIosArrowDown } from "react-icons/io";
 import { routed } from "@/constants/navigation/routed";
 
 const Navbar = () => {
