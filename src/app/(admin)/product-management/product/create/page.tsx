@@ -724,9 +724,11 @@ const CreateProductComponent = () => {
     <div>
       <div className="p-4 bg-white flex justify-between">
         <h1 className="font-bold text-xl">Create Product</h1>
-        <ButtonCustom onClick={onPreviewProduct} className="px-4 h-9">
-          Preview Product
-        </ButtonCustom>
+        {productId && (
+          <ButtonCustom onClick={onPreviewProduct} className="px-4 h-9">
+            Preview Product
+          </ButtonCustom>
+        )}
       </div>
       <Tabs defaultValue="tab1" className="w-full bg-white mt-4">
         <TabsList className="bg-[#F1F5F9] my-4 mx-4 py-6">
@@ -1080,7 +1082,7 @@ const CreateProductComponent = () => {
 
                     return (
                       <tr key={value.id} className="hover:bg-gray-200">
-                        <td>{displayIndex + 1}</td>
+                        <td>{displayIndex}</td>
                         <td className="max-w-72">{value.productTo.id}</td>
                         <td>{value.productTo.name || "- - -"}</td>
                         <td>{value.productTo.description || "- - -"}</td>

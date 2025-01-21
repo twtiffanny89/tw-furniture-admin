@@ -12,4 +12,12 @@ export enum OrderStatus {
 export enum PaymentStatus {
   UNPAID = "UNPAID",
   PAID = "PAID",
+  ALL = "ALL",
+}
+
+export enum FilterOrderStatus {
+  PROCESS = "PROCESS",
+  SUCCESS = "SUCCESS",
+  FAIL = "FAIL",
+  ALL = "ALL",
 }

@@ -7,7 +7,10 @@ import showToast from "@/components/error-handle/show-toast";
 import CenteredLoading from "@/components/loading/center_loading";
 import Pagination from "@/components/pagination/Pagination";
 import { headerAllOrder } from "@/constants/data/header_table";
-import { PaymentStatus } from "@/constants/enum/order-status";
+import {
+  FilterOrderStatus,
+  PaymentStatus,
+} from "@/constants/enum/order-status";
 import { routed } from "@/constants/navigation/routed";
 import { getAllProductOrderService } from "@/redux/action/order-management/order-service";
 import {
@@ -28,16 +31,31 @@ const AllOrderPage = () => {
   const rounter = useRouter();
   const searchParams = useSearchParams();
   const pageId = searchParams.get("page") || "1";
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(
+    PaymentStatus.ALL
+  );
+  const [filterStatus, setFilterStatus] = useState<FilterOrderStatus>(
+    FilterOrderStatus.ALL
+  );
 
   async function onCallApi({
-    page = 1,
-    search = "",
+    page = pageId ? parseInt(pageId, 10) : 1,
+    search,
+    filterBy,
+    paymentStatus,
   }: {
     page?: number;
     search?: string;
+    filterBy?: string;
+    paymentStatus?: string;
   }) {
     setLoading(true);
-    const response = await getAllProductOrderService({ page, search });
+    const response = await getAllProductOrderService({
+      page,
+      search,
+      filterBy,
+      paymentStatus,
+    });
     setOrderData(response);
     setLoading(false);
   }
@@ -79,6 +97,19 @@ const AllOrderPage = () => {
     rounter.push(`/${routed.orderManagement}/${routed.allOrder}/${value.id}`);
   }
 
+  function onPaymentFilter(e: React.ChangeEvent<HTMLSelectElement>) {
+    setPaymentStatus(e.target.value as PaymentStatus);
+    onCallApi({
+      paymentStatus:
+        e.target.value == PaymentStatus.ALL ? undefined : e.target.value,
+    });
+  }
+
+  function onFilterOrderStatus(e: React.ChangeEvent<HTMLSelectElement>) {
+    setFilterStatus(e.target.value as FilterOrderStatus);
+    onCallApi({ filterBy: e.target.value });
+  }
+
   return (
     <div>
       <div className="p-4 bg-white">
@@ -95,6 +126,31 @@ const AllOrderPage = () => {
             <ButtonCustom className="w-9 h-9" onClick={onRefreshClick}>
               <HiRefresh size={20} />
             </ButtonCustom>
+          </div>
+          <div className="flex space-x-8 items-center">
+            <div className="flex space-x-8 items-center">
+              <select
+                onChange={onFilterOrderStatus}
+                value={filterStatus}
+                className="mt-1 w-full bg-[#00000010] border border-gray-300 rounded max-w-96 flex items-center px-4 h-9 cursor-pointer"
+              >
+                <option value={FilterOrderStatus.ALL}>All</option>
+                <option value={FilterOrderStatus.PROCESS}>Process</option>
+                <option value={FilterOrderStatus.SUCCESS}>Success</option>
+                <option value={FilterOrderStatus.FAIL}>Fail</option>
+              </select>
+            </div>
+            <div className="flex space-x-8 items-center">
+              <select
+                onChange={onPaymentFilter}
+                value={paymentStatus}
+                className="mt-1 w-full bg-[#00000010] border border-gray-300 rounded max-w-96 flex items-center px-4 h-9 cursor-pointer"
+              >
+                <option value={PaymentStatus.ALL}>All</option>
+                <option value={PaymentStatus.PAID}>Paid</option>
+                <option value={PaymentStatus.UNPAID}>Unpaid</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
