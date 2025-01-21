@@ -1,4 +1,4 @@
 export const config = {
-  BASE_URL: "https://dev.twfurniturekh.com",
-  DEV: "development",
+  BASE_URL: "https://pro.twfurniturekh.com",
+  DEV: "production",
 };
