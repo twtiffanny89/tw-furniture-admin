@@ -41,7 +41,11 @@ const Page = ({ params }: { params: { id: string } }) => {
   }
 
   async function onUpdateOrderStatus(e: React.ChangeEvent<HTMLSelectElement>) {
-    if (orderDetail?.status === e.target.value) return;
+    if (
+      orderDetail?.status === e.target.value ||
+      e.target.value == OrderStatus.PENDING
+    )
+      return;
     setOrderDetail({ ...orderDetail!, status: e.target.value });
     const response = await updateProductOrderDetailService({
       orderId,
@@ -245,6 +249,7 @@ const Page = ({ params }: { params: { id: string } }) => {
                   return (
                     <tr key={value.id} className="hover:bg-gray-200">
                       <td>{index + 1}</td>
+                      <td>{value.variant?.product?.name || "- - -"}</td>
                       <td>
                         <a
                           href="#"
@@ -260,8 +265,9 @@ const Page = ({ params }: { params: { id: string } }) => {
                           {value.variant?.productId || "- - -"}
                         </a>
                       </td>
+
                       <td>{value.name || "- - -"}</td>
-                      <td>{value.id || "- - -"}</td>
+                      <td>{orderDetail?.orderNumber || "- - -"}</td>
                       <td>
                         {value.variant?.images?.[0]?.imageUrl ? (
                           <CashImage

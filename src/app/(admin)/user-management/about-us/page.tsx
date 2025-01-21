@@ -28,6 +28,8 @@ const AboutUsComponent = () => {
     location: "",
     phoneNumber: "",
     phoneStore: "",
+    bankName: "",
+    bankNumber: "",
     availableTime: "",
     showroomHours: "",
     websiteUrl: "",
@@ -49,6 +51,7 @@ const AboutUsComponent = () => {
   }, []);
 
   async function onCallApi() {
+    setLoading(true);
     const resposne = await getAboutUsService();
     setAboutUsData(resposne);
     setFormData({
@@ -56,6 +59,8 @@ const AboutUsComponent = () => {
       location: resposne?.location || "",
       phoneNumber: resposne?.phoneNumber || "",
       phoneStore: resposne?.phoneStore || "",
+      bankName: resposne?.bankName || "",
+      bankNumber: resposne?.bankNumber || "",
       availableTime: resposne?.availableTime || "",
       showroomHours: resposne?.showroomHours || "",
       websiteUrl: resposne?.websiteUrl || "",
@@ -82,6 +87,7 @@ const AboutUsComponent = () => {
           }
         : null
     );
+    setLoading(false);
   }
 
   const handleInputChange = (
