@@ -13,6 +13,7 @@ import { config } from "@/utils/config/config";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
 import { openGoogleMap } from "@/utils/google-map/open_google_map";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 const ActivityLogComponent = () => {
@@ -21,10 +22,16 @@ const ActivityLogComponent = () => {
   const [selectedFromDate, setSelectedFromDate] = useState<string>("");
   const [selectedToDate, setSelectedToDate] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const rounter = useRouter();
+  const searchParams = useSearchParams();
+  const pageId = searchParams.get("page") || "1";
 
   useEffect(() => {
-    onCallFirstApi({});
-  }, []);
+    const parsedPageId = parseInt(pageId, 10) || 1;
+    if (parsedPageId && !activityData) {
+      onCallFirstApi({ page: parsedPageId });
+    }
+  }, [pageId, activityData]);
 
   const onSearchClick = useCallback(
     debounce(async () => {
@@ -113,7 +120,11 @@ const ActivityLogComponent = () => {
                         <CashImage
                           width={32}
                           height={32}
-                          imageUrl={`${config.BASE_URL}${activity.user?.image}`}
+                          imageUrl={
+                            activity.user?.image
+                              ? `${config.BASE_URL}${activity?.user?.image?.imageUrl}`
+                              : ""
+                          }
                         />
                       </td>
                       <td>{`${activity?.deviceName} - ${activity.deviceType} - ${activity.osVersion}`}</td>
@@ -152,7 +163,10 @@ const ActivityLogComponent = () => {
             <div className="flex justify-end mr-8 mt-8">
               <Pagination
                 currentPage={activityData.pagination?.currentPage || 1}
-                onPageChange={(page) => onCallFirstApi({ page })}
+                onPageChange={(page) => {
+                  rounter.push("/user-management/activity-log?page=" + page);
+                  onCallFirstApi({ page });
+                }}
                 totalPages={activityData.pagination?.totalPages || 1}
               />
             </div>
