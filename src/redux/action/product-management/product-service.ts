@@ -416,8 +416,7 @@ export async function addVariantProductService({
       data: response.data.data,
       message: "Variant add successfully!",
     };
-  } catch (e) {
-    console.log("### e", e.response.data);
+  } catch {
     return {
       success: false,
       message: "Failed to add Variant. Please try again!",
