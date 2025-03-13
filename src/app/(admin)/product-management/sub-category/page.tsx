@@ -26,7 +26,6 @@ import {
 import { config } from "@/utils/config/config";
 import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
-import { set } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 
@@ -53,20 +52,17 @@ const SubCategoryComponent = () => {
 
   async function onCallFirstApi() {
     setLoading(true);
-    const responseCategory = await getCategoryService({});
-    setCategory(responseCategory);
     const response = await getSubCategoryService({});
     setSubCategories(response);
     setLoading(false);
+    const responseCategory = await getCategoryService({});
+    setCategory(responseCategory);
   }
 
-  const onRefreshClick = useCallback(
-    debounce(async () => {
-      onCallApi({});
-      showToast("Refresh page successfully!", "success");
-    }),
-    []
-  );
+  const onRefreshClick = () => {
+    onCallApi({});
+    showToast("Refresh page successfully!", "success");
+  };
 
   async function onCallApi({
     page = 1,
@@ -267,7 +263,10 @@ const SubCategoryComponent = () => {
   return (
     <div>
       <Header
-        title="Sub categories"
+        title={
+          "Sub Category Management Total: " +
+          `${subCategories?.pagination?.total || 0}`
+        }
         onRefreshClick={onRefreshClick}
         showAdd={true}
         placeholder="Search Subcategories id, name ..."
@@ -294,17 +293,16 @@ const SubCategoryComponent = () => {
               <tbody>
                 {subCategories?.data.map((sub, index) => {
                   const displayIndex =
-                    ((subCategories.pagination?.currentPage || 1) - 1) * 15 +
+                    ((subCategories.pagination?.currentPage || 1) - 1) * 10 +
                     index +
                     1;
                   return (
                     <tr key={sub.id} className="hover:bg-gray-200">
                       <td>{displayIndex}</td>
-                      <td className="max-w-72">{sub.id}</td>
                       <td>
                         <CashImage
-                          width={32}
-                          height={32}
+                          width={64}
+                          height={64}
                           imageUrl={`${config.BASE_URL}${sub.image?.imageUrl}`}
                         />
                       </td>

@@ -152,7 +152,7 @@ interface getByProductIdModel {
 // Get All
 export async function getAllProductService({
   page = 1,
-  limit = 15,
+  limit = 10,
   search = "",
 }: getAllProductParams) {
   try {
@@ -174,7 +174,7 @@ export async function getAllProductService({
 // Get All
 export async function getAllProductPromotionService({
   page = 1,
-  limit = 15,
+  limit = 10,
   search = "",
 }: getAllProductParams) {
   try {
@@ -405,6 +405,8 @@ export async function addVariantProductService({
   productId,
 }: addVariantModel) {
   try {
+    console.log("### data", data);
+    console.log("### productId", productId);
     const response = await axiosServerWithAuth.post(
       `/v1/admin/product/${productId}/add-variant`,
       data
@@ -414,7 +416,8 @@ export async function addVariantProductService({
       data: response.data.data,
       message: "Variant add successfully!",
     };
-  } catch {
+  } catch (e) {
+    console.log("### e", e.response.data);
     return {
       success: false,
       message: "Failed to add Variant. Please try again!",

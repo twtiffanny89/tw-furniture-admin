@@ -221,7 +221,9 @@ const CategoryComponent = () => {
   return (
     <div>
       <Header
-        title="Categories"
+        title={
+          "Category Management Total: " + `${category?.pagination?.total || 0}`
+        }
         onRefreshClick={onRefreshClick}
         onSearchChange={onSearchChange}
         showAdd={true}
@@ -248,17 +250,16 @@ const CategoryComponent = () => {
               <tbody>
                 {category?.data.map((categories, index) => {
                   const displayIndex =
-                    ((category.pagination?.currentPage || 1) - 1) * 15 +
+                    ((category.pagination?.currentPage || 1) - 1) * 10 +
                     index +
                     1;
                   return (
                     <tr key={categories.id} className="hover:bg-gray-200">
                       <td>{displayIndex}</td>
-                      <td className="max-w-72">{categories.id}</td>
                       <td>
                         <CashImage
-                          width={32}
-                          height={32}
+                          width={64}
+                          height={64}
                           imageUrl={`${config.BASE_URL}${categories.image?.imageUrl}`}
                         />
                       </td>

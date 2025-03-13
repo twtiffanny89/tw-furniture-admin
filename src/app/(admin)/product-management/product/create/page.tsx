@@ -394,7 +394,7 @@ const CreateProductComponent = () => {
       if (responseFinal.success) {
         showToast(responseFinal.message, "success");
       } else {
-        showToast(responseFinal.message, "error");
+        // showToast(responseFinal.message, "error");
       }
     }
     getProductDetail();
@@ -539,6 +539,8 @@ const CreateProductComponent = () => {
         : undefined,
       stock: data.stock ? parseInt(data.stock) : undefined,
     };
+
+    console.log("###variantData", variantData);
 
     const responseVariant = await addVariantProductService({
       productId: productDetail!.id,
@@ -795,7 +797,7 @@ const CreateProductComponent = () => {
                     <input
                       id="singleFileInput"
                       type="file"
-                      accept="image/*"
+                      accept="image/png, image/jpeg, image/jpg"
                       onChange={handleImageUpload}
                       className="hidden"
                     />

@@ -34,7 +34,7 @@ interface deleteCategoryParams {
 }
 export async function getCategoryService({
   page = 1,
-  limit = 15,
+  limit = 10,
   search = "",
 }: getCategoryParams) {
   try {

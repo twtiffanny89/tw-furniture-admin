@@ -12,7 +12,7 @@ interface getAllProductParams {
 
 export async function getAllProductOrderService({
   page = 1,
-  limit = 15,
+  limit = 10,
   search,
   filterBy,
   paymentStatus,

@@ -16,6 +16,7 @@ axiosServerWithAuth.interceptors.request.use(
   (config) => {
     const token = getServerCookieToken();
 
+    console.log("##Token: ", token);
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }

@@ -54,7 +54,6 @@ export const headerActivityLog: string[] = [
 
 export const headerCategory: string[] = [
   "NO",
-  "CATEGORIES_ID",
   "IMAGE",
   "NAME",
   "CREATE_AT",
@@ -66,7 +65,6 @@ export const headerCategory: string[] = [
 
 export const headerSubCategory: string[] = [
   "NO",
-  "SUBCATEGORY_ID",
   "IMAGE",
   "NAME",
   "CREATE_AT",
@@ -76,12 +74,7 @@ export const headerSubCategory: string[] = [
   "ACTION",
 ];
 
-export const eventHeader: string[] = [
-  "NO",
-  "BANNER_ID",
-  "BANNER_IMAGE",
-  "ACTION",
-];
+export const eventHeader: string[] = ["NO", "BANNER_IMAGE", "ACTION"];
 
 export const attributeHeader: string[] = [
   "NO",
@@ -109,8 +102,6 @@ export const productHeader: string[] = [
   "PRODUCT_VIEW",
   "STATUS",
   "CREATED_AT",
-  "CATEGORIES_NAME",
-  "SUB_CATEGORIES_NAME",
   "ACTION",
 ];
 

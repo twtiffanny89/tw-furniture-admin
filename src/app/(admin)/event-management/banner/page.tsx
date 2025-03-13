@@ -146,13 +146,10 @@ const BannerComponent = () => {
               <tbody>
                 {banner?.data.map((value, index) => {
                   const displayIndex =
-                    ((banner.pagination?.currentPage || 1) - 1) * 15 +
-                    index +
-                    1;
+                    ((banner.pagination?.currentPage || 1) - 1) * 5 + index + 1;
                   return (
                     <tr key={value.id} className="hover:bg-gray-200">
                       <td>{displayIndex}</td>
-                      <td className="max-w-72">{value.id}</td>
                       <td className="max-w-full">
                         <CashImage
                           width={361}
