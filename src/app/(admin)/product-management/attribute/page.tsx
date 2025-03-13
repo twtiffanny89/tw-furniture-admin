@@ -25,10 +25,12 @@ const AttributeComponent = () => {
   }, []);
 
   async function onCallApi({ page = 1 }: { page?: number }) {
+    setLoading(true);
     const response = await getAttributeService({
       page,
     });
     setAttribute(response);
+    setLoading(false);
   }
 
   function onAddNewClick() {

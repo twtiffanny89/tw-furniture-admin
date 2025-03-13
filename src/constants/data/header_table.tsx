@@ -27,6 +27,7 @@ export const headerAllOrder: string[] = [
 
 export const headerProductOrder: string[] = [
   "NO",
+  "PRODUCT_NAME",
   "MAIN_PRODUCT_ID",
   "NAME",
   "ORDER_ID",

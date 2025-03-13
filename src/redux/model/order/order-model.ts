@@ -7,6 +7,7 @@ export interface OrderListModel {
 
 export interface OrderDetailModel {
   id: string;
+  orderNumber: string;
   noted: string;
   userId: string;
   addressId: string;
@@ -113,4 +114,18 @@ interface Variant {
   createdAt: string;
   updatedAt: string;
   images: Image[];
+  product: ProductInfo;
+}
+
+interface ProductInfo {
+  id: string;
+  name: string;
+  description: string;
+  basePrice: number;
+  categoryId: string;
+  subcategoryId: string;
+  isPublic: boolean;
+  viewCount: number;
+  createdAt: string;
+  updatedAt: string;
 }

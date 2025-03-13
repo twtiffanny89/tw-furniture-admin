@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import CashImage from "../custom/CashImage";
-import { IoIosArrowDown } from "react-icons/io";
 import { routed } from "@/constants/navigation/routed";
 
 const Navbar = () => {
@@ -25,7 +24,7 @@ const Navbar = () => {
             width={32}
             height={32}
             borderRadius={16}
-            imageUrl="https://picsum.photos/200/300?image=20"
+            imageUrl="https://picsum.photos/500/500?image=200"
           />
         </Link>
       </div>

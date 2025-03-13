@@ -61,8 +61,11 @@ const AllOrderPage = () => {
   }
 
   useEffect(() => {
-    onCallApi({});
-  }, []);
+    const parsedPageId = parseInt(pageId, 10) || 1;
+    if (parsedPageId && !orderData) {
+      onCallApi({ page: parsedPageId });
+    }
+  }, [pageId, orderData]);
 
   const onRefreshClick = useCallback(
     debounce(async () => {
@@ -247,7 +250,10 @@ const AllOrderPage = () => {
             <div className="flex justify-end mr-8 mt-8">
               <Pagination
                 currentPage={orderData.pagination?.currentPage || 1}
-                onPageChange={(value) => onCallApi({ page: value })}
+                onPageChange={(value) => {
+                  rounter.push("/order-management/order-listing?page=" + value);
+                  onCallApi({ page: value });
+                }}
                 totalPages={orderData.pagination?.totalPages || 1}
               />
             </div>

@@ -3,6 +3,8 @@ export interface UpdateAboutUsModel {
   location: string;
   phoneNumber: string;
   phoneStore: string;
+  bankName: string;
+  bankNumber: string;
   email: string;
   availableTime: string;
   showroomHours: string;
