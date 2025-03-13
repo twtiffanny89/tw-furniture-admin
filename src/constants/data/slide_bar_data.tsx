@@ -57,11 +57,6 @@ export const slideBarData = [
         href: `/${routed.productManagement}/${routed.productPromotion}`,
         icon: <FaTags />, // Or use FaGift, FaBullhorn, or FaPercent
       },
-      {
-        label: "Attributes",
-        href: `/${routed.productManagement}/${routed.attribute}`,
-        icon: <FaStream />, // New icon for attributes
-      },
     ],
   },
   {

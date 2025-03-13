@@ -113,7 +113,9 @@ const AllOrderPage = () => {
   return (
     <div>
       <div className="p-4 bg-white">
-        <h1 className="font-bold text-xl">Order Management</h1>
+        <h1 className="font-bold text-xl">{`Order Management Total: ${
+          orderData?.pagination?.total || 0
+        }`}</h1>
         <div className="flex mt-2 ">
           <div className="flex flex-1 gap-2">
             <Input
@@ -175,7 +177,7 @@ const AllOrderPage = () => {
                 {orderData?.data.map(
                   (value: OrderDetailModel, index: number) => {
                     const displayIndex =
-                      ((orderData.pagination?.currentPage || 1) - 1) * 15 +
+                      ((orderData.pagination?.currentPage || 1) - 1) * 10 +
                       index +
                       1;
                     return (
@@ -203,7 +205,13 @@ const AllOrderPage = () => {
                           {value.paymentStatus || "- - -"}
                         </td>
                         <td>${value.totalAmount || "- - -"}</td>
-                        <td className="text-primary font-semibold">
+                        <td
+                          className={` font-semibold ${
+                            value.status === "CANCELLED"
+                              ? "text-red-500"
+                              : "text-primary"
+                          }`}
+                        >
                           {value.status || "- - -"}
                         </td>
 
@@ -212,6 +220,8 @@ const AllOrderPage = () => {
                           <div className="flex gap-2">
                             {value?.items.map((img, index) => (
                               <CashImage
+                                width={64}
+                                height={64}
                                 key={index}
                                 imageUrl={`${config.BASE_URL}${img?.variant?.images[0]?.imageUrl}`}
                               />

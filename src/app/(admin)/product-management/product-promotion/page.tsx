@@ -47,6 +47,7 @@ const ProductPromotionPage = () => {
     const response = await getAllProductPromotionService({
       page,
     });
+    console.log("### response", response);
     setProduct(response);
     setLoading(false);
   }
@@ -131,7 +132,9 @@ const ProductPromotionPage = () => {
     <div>
       <div className="p-4 bg-white">
         <div className="flex">
-          <h1 className="font-bold text-xl">Product Listing</h1>
+          <h1 className="font-bold text-xl">{`Product Promotion Total: ${
+            product?.pagination?.total || 0
+          }`}</h1>
         </div>
         <div className="flex mt-2 ">
           <div className="flex flex-1 gap-2">
@@ -167,7 +170,7 @@ const ProductPromotionPage = () => {
               <tbody>
                 {product?.data.map((value, index) => {
                   const displayIndex =
-                    ((product.pagination?.currentPage || 1) - 1) * 15 +
+                    ((product.pagination?.currentPage || 1) - 1) * 10 +
                     index +
                     1;
 
@@ -177,8 +180,8 @@ const ProductPromotionPage = () => {
                       <td className="max-w-72">{value.id}</td>
                       <td>
                         <CashImage
-                          width={32}
-                          height={32}
+                          width={64}
+                          height={64}
                           imageUrl={`${config.BASE_URL}${
                             value?.mainImage
                               ? value?.mainImage[0]?.imageUrl
@@ -207,8 +210,6 @@ const ProductPromotionPage = () => {
                       </td>
 
                       <td>{formatTimestamp(value.createdAt)}</td>
-                      <td>{value.category?.name || "- - -"}</td>
-                      <td>{value.subcategory?.name || "- - -"}</td>
                       <td>
                         <div className="flex gap-2">
                           <ButtonCustom

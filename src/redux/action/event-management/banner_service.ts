@@ -19,7 +19,7 @@ interface deletBannerParams {
 }
 export async function getBannerService({
   page = 1,
-  limit = 10,
+  limit = 5,
 }: getBannerParams) {
   try {
     const response = await axiosServerWithAuth.get(

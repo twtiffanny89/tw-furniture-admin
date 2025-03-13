@@ -14,7 +14,7 @@ const nextConfig = {
   swcMinify: true, // Enable minification
   experimental: {
     serverActions: {
-      bodySizeLimit: "10mb", // Set the desired size limit (e.g., '10mb', '20mb', etc.)
+      bodySizeLimit: "100mb",
     },
   },
 };

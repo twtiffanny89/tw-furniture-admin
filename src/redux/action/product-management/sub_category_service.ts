@@ -35,7 +35,7 @@ interface deleteSubParams {
 }
 export async function getSubCategoryService({
   page = 1,
-  limit = 15,
+  limit = 10,
   search = "",
 }: getSubCategoryParams) {
   try {
