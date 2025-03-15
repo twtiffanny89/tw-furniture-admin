@@ -63,7 +63,7 @@ export async function uploadCategory(data: uploadCategoryParams) {
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      if (error.response && error.response.status === 400) {
+      if (error.response && error.response.status === 409) {
         return {
           success: false,
           message:
@@ -119,7 +119,7 @@ export async function onUpdateCategory({
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      if (error.response && error.response.status === 400) {
+      if (error.response && error.response.status === 409) {
         return {
           success: false,
           message:

@@ -88,7 +88,7 @@ const CategoryComponent = () => {
       const response = await onUpdateCategory({
         categoryId: categoryItem!.id,
         data: {
-          name: data.nameCategory,
+          name: data.nameCategory.trim(),
           isPublic: undefined,
         },
       });
@@ -124,7 +124,7 @@ const CategoryComponent = () => {
     setOpenModal(false);
     setLoading(true);
     const response = await uploadCategory({
-      name: data.nameCategory,
+      name: data.nameCategory.trim(),
     });
     if (response.success) {
       const responseImage = await uploadImageCategory({

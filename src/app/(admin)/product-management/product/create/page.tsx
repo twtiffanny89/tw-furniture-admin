@@ -240,8 +240,8 @@ const CreateProductComponent = () => {
     }
     setLoading(true);
     const response = await createProductService({
-      name: nameProduct,
-      description: description,
+      name: nameProduct.trim() || "",
+      description: description.trim() || "",
       subcategoryId: subCategoryItem?.id || "",
       basePrice: parseInt(priceProduct, 10),
     });
@@ -351,15 +351,15 @@ const CreateProductComponent = () => {
     let response;
     if (item.selectedAttribute.name == "Color") {
       response = await createAttributeValueService({
-        label: item.name,
-        value: item.name,
+        label: item.name.trim() || "",
+        value: item.name.trim() || "",
         attributeId: item.selectedAttribute.id,
         valueType: "COLOR",
       });
     } else {
       response = await createAttributeValueService({
-        label: item.name,
-        value: item.name,
+        label: item.name.trim() || "",
+        value: item.name.trim() || "",
         attributeId: item.selectedAttribute.id,
       });
     }
@@ -417,8 +417,8 @@ const CreateProductComponent = () => {
     const response = await onUpdateSubAttribute({
       id: dataAttribudeValueItem?.attributeValue.id || "",
       data: {
-        value: item.name,
-        label: item.name,
+        value: item.name.trim() || "",
+        label: item.name.trim() || "",
       },
     });
 
@@ -842,7 +842,14 @@ const CreateProductComponent = () => {
                 </label>
                 <Input
                   value={priceProduct}
-                  onChange={(e) => setPriceProduct(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Regex to allow digits, dots, and ensure only one dot
+                    const formattedValue = value
+                      .replace(/[^0-9.]/g, "")
+                      .replace(/(\..*)\./g, "$1");
+                    setPriceProduct(formattedValue);
+                  }}
                   className="h-11"
                 />
               </div>

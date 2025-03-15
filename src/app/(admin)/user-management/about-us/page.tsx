@@ -55,21 +55,25 @@ const AboutUsComponent = () => {
     const resposne = await getAboutUsService();
     setAboutUsData(resposne);
     setFormData({
-      email: resposne?.email || "",
-      location: resposne?.location || "",
-      phoneNumber: resposne?.phoneNumber || "",
-      phoneStore: resposne?.phoneStore || "",
-      bankName: resposne?.bankName || "",
-      bankNumber: resposne?.bankNumber || "",
-      availableTime: resposne?.availableTime || "",
-      showroomHours: resposne?.showroomHours || "",
-      websiteUrl: resposne?.websiteUrl || "",
-      telegramUrl: resposne?.telegramUrl || "",
-      messagerUrl: resposne?.messagerUrl || "",
-      facebookUrl: resposne?.facebookUrl || "",
-      instagramUrl: resposne?.instagramUrl || "",
-      twitterUrl: resposne?.twitterUrl || "",
-      description: resposne?.description || "",
+      email: resposne?.email ? resposne?.email.trim() : "",
+      location: resposne?.location ? resposne?.location.trim() : "",
+      phoneNumber: resposne?.phoneNumber ? resposne?.phoneNumber.trim() : "",
+      phoneStore: resposne?.phoneStore ? resposne?.phoneStore.trim() : "",
+      bankName: resposne?.bankName ? resposne?.bankName.trim() : "",
+      bankNumber: resposne?.bankNumber ? resposne?.bankNumber.trim() : "",
+      availableTime: resposne?.availableTime
+        ? resposne?.availableTime.trim()
+        : "",
+      showroomHours: resposne?.showroomHours
+        ? resposne?.showroomHours.trim()
+        : "",
+      websiteUrl: resposne?.websiteUrl ? resposne?.websiteUrl.trim() : "",
+      telegramUrl: resposne?.telegramUrl ? resposne?.telegramUrl.trim() : "",
+      messagerUrl: resposne?.messagerUrl ? resposne?.messagerUrl.trim() : "",
+      facebookUrl: resposne?.facebookUrl ? resposne?.facebookUrl.trim() : "",
+      instagramUrl: resposne?.instagramUrl ? resposne?.instagramUrl.trim() : "",
+      twitterUrl: resposne?.twitterUrl ? resposne?.twitterUrl.trim() : "",
+      description: resposne?.description ? resposne?.description.trim() : "",
     });
     setImageQRData(
       resposne?.abaQrImage

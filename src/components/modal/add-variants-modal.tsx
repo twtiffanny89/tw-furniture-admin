@@ -304,7 +304,12 @@ const AddVariantsModal: React.FC<ModalProps> = ({
                 placeholder="Input Price..."
                 value={price}
                 onChange={(e) => {
-                  setPrice(e.target.value);
+                  const value = e.target.value;
+                  // Regex to allow digits, dots, and ensure only one dot
+                  const formattedValue = value
+                    .replace(/[^0-9.]/g, "")
+                    .replace(/(\..*)\./g, "$1");
+                  setPrice(formattedValue);
                   setErrors((prev) => ({ ...prev, price: "" }));
                 }}
                 required
@@ -323,7 +328,11 @@ const AddVariantsModal: React.FC<ModalProps> = ({
                 placeholder="Input stock quantity..."
                 value={stock}
                 onChange={(e) => {
-                  setStock(e.target.value);
+                  const value = e.target.value;
+                  const formattedValue = value
+                    .replace(/[^0-9.]/g, "")
+                    .replace(/(\..*)\./g, "$1");
+                  setStock(formattedValue);
                   setErrors((prev) => ({ ...prev, stock: "" }));
                 }}
                 required

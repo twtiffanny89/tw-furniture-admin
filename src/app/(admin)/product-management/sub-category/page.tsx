@@ -81,7 +81,7 @@ const SubCategoryComponent = () => {
 
   async function onCreateCategory(data: any) {
     const response = await createSubCategory({
-      name: data.nameSub,
+      name: data.nameSub.trim(),
       categoryId: data.idCategory,
     });
     if (response.success) {
@@ -107,7 +107,7 @@ const SubCategoryComponent = () => {
     const response = await updatedSubCategory({
       subCategoryId: data.id,
       data: {
-        name: data.nameSub,
+        name: data.nameSub.trim(),
         categoryId: data.idCategory,
       },
     });

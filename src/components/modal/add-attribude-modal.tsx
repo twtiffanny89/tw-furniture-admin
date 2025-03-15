@@ -225,7 +225,7 @@ const AddAttributeModal = ({
                   <input
                     id="singleFileInput"
                     type="file"
-                    accept="image/*"
+                    accept="image/png, image/jpeg, image/jpg"
                     onChange={handleImageUpload}
                     className="hidden"
                   />
