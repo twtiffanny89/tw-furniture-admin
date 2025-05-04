@@ -7,6 +7,7 @@ interface getSubCategoryParams {
   page?: number;
   limit?: number;
   search?: string;
+  filterBy?: string;
 }
 
 interface createSubParams {
@@ -37,10 +38,11 @@ export async function getSubCategoryService({
   page = 1,
   limit = 10,
   search = "",
+  filterBy = "",
 }: getSubCategoryParams) {
   try {
     const response = await axiosServerWithAuth.get(
-      `/v1/admin/subcategory?page=${page}&limit=${limit}&search=${search}`
+      `/v1/admin/subcategory?page=${page}&limit=${limit}&search=${search}&filterBy=${filterBy}`
     );
     return {
       data: response.data.data.data,

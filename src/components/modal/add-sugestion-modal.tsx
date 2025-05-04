@@ -1,3 +1,4 @@
+// AddSuggestionModal.tsx
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   Dialog,

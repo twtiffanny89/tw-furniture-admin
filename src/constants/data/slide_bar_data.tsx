@@ -2,7 +2,6 @@ import {
   FaUsers,
   FaClipboardList,
   FaBox,
-  FaStream,
   FaImage,
   FaThList,
   FaListAlt,

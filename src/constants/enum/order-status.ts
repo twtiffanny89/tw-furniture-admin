@@ -21,3 +21,9 @@ export enum FilterOrderStatus {
   FAIL = "FAIL",
   ALL = "ALL",
 }
+
+export const STATUS_OPTIONS = [
+  { value: "ALL", label: "All Status" },
+  { value: "ACTIVE", label: "Active" },
+  { value: "INACTIVE", label: "Inactive" },
+];

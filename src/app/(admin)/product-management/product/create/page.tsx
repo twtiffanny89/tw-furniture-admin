@@ -99,9 +99,14 @@ const CreateProductComponent = () => {
     null
   );
   const [productIdDelete, setProductIdDelete] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("tab1");
+  const [tabChangeAttempt, setTabChangeAttempt] = useState<string | null>(null);
+  const [showValidationModal, setShowValidationModal] = useState(false);
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const productId = searchParams.get("id");
+
   const [loadingUpdate, setLoadingUpdate] = useState({
     id: "",
     loading: false,
@@ -121,6 +126,18 @@ const CreateProductComponent = () => {
       getProductSuggestion({});
     }
   }, [productId]);
+
+  // Check for tab parameter in URL and set active tab accordingly
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (
+      productId &&
+      tabParam &&
+      ["tab1", "tab2", "tab3", "tab4"].includes(tabParam)
+    ) {
+      setActiveTab(tabParam);
+    }
+  }, [productId, searchParams]);
 
   const getAllSubCategory = async () => {
     const response = await getSubCategoryService({});
@@ -234,33 +251,66 @@ const CreateProductComponent = () => {
     setLoading(false);
   };
 
+  // Improved validateForm function to ensure toast messages are displayed
+  const validateForm = (): boolean => {
+    let isValid = true;
+
+    if (!nameProduct) {
+      showToast("Name Product is required", "error");
+      isValid = false;
+    }
+
+    if (!priceProduct) {
+      showToast("Price Product is required", "error");
+      isValid = false;
+    }
+
+    if (!subCategoryItem) {
+      showToast("Sub-category is required", "error");
+      isValid = false;
+    }
+
+    if (!image) {
+      showToast("Main Image is required", "error");
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
   const createProduct = async () => {
     if (!validateForm()) {
       return;
     }
     setLoading(true);
-    const response = await createProductService({
-      name: nameProduct.trim() || "",
-      description: description.trim() || "",
-      subcategoryId: subCategoryItem?.id || "",
-      basePrice: parseInt(priceProduct, 10),
-    });
+    try {
+      const response = await createProductService({
+        name: nameProduct.trim() || "",
+        description: description.trim() || "",
+        subcategoryId: subCategoryItem?.id || "",
+        basePrice: parseInt(priceProduct, 10),
+      });
 
-    await uploadMainImageProductService({
-      productId: response.data?.id || "",
-      data: {
-        fileContent: image?.base64.replace(base64Cut.cutHead, ""),
-        fileExtension: image?.type || "",
-      },
-    });
+      await uploadMainImageProductService({
+        productId: response.data?.id || "",
+        data: {
+          fileContent: image?.base64.replace(base64Cut.cutHead, ""),
+          fileExtension: image?.type || "",
+        },
+      });
 
-    if (response.success) {
-      showToast(response.message, "success");
-      router.push(
-        `/${routed.productManagement}/${routed.product}/${routed.create}?id=${response.data.id}`
-      );
-    } else {
-      showToast(response.message, "error");
+      if (response.success) {
+        showToast(response.message, "success");
+        router.push(
+          `/${routed.productManagement}/${routed.product}/${routed.create}?id=${response.data.id}`
+        );
+      } else {
+        showToast(response.message, "error");
+      }
+    } catch (error) {
+      showToast("Failed to create product", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -269,68 +319,49 @@ const CreateProductComponent = () => {
       return;
     }
     setLoading(true);
-    const response = await editProductService({
-      productId: productDetail?.id || "",
-      data: {
-        name: nameProduct,
-        description: description,
-        subcategoryId: subCategoryItem?.id || "",
-        basePrice: parseInt(priceProduct, 10),
-      },
-    });
+    try {
+      const response = await editProductService({
+        productId: productDetail?.id || "",
+        data: {
+          name: nameProduct,
+          description: description,
+          subcategoryId: subCategoryItem?.id || "",
+          basePrice: parseInt(priceProduct, 10),
+        },
+      });
 
-    if (productDetail?.mainImage[0]?.imageUrl) {
-      if (image?.type) {
+      if (productDetail?.mainImage[0]?.imageUrl) {
+        if (image?.type) {
+          await uploadMainImageProductService({
+            productId: productDetail?.id || "",
+            data: {
+              fileContent: image?.base64.replace(base64Cut.cutHead, ""),
+              fileExtension: image?.type || "",
+              imageId: productDetail?.mainImage[0].id,
+            },
+          });
+        }
+      } else {
         await uploadMainImageProductService({
           productId: productDetail?.id || "",
           data: {
             fileContent: image?.base64.replace(base64Cut.cutHead, ""),
             fileExtension: image?.type || "",
-            imageId: productDetail?.mainImage[0].id,
           },
         });
       }
-    } else {
-      await uploadMainImageProductService({
-        productId: productDetail?.id || "",
-        data: {
-          fileContent: image?.base64.replace(base64Cut.cutHead, ""),
-          fileExtension: image?.type || "",
-        },
-      });
-    }
 
-    if (response.success) {
-      showToast(response.message, "success");
-    } else {
-      showToast(response.message, "error");
+      if (response.success) {
+        showToast(response.message, "success");
+      } else {
+        showToast(response.message, "error");
+      }
+    } catch (error) {
+      showToast("Failed to update product", "error");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
-
-  function validateForm(): boolean {
-    if (!nameProduct) {
-      showToast("Name Product is required", "error");
-      return false;
-    }
-
-    if (!priceProduct) {
-      showToast("Price Product is required", "error");
-      return false;
-    }
-
-    if (!subCategoryItem) {
-      showToast("Sub-category is required", "error");
-      return false;
-    }
-
-    if (!image) {
-      showToast("Main Image is required", "error");
-      return false;
-    }
-
-    return true;
-  }
 
   const isDuplicateName = (attributes: any[], newName: string): boolean => {
     const allNames = attributes?.flatMap((attr) =>
@@ -348,57 +379,60 @@ const CreateProductComponent = () => {
       return;
     }
     setLoading(true);
-    let response;
-    if (item.selectedAttribute.name == "Color") {
-      response = await createAttributeValueService({
-        label: item.name.trim() || "",
-        value: item.name.trim() || "",
-        attributeId: item.selectedAttribute.id,
-        valueType: "COLOR",
-      });
-    } else {
-      response = await createAttributeValueService({
-        label: item.name.trim() || "",
-        value: item.name.trim() || "",
-        attributeId: item.selectedAttribute.id,
-      });
-    }
-
-    if (response.success) {
-      const createdAttributeValue = response?.data[0];
+    try {
+      let response;
       if (item.selectedAttribute.name == "Color") {
-        await addAttributeValueImageProductService({
-          productId: productDetail!.id,
-          data: {
-            attributeId: createdAttributeValue.attributeId,
-            attributeValueId: createdAttributeValue.id,
-            fileContent: item.image.base64.replace(base64Cut.cutHead, ""),
-            fileExtension: item.image.type,
-          },
+        response = await createAttributeValueService({
+          label: item.name.trim() || "",
+          value: item.name.trim() || "",
+          attributeId: item.selectedAttribute.id,
+          valueType: "COLOR",
+        });
+      } else {
+        response = await createAttributeValueService({
+          label: item.name.trim() || "",
+          value: item.name.trim() || "",
+          attributeId: item.selectedAttribute.id,
         });
       }
 
-      const responseFinal = await addAttributeProductService({
-        productId: productDetail!.id,
-        data: {
-          attributeId: createdAttributeValue.attributeId,
-          attributeValues: [
-            {
+      if (response.success) {
+        const createdAttributeValue = response?.data[0];
+        if (item.selectedAttribute.name == "Color") {
+          await addAttributeValueImageProductService({
+            productId: productDetail!.id,
+            data: {
+              attributeId: createdAttributeValue.attributeId,
               attributeValueId: createdAttributeValue.id,
-              name: item.name,
+              fileContent: item.image.base64.replace(base64Cut.cutHead, ""),
+              fileExtension: item.image.type,
             },
-          ],
-        },
-      });
+          });
+        }
 
-      if (responseFinal.success) {
-        showToast(responseFinal.message, "success");
-      } else {
-        // showToast(responseFinal.message, "error");
+        const responseFinal = await addAttributeProductService({
+          productId: productDetail!.id,
+          data: {
+            attributeId: createdAttributeValue.attributeId,
+            attributeValues: [
+              {
+                attributeValueId: createdAttributeValue.id,
+                name: item.name,
+              },
+            ],
+          },
+        });
+
+        if (responseFinal.success) {
+          showToast(responseFinal.message, "success");
+        }
       }
+      getProductDetail();
+    } catch (error) {
+      showToast("Failed to create attribute value", "error");
+    } finally {
+      setLoading(false);
     }
-    getProductDetail();
-    setLoading(false);
   };
 
   const onConfirmAttribudeValue = (item: any) => {
@@ -414,32 +448,38 @@ const CreateProductComponent = () => {
 
   const updateAttribudeValue = async (item: any) => {
     setLoading(true);
-    const response = await onUpdateSubAttribute({
-      id: dataAttribudeValueItem?.attributeValue.id || "",
-      data: {
-        value: item.name.trim() || "",
-        label: item.name.trim() || "",
-      },
-    });
-
-    if (item?.image?.type) {
-      await addAttributeValueImageProductService({
-        productId: productDetail!.id,
+    try {
+      const response = await onUpdateSubAttribute({
+        id: dataAttribudeValueItem?.attributeValue.id || "",
         data: {
-          attributeId: dataAttribudeValueItem?.attributeValue.attributeId || "",
-          attributeValueId: dataAttribudeValueItem?.attributeValue.id || "",
-          fileContent: item.image.base64.replace(base64Cut.cutHead, ""),
-          fileExtension: item.image.type,
+          value: item.name.trim() || "",
+          label: item.name.trim() || "",
         },
       });
+
+      if (item?.image?.type) {
+        await addAttributeValueImageProductService({
+          productId: productDetail!.id,
+          data: {
+            attributeId:
+              dataAttribudeValueItem?.attributeValue.attributeId || "",
+            attributeValueId: dataAttribudeValueItem?.attributeValue.id || "",
+            fileContent: item.image.base64.replace(base64Cut.cutHead, ""),
+            fileExtension: item.image.type,
+          },
+        });
+      }
+      if (response.success) {
+        showToast(response.message, "success");
+      } else {
+        showToast(response.message, "error");
+      }
+      getProductDetail();
+    } catch (error) {
+      showToast("Failed to update attribute value", "error");
+    } finally {
+      setLoading(false);
     }
-    if (response.success) {
-      showToast(response.message, "success");
-    } else {
-      showToast(response.message, "error");
-    }
-    getProductDetail();
-    setLoading(false);
   };
 
   const onOpenModalAttribude = () => {
@@ -469,33 +509,38 @@ const CreateProductComponent = () => {
     };
 
     setLoading(true);
+    try {
+      const responseVariant = await updateVariantProductService({
+        variantId: dataVariantItem?.id || "",
+        data: variantData,
+      });
 
-    const responseVariant = await updateVariantProductService({
-      variantId: dataVariantItem?.id || "",
-      data: variantData,
-    });
-
-    if (responseVariant.success) {
-      getProductDetail();
-      showToast(responseVariant.message, "success");
-    } else {
-      showToast(responseVariant.message, "error");
-    }
-
-    const imageUploadPromises = data.imagesList.map((image) => {
-      if (image.type) {
-        return addVariantImageProductService({
-          variantId: dataVariantItem?.id || "",
-          data: {
-            fileContent: image.base64.replace(base64Cut.cutHead, ""),
-            fileExtension: image.type!,
-          },
-        });
+      if (responseVariant.success) {
+        getProductDetail();
+        showToast(responseVariant.message, "success");
+      } else {
+        showToast(responseVariant.message, "error");
       }
-    });
-    await Promise.all(imageUploadPromises);
-    getProductDetail();
-    setLoading(false);
+
+      const imageUploadPromises = data.imagesList.map((image) => {
+        if (image.type) {
+          return addVariantImageProductService({
+            variantId: dataVariantItem?.id || "",
+            data: {
+              fileContent: image.base64.replace(base64Cut.cutHead, ""),
+              fileExtension: image.type!,
+            },
+          });
+        }
+        return Promise.resolve();
+      });
+      await Promise.all(imageUploadPromises);
+      getProductDetail();
+    } catch (error) {
+      showToast("Failed to update variant", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onSubmidModalVarants = async (data: FormData) => {
@@ -526,71 +571,75 @@ const CreateProductComponent = () => {
     }
 
     setLoading(true);
+    try {
+      const variantData: addVariant = {
+        price: parseInt(data.price) || productDetail?.basePrice || 0,
+        discount: data.discount ? parseFloat(data.discount) : undefined,
+        discountType: data.discountType ? data.discountType : undefined,
+        discountStartDate: data.selectedFromDate
+          ? convertToISOString(data.selectedFromDate)
+          : undefined,
+        discountEndDate: data.selectedToDate
+          ? convertToISOString(data.selectedToDate)
+          : undefined,
+        stock: data.stock ? parseInt(data.stock) : undefined,
+      };
 
-    const variantData: addVariant = {
-      price: parseInt(data.price) || productDetail?.basePrice || 0,
-      discount: data.discount ? parseFloat(data.discount) : undefined,
-      discountType: data.discountType ? data.discountType : undefined,
-      discountStartDate: data.selectedFromDate
-        ? convertToISOString(data.selectedFromDate)
-        : undefined,
-      discountEndDate: data.selectedToDate
-        ? convertToISOString(data.selectedToDate)
-        : undefined,
-      stock: data.stock ? parseInt(data.stock) : undefined,
-    };
-
-    console.log("###variantData", variantData);
-
-    const responseVariant = await addVariantProductService({
-      productId: productDetail!.id,
-      data: variantData,
-    });
-
-    if (responseVariant.success) {
-      const variantId = responseVariant?.data?.id;
-      const response = await addVariantValueProductService({
+      const responseVariant = await addVariantProductService({
         productId: productDetail!.id,
-        data: {
-          variantId,
-          attributeId: data.selectedAttributes.Color.attributeValue.attributeId,
-          attributeValueId: data.selectedAttributes.Color.attributeValue.id,
-        },
+        data: variantData,
       });
 
-      if (response.success) {
-        if (data.selectedAttributes?.Size?.id) {
-          await addVariantValueProductService({
-            productId: productDetail!.id,
-            data: {
-              variantId: response.data?.variant?.id,
-              attributeId:
-                data.selectedAttributes.Size.attributeValue.attributeId,
-              attributeValueId: data.selectedAttributes.Size.attributeValue.id,
-            },
-          });
+      if (responseVariant.success) {
+        const variantId = responseVariant?.data?.id;
+        const response = await addVariantValueProductService({
+          productId: productDetail!.id,
+          data: {
+            variantId,
+            attributeId:
+              data.selectedAttributes.Color.attributeValue.attributeId,
+            attributeValueId: data.selectedAttributes.Color.attributeValue.id,
+          },
+        });
+
+        if (response.success) {
+          if (data.selectedAttributes?.Size?.id) {
+            await addVariantValueProductService({
+              productId: productDetail!.id,
+              data: {
+                variantId: response.data?.variant?.id,
+                attributeId:
+                  data.selectedAttributes.Size.attributeValue.attributeId,
+                attributeValueId:
+                  data.selectedAttributes.Size.attributeValue.id,
+              },
+            });
+          }
         }
+
+        const imageUploadPromises = data.imagesList.map((image) =>
+          addVariantImageProductService({
+            variantId,
+            data: {
+              fileContent: image.base64.replace(base64Cut.cutHead, ""),
+              fileExtension: image.type!,
+            },
+          })
+        );
+        await Promise.all(imageUploadPromises);
+        getProductDetail();
       }
 
-      const imageUploadPromises = data.imagesList.map((image) =>
-        addVariantImageProductService({
-          variantId,
-          data: {
-            fileContent: image.base64.replace(base64Cut.cutHead, ""),
-            fileExtension: image.type!,
-          },
-        })
-      );
-      await Promise.all(imageUploadPromises);
-      getProductDetail();
+      if (responseVariant.success) {
+        showToast(responseVariant.message, "success");
+      } else {
+        showToast(responseVariant.message, "error");
+      }
+    } catch (error) {
+      showToast("Failed to create variant", "error");
+    } finally {
+      setLoading(false);
     }
-
-    if (responseVariant.success) {
-      showToast(responseVariant.message, "success");
-    } else {
-      showToast(responseVariant.message, "error");
-    }
-    setLoading(false);
   };
 
   const onConfirmSuggestion = async (val: Product | null) => {
@@ -603,26 +652,10 @@ const CreateProductComponent = () => {
       return;
     }
     setLoading(true);
-    const response = await addProductSuggestionService({
-      productId: productDetail!.id,
-      data: { toId: val?.id || "" },
-    });
-    if (response.success) {
-      getProductSuggestion({});
-      showToast(response.message, "success");
-    } else {
-      showToast(response.message, "error");
-    }
-    setLoading(false);
-  };
-
-  const onApproveDelete = async () => {
-    setModalConfirmDeleteOpen(false);
-    setLoading(true);
-    if (productIdDelete) {
-      const response = await deleteProductSuggestionService({
-        productId: productDetail?.id || "",
-        data: { toId: productIdDelete },
+    try {
+      const response = await addProductSuggestionService({
+        productId: productDetail!.id,
+        data: { toId: val?.id || "" },
       });
       if (response.success) {
         getProductSuggestion({});
@@ -630,8 +663,34 @@ const CreateProductComponent = () => {
       } else {
         showToast(response.message, "error");
       }
+    } catch (error) {
+      showToast("Failed to add suggestion", "error");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
+  };
+
+  const onApproveDelete = async () => {
+    setModalConfirmDeleteOpen(false);
+    setLoading(true);
+    try {
+      if (productIdDelete) {
+        const response = await deleteProductSuggestionService({
+          productId: productDetail?.id || "",
+          data: { toId: productIdDelete },
+        });
+        if (response.success) {
+          getProductSuggestion({});
+          showToast(response.message, "success");
+        } else {
+          showToast(response.message, "error");
+        }
+      }
+    } catch (error) {
+      showToast("Failed to delete suggestion", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onEditVariants = (value: Variant) => {
@@ -646,18 +705,24 @@ const CreateProductComponent = () => {
     updateAttributeVisibility(attributeName, value.id, !value.isPublic);
     setLoadingUpdate({ id: value.id, loading: true });
 
-    const response = await updateStatusAttribudeValueProductService({
-      productAttributeToValueId: value.id,
-      data: { isPublic: !value.isPublic },
-    });
+    try {
+      const response = await updateStatusAttribudeValueProductService({
+        productAttributeToValueId: value.id,
+        data: { isPublic: !value.isPublic },
+      });
 
-    if (response.success) {
-      showToast(response.message, "success");
-    } else {
-      showToast(response?.message ?? "Error", "error");
+      if (response.success) {
+        showToast(response.message, "success");
+      } else {
+        showToast(response?.message ?? "Error", "error");
+        updateAttributeVisibility(attributeName, value.id, value.isPublic);
+      }
+    } catch (error) {
+      showToast("Failed to update status", "error");
       updateAttributeVisibility(attributeName, value.id, value.isPublic);
+    } finally {
+      setLoadingUpdate({ id: value.id, loading: false });
     }
-    setLoadingUpdate({ id: value.id, loading: false });
   };
 
   const updateAttributeVisibility = (
@@ -698,12 +763,6 @@ const CreateProductComponent = () => {
     );
   }
 
-  function onPreviewProduct(): void {
-    router.push(
-      `/${routed.productManagement}/${routed.product}/${routed.preview}/${productDetail?.id}`
-    );
-  }
-
   const handleRemoveImage = () => {
     setImage(null);
   };
@@ -722,28 +781,111 @@ const CreateProductComponent = () => {
     }
   };
 
+  // Handle tab change with validation
+  const handleTabChange = (tabValue: string) => {
+    // If we already have a productId, allow tab switching freely
+    if (productId) {
+      setActiveTab(tabValue);
+      return;
+    }
+
+    // If trying to leave the first tab without completing form
+    if (activeTab === "tab1" && tabValue !== "tab1") {
+      // Save the requested tab to switch to after validation
+      setTabChangeAttempt(tabValue);
+      // Show the validation modal
+      setShowValidationModal(true);
+      return;
+    }
+
+    // Default case - allow tab change
+    setActiveTab(tabValue);
+  };
+
+  // Handle validation confirmation
+  const handleValidationConfirm = async () => {
+    setShowValidationModal(false);
+
+    // Save the target tab we want to navigate to after creation
+    const targetTab = tabChangeAttempt;
+
+    // Check if form is valid - this is where we need to improve error handling
+    if (!validateForm()) {
+      // When validation fails, we need to explicitly show toast messages
+      if (!nameProduct) {
+        showToast("Name Product is required", "error");
+      }
+      if (!priceProduct) {
+        showToast("Price Product is required", "error");
+      }
+      if (!subCategoryItem) {
+        showToast("Sub-category is required", "error");
+      }
+      if (!image) {
+        showToast("Main Image is required", "error");
+      }
+      return;
+    }
+
+    // Create the product first
+    setLoading(true);
+    try {
+      const response = await createProductService({
+        name: nameProduct.trim() || "",
+        description: description.trim() || "",
+        subcategoryId: subCategoryItem?.id || "",
+        basePrice: parseInt(priceProduct, 10),
+      });
+
+      if (response.success) {
+        await uploadMainImageProductService({
+          productId: response.data?.id || "",
+          data: {
+            fileContent: image?.base64.replace(base64Cut.cutHead, ""),
+            fileExtension: image?.type || "",
+          },
+        });
+
+        showToast("Product created successfully", "success");
+
+        // Redirect to the same page with the new product ID and include tab parameter
+        router.push(
+          `/${routed.productManagement}/${routed.product}/${routed.create}?id=${response.data.id}&tab=${targetTab}`
+        );
+      } else {
+        showToast(response.message, "error");
+      }
+    } catch (error) {
+      showToast("Failed to create product", "error");
+    } finally {
+      setLoading(false);
+      setTabChangeAttempt(null); // Reset the tab change attempt
+    }
+  };
+
   return (
     <div>
       <div className="p-4 bg-white flex justify-between">
-        <h1 className="font-bold text-xl">Create Product</h1>
-        {productId && (
-          <ButtonCustom onClick={onPreviewProduct} className="px-4 h-9">
-            Preview Product
-          </ButtonCustom>
-        )}
+        <h1 className="font-bold text-xl">
+          {productId ? "Edit Product" : "Create Product"}
+        </h1>
       </div>
-      <Tabs defaultValue="tab1" className="w-full bg-white mt-4">
+      <Tabs
+        value={activeTab}
+        onValueChange={handleTabChange}
+        className="w-full bg-white mt-4"
+      >
         <TabsList className="bg-[#F1F5F9] my-4 mx-4 py-6">
           <TabsTrigger className="py-2 px-8" value="tab1">
             Basic Details
           </TabsTrigger>
-          <TabsTrigger className="py-2 px-8" value="tab2">
+          <TabsTrigger className="py-2 px-8" value="tab2" disabled={!productId}>
             Attributes Value
           </TabsTrigger>
-          <TabsTrigger className="py-2 px-8" value="tab3">
+          <TabsTrigger className="py-2 px-8" value="tab3" disabled={!productId}>
             Variants
           </TabsTrigger>
-          <TabsTrigger className="py-2 px-8" value="tab4">
+          <TabsTrigger className="py-2 px-8" value="tab4" disabled={!productId}>
             Suggestion
           </TabsTrigger>
         </TabsList>
@@ -753,7 +895,7 @@ const CreateProductComponent = () => {
           <div className="flex justify-end">
             {productId ? (
               <ButtonCustom onClick={editProduct} className="px-4 h-9">
-                Edit Product
+                Save Product
               </ButtonCustom>
             ) : (
               <ButtonCustom onClick={createProduct} className="px-4 h-9">
@@ -761,8 +903,8 @@ const CreateProductComponent = () => {
               </ButtonCustom>
             )}
           </div>
-          <div className="flex">
-            <div className="mr-8">
+          <div className="flex flex-col md:flex-row mt-4">
+            <div className="md:mr-8 mb-4 md:mb-0">
               <div className="mb-4">
                 <label className="block text-xs font-medium text-gray-700 mb-1">
                   Main Image<span className="text-red-500 ml-1">*</span>
@@ -806,7 +948,7 @@ const CreateProductComponent = () => {
                 )}
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 flex-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
                   Name Product
@@ -937,7 +1079,10 @@ const CreateProductComponent = () => {
                         <td>
                           <div className="flex gap-2 items-center">
                             <Switch
-                              disable={loadingUpdate.loading}
+                              disabled={
+                                loadingUpdate.loading &&
+                                loadingUpdate.id === value.id
+                              }
                               checked={value.isPublic}
                               onChange={() =>
                                 toggleAttritudeStatus(
@@ -1068,7 +1213,7 @@ const CreateProductComponent = () => {
               </ButtonCustom>
             </div>
             <div className="overflow-x-auto min-h-[50vh]">
-              <table>
+              <table className="w-full">
                 <thead className="bg-gray-100">
                   <tr>
                     {productPreviewSuggestionHeader.map((header, index) => (
@@ -1091,16 +1236,26 @@ const CreateProductComponent = () => {
 
                     return (
                       <tr key={value.id} className="hover:bg-gray-200">
-                        <td>{displayIndex}</td>
-                        <td className="max-w-72">{value.productTo.id}</td>
-                        <td>{value.productTo.name || "- - -"}</td>
-                        <td>{value.productTo.description || "- - -"}</td>
-                        <td>{value.productTo.viewCount}</td>
-                        <td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {displayIndex}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2 max-w-72 truncate">
+                          {value.productTo.id}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {value.productTo.name || "- - -"}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {value.productTo.description || "- - -"}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {value.productTo.viewCount}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
                           {formatTimestamp(value.productTo.createdAt) ||
                             "- - -"}
                         </td>
-                        <td>
+                        <td className="border border-gray-300 px-4 py-2">
                           <div className="flex gap-2">
                             <ButtonCustom
                               variant="cancel"
@@ -1178,6 +1333,16 @@ const CreateProductComponent = () => {
         onConfirm={onApproveDelete}
         message="Are you sure you want to delete?"
         isNotCancel={true}
+      />
+
+      {/* Validation Modal */}
+      <ConfirmationModal
+        isOpen={showValidationModal}
+        title="Create Product First"
+        onClose={() => setShowValidationModal(false)}
+        onConfirm={handleValidationConfirm}
+        message="You need to create and save the product before accessing other tabs. Do you want to create the product now?"
+        isNotCancel={false}
       />
     </div>
   );

@@ -12,6 +12,7 @@ import {
   CategoryListModel,
 } from "@/redux/model/category/category_model";
 import { FiEdit } from "react-icons/fi";
+import { HiRefresh } from "react-icons/hi";
 import ButtonCustom from "@/components/custom/ButtonCustom";
 import CategoryModal from "@/components/modal/category_modal";
 import {
@@ -26,6 +27,21 @@ import { debounce } from "@/utils/debounce/debounce";
 import { config } from "@/utils/config/config";
 import CenteredLoading from "@/components/loading/center_loading";
 import { Switch } from "@/components/custom/Switch";
+import Input from "@/components/custom/Input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+// Status filter options like in the product page
+const STATUS_OPTIONS = [
+  { value: "ALL", label: "All" },
+  { value: "ACTIVE", label: "Active" },
+  { value: "INACTIVE", label: "Inactive" },
+];
 
 const CategoryComponent = () => {
   const [category, setCategory] = useState<CategoryListModel | null>(null);
@@ -37,17 +53,19 @@ const CategoryComponent = () => {
     id: "",
     loading: false,
   });
+  // Add status filter state
+  const [statusFilter, setStatusFilter] = useState<string>("ALL");
 
   useEffect(() => {
     onCallFirstApi({});
-  }, []);
+  }, [statusFilter]); // Add statusFilter as dependency to reload when it changes
 
   const onRefreshClick = useCallback(
     debounce(async () => {
       onCallApi({});
       showToast("Refresh page successfully!", "success");
     }),
-    []
+    [statusFilter]
   );
 
   async function onCallFirstApi({
@@ -58,10 +76,14 @@ const CategoryComponent = () => {
     search?: string;
   }) {
     setLoading(true);
-    const response = await getCategoryService({
-      page,
-      search,
-    });
+    // Include status filter in the API call
+    const params: any = { page, search };
+
+    if (statusFilter !== "ALL") {
+      params.filterBy = statusFilter === "ACTIVE" ? "public" : "draft";
+    }
+
+    const response = await getCategoryService(params);
     setCategory(response);
     setLoading(false);
   }
@@ -73,10 +95,14 @@ const CategoryComponent = () => {
     page?: number;
     search?: string;
   }) {
-    const response = await getCategoryService({
-      page,
-      search,
-    });
+    // Include status filter in the API call
+    const params: any = { page, search };
+
+    if (statusFilter !== "ALL") {
+      params.filterBy = statusFilter === "ACTIVE" ? "public" : "draft";
+    }
+
+    const response = await getCategoryService(params);
     setCategory(response);
   }
 
@@ -174,8 +200,14 @@ const CategoryComponent = () => {
         setSearch("");
       }
     }),
-    []
+    [statusFilter]
   );
+
+  // Handle status filter change
+  const handleStatusFilterChange = (value: string) => {
+    setStatusFilter(value);
+    // The API call will be triggered by the useEffect
+  };
 
   async function toggleCategoryStatus(value: Category) {
     if (category) {
@@ -201,6 +233,11 @@ const CategoryComponent = () => {
 
     if (response.success) {
       showToast(response.message, "success");
+
+      // If we're filtering by status, refresh the list after toggling
+      if (statusFilter !== "ALL") {
+        onCallApi({ page: category?.pagination?.currentPage, search });
+      }
     } else {
       showToast(response?.message ?? "Error", "error");
       if (category) {
@@ -218,57 +255,106 @@ const CategoryComponent = () => {
     });
   }
 
+  // Create a custom header section similar to product page
+  const CustomHeader = () => (
+    <div className="p-4 bg-white rounded-md shadow-sm">
+      <div className="flex justify-between">
+        <h1 className="font-bold text-xl">
+          {`Category Management Total: ${category?.pagination?.total || 0}`}
+        </h1>
+      </div>
+      <div className="flex mt-2 gap-2">
+        <div className="flex flex-1 gap-2">
+          <Input
+            className="max-w-md h-9"
+            placeholder="Search categories id, name..."
+            onChange={(e) => onSearchChange(e.target.value)}
+          />
+          <ButtonCustom className="w-9 h-9" onClick={onRefreshClick}>
+            <HiRefresh size={20} />
+          </ButtonCustom>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
+            <SelectTrigger className="w-[150px] h-9">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {STATUS_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <ButtonCustom className="h-8 px-4" onClick={onAddCategory}>
+            Add Category
+          </ButtonCustom>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div>
-      <Header
-        title={
-          "Category Management Total: " + `${category?.pagination?.total || 0}`
-        }
-        onRefreshClick={onRefreshClick}
-        onSearchChange={onSearchChange}
-        showAdd={true}
-        placeholder="Search categories id, name ..."
-        onAddNewClick={onAddCategory}
-      />
+      {/* Replace the old header with the new custom header */}
+      <CustomHeader />
 
-      <div className="mt-4 bg-white">
-        <div>
-          <div className="overflow-x-auto min-h-[50vh]">
-            <table>
-              <thead className="bg-gray-100">
+      <div className="mt-4 bg-white rounded-md shadow-sm">
+        <div className="overflow-x-auto min-h-[50vh]">
+          <table className="w-full">
+            <thead className="bg-gray-100">
+              <tr>
+                {headerCategory.map((header, index) => (
+                  <th
+                    key={header + index.toString()}
+                    className="border border-gray-300 px-4 py-2 text-left"
+                  >
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
                 <tr>
-                  {headerCategory.map((header, index) => (
-                    <th
-                      key={header + index.toString()}
-                      className="border border-gray-300 px-4 py-2 text-left"
-                    >
-                      {header}
-                    </th>
-                  ))}
+                  <td
+                    colSpan={headerCategory.length}
+                    className="text-center py-4"
+                  >
+                    <CenteredLoading loading={true} />
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {category?.data.map((categories, index) => {
+              ) : category?.data && category.data.length > 0 ? (
+                category.data.map((categories, index) => {
                   const displayIndex =
                     ((category.pagination?.currentPage || 1) - 1) * 10 +
                     index +
                     1;
                   return (
                     <tr key={categories.id} className="hover:bg-gray-200">
-                      <td>{displayIndex}</td>
-                      <td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {displayIndex}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
                         <CashImage
                           width={64}
                           height={64}
                           imageUrl={`${config.BASE_URL}${categories.image?.imageUrl}`}
                         />
                       </td>
-                      <td>{categories.name}</td>
-                      <td>{formatTimestamp(categories.createdAt)}</td>
-                      <td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {categories.name}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {formatTimestamp(categories.createdAt)}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
                         <div className="flex gap-2 items-center">
                           <Switch
-                            disable={loadingUpdate.loading}
+                            disabled={loadingUpdate.loading}
                             checked={categories.isPublic}
                             onChange={() => toggleCategoryStatus(categories)}
                           />
@@ -283,13 +369,13 @@ const CategoryComponent = () => {
                           </span>
                         </div>
                       </td>
-                      <td>{`${categories._count.subcategories} Items`}</td>
-                      <td>{`${categories._count.products} Items`}</td>
-                      <td>
+                      <td className="border border-gray-300 px-4 py-2">{`${categories._count.subcategories} Items`}</td>
+                      <td className="border border-gray-300 px-4 py-2">{`${categories._count.products} Items`}</td>
+                      <td className="border border-gray-300 px-4 py-2">
                         <div className="flex gap-2">
                           <ButtonCustom
                             onClick={() => onOpenModalCategory(categories)}
-                            className="w-6 h-6 "
+                            className="w-6 h-6"
                           >
                             <FiEdit size={14} className="text-white" />
                           </ButtonCustom>
@@ -297,20 +383,29 @@ const CategoryComponent = () => {
                       </td>
                     </tr>
                   );
-                })}
-              </tbody>
-            </table>
-          </div>
-          {category && category.data.length > 0 && (
-            <div className="flex justify-end mr-8 mt-8">
-              <Pagination
-                currentPage={category.pagination?.currentPage || 1}
-                onPageChange={(page) => onCallFirstApi({ page })}
-                totalPages={category.pagination?.totalPages || 1}
-              />
-            </div>
-          )}
+                })
+              ) : (
+                <tr>
+                  <td
+                    colSpan={headerCategory.length}
+                    className="text-center py-4"
+                  >
+                    No categories found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
+        {category && category.data.length > 0 && (
+          <div className="flex justify-end mr-8 my-4">
+            <Pagination
+              currentPage={category.pagination?.currentPage || 1}
+              onPageChange={(page) => onCallFirstApi({ page })}
+              totalPages={category.pagination?.totalPages || 1}
+            />
+          </div>
+        )}
       </div>
 
       <CategoryModal

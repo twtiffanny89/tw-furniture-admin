@@ -59,8 +59,8 @@ export const headerCategory: string[] = [
   "NAME",
   "CREATE_AT",
   "STATUS",
-  "PRODUCT_IN",
   "SUBCATEGORY_IN",
+  "PRODUCT_IN",
   "ACTION",
 ];
 
@@ -70,8 +70,8 @@ export const headerSubCategory: string[] = [
   "NAME",
   "CREATE_AT",
   "STATUS",
-  "PRODUCT_IN",
   "CATEGORIES_NAME",
+  "PRODUCT_IN",
   "ACTION",
 ];
 

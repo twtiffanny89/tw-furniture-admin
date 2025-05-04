@@ -7,6 +7,7 @@ interface getCategoryParams {
   page?: number;
   limit?: number;
   search?: string;
+  filterBy?: string;
 }
 
 interface uploadCategoryParams {
@@ -36,10 +37,11 @@ export async function getCategoryService({
   page = 1,
   limit = 10,
   search = "",
+  filterBy = "",
 }: getCategoryParams) {
   try {
     const response = await axiosServerWithAuth.get(
-      `/v1/admin/category?page=${page}&limit=${limit}&search=${search}`
+      `/v1/admin/category?page=${page}&limit=${limit}&search=${search}&filterBy=${filterBy}`
     );
     return {
       data: response.data.data.data,

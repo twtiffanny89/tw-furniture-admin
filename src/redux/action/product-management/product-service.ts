@@ -8,6 +8,7 @@ interface getAllProductParams {
   page?: number;
   limit?: number;
   search?: string;
+  filterBy?: string;
 }
 
 interface getAllProductSuggestionParams {
@@ -154,10 +155,11 @@ export async function getAllProductService({
   page = 1,
   limit = 10,
   search = "",
+  filterBy = "",
 }: getAllProductParams) {
   try {
     const response = await axiosServerWithAuth.get(
-      `/v1/admin/product?page=${page}&limit=${limit}&search=${search}`
+      `/v1/admin/product?page=${page}&limit=${limit}&search=${search}&filterBy=${filterBy}`
     );
     return {
       data: response.data.data.data,
@@ -176,10 +178,11 @@ export async function getAllProductPromotionService({
   page = 1,
   limit = 10,
   search = "",
+  filterBy = "",
 }: getAllProductParams) {
   try {
     const response = await axiosServerWithAuth.get(
-      `/v1/admin/product/discount?page=${page}&limit=${limit}&search=${search}`
+      `/v1/admin/product/discount?page=${page}&limit=${limit}&search=${search}&filterBy=${filterBy}`
     );
     return {
       data: response.data.data.data,

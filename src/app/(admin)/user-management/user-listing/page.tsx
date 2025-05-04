@@ -115,10 +115,10 @@ const AllUserComponent = () => {
                       <td>{user.phoneNumber}</td>
                       <td
                         className={
-                          user.active ? "text-green-500" : "text-red-500"
+                          user.isActive ? "text-green-500" : "text-red-500"
                         }
                       >
-                        {user.active ? "Active" : "Inactive"}
+                        {user.isActive ? "Active" : "Inactive"}
                       </td>
                     </tr>
                   );

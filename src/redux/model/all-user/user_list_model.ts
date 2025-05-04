@@ -13,7 +13,7 @@ export interface UserInfoModel {
   password: string;
   firstName: string;
   lastName: string;
-  active: boolean;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
   role: string;
