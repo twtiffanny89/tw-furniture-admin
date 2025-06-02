@@ -7,11 +7,18 @@ export const resizeImageConvertBase64 = (
   targetHeight?: number
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
-    // Check file size (10MB = 10 * 1024 * 1024 bytes)
+    // Check file type - only allow PNG, JPEG, JPG
+    const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+    if (!allowedTypes.includes(file.type.toLowerCase())) {
+      showToast("Only PNG, JPEG, and JPG files are allowed.", "error");
+      reject(new Error("Only PNG, JPEG, and JPG files are allowed."));
+      return;
+    }
 
-    if (file.size > 8 * 1024 * 1024) {
-      showToast("File size must be under 8MB.", "error");
-      reject(new Error("File size must be under 8MB."));
+    // Check file size (5MB = 5 * 1024 * 1024 bytes)
+    if (file.size > 5 * 1024 * 1024) {
+      showToast("File size must be under 5MB.", "error");
+      reject(new Error("File size must be under 5MB."));
       return;
     }
 

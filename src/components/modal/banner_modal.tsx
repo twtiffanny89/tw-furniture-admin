@@ -36,10 +36,15 @@ const BannerModal = ({
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
-    if (initialData) {
-      setImage({ base64: initialData.imageUrl, type: null });
-    } else {
-      resetForm();
+    if (isOpen) {
+      if (initialData) {
+        // Edit mode - populate with existing data
+        setImage({ base64: initialData.imageUrl, type: null });
+        setErrors({}); // Clear any previous errors
+      } else {
+        // Create mode - reset to default values
+        resetForm();
+      }
     }
   }, [initialData, isOpen]);
 
@@ -52,7 +57,7 @@ const BannerModal = ({
   const handleConfirm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!image) {
-      newErrors.image = "Image banner is required."; // Add error if image is null
+      newErrors.image = "Image banner is required.";
       setErrors(newErrors);
       return;
     }
@@ -66,6 +71,8 @@ const BannerModal = ({
 
   const handleRemoveImage = () => {
     setImage(null); // Clear the image state
+    // Clear image error when removing image
+    setErrors((prev) => ({ ...prev, image: "" }));
   };
 
   const handleImageUpload = async (
@@ -73,12 +80,21 @@ const BannerModal = ({
   ) => {
     const file = event.target.files?.[0];
     if (file) {
-      const resizedBase64 = await resizeImageConvertBase64(file);
-      const fileExtension = `.${file.type.split("/")[1]}`;
-      setImage({
-        base64: resizedBase64,
-        type: fileExtension,
-      });
+      try {
+        const resizedBase64 = await resizeImageConvertBase64(file);
+        const fileExtension = `.${file.type.split("/")[1]}`;
+        setImage({
+          base64: resizedBase64,
+          type: fileExtension,
+        });
+        // Clear image error if upload is successful
+        setErrors((prev) => ({ ...prev, image: "" }));
+      } catch (error) {
+        // Error handling is already done in resizeImageConvertBase64 function
+        console.error("Image upload failed:", error);
+        // Reset file input
+        event.target.value = "";
+      }
     }
   };
 
@@ -92,7 +108,8 @@ const BannerModal = ({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
-            Please fill in the details below.
+            Please upload a banner image. Supported formats: PNG, JPEG, JPG (Max
+            5MB)
           </DialogDescription>
         </DialogHeader>
         <form onKeyDown={handleKeyPress}>
@@ -100,8 +117,11 @@ const BannerModal = ({
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Image Banner<span className="text-red-500 ml-1">*</span>
             </label>
+            <div className="text-xs text-gray-500 mb-2">
+              Recommended size: 1920x1080px or 16:9 aspect ratio
+            </div>
             {image ? (
-              <div className="relative w-[360px] h-[200px] ">
+              <div className="relative w-[360px] h-[200px]">
                 {image.type ? (
                   <img
                     src={image.base64}
@@ -118,8 +138,9 @@ const BannerModal = ({
                 )}
 
                 <button
+                  type="button"
                   onClick={handleRemoveImage}
-                  className="absolute top-2 right-2 bg-red-500 text-white px-1 py-1 rounded"
+                  className="absolute top-2 right-2 bg-red-500 text-white px-1 py-1 rounded hover:bg-red-600 transition-colors"
                 >
                   <IoClose />
                 </button>
@@ -127,16 +148,22 @@ const BannerModal = ({
             ) : (
               <label
                 htmlFor="fileInput"
-                className="flex items-center justify-center w-[361px] h-[200px] bg-[#00000026] rounded-md cursor-pointer relative"
+                className="flex flex-col items-center justify-center w-[361px] h-[200px] bg-[#00000026] rounded-md cursor-pointer relative border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors"
               >
                 <input
                   id="fileInput"
                   type="file"
-                  accept="image/*"
+                  accept="image/png,image/jpeg,image/jpg"
                   onChange={handleImageUpload}
                   className="hidden"
                 />
-                <LuImagePlus className="text-gray-500 text-2xl rounded" />
+                <LuImagePlus className="text-gray-500 text-3xl mb-2" />
+                <span className="text-gray-500 text-sm">
+                  Click to upload banner
+                </span>
+                <span className="text-gray-400 text-xs mt-1">
+                  PNG, JPEG, JPG up to 5MB
+                </span>
               </label>
             )}
             {errors.image && (

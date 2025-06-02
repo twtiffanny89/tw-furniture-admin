@@ -55,8 +55,9 @@ export async function createAttributeValueService(data: createdParams) {
       data: response.data.data,
       message: "Attribute value created successfully!",
     };
-  } catch {
+  } catch (error: any) {
     return {
+      error: error.response?.data || "Unknown error occurred",
       success: false,
       message: "Failed to created Attribute value. Please try again!",
     };

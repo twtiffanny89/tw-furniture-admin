@@ -9,7 +9,7 @@ import {
   FaInfoCircle,
   FaTags,
 } from "react-icons/fa";
-import { MdDashboard } from "react-icons/md";
+import { MdAdminPanelSettings, MdDashboard } from "react-icons/md";
 import { routed } from "../navigation/routed";
 
 export const slideBarData = [
@@ -20,6 +20,11 @@ export const slideBarData = [
         label: "Dashboard",
         href: `/${routed.userManagement}/${routed.dashboard}`,
         icon: <MdDashboard />,
+      },
+      {
+        label: "Admin Listing",
+        href: `/${routed.userManagement}/${routed.admin}`,
+        icon: <MdAdminPanelSettings />,
       },
       {
         label: "User Listing",

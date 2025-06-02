@@ -18,4 +18,5 @@ export const routed = {
   create: "create",
   preview: "preview",
   dashboard: "dashboard",
+  admin: "admin",
 };

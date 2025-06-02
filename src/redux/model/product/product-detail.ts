@@ -72,7 +72,8 @@ interface Image {
 export interface Variant {
   id: string;
   productId: string;
-  price: string;
+  number: string;
+  price: number;
   discount?: string;
   discountType: string;
   discountStartDate?: string;

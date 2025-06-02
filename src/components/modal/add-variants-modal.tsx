@@ -63,7 +63,15 @@ const AddVariantsModal: React.FC<ModalProps> = ({
   onSubmit,
   initialData,
 }) => {
-  const initialSelectedAttributes = attributes.reduce(
+  // Filter attributes to only include those with public values
+  const publicAttributes = attributes
+    .map((attr) => ({
+      ...attr,
+      values: attr.values.filter((value) => value.isPublic === true),
+    }))
+    .filter((attr) => attr.values.length > 0);
+
+  const initialSelectedAttributes = publicAttributes.reduce(
     (acc, attr) => ({ ...acc, [attr.attribute.name]: "" }),
     {}
   );
@@ -97,7 +105,7 @@ const AddVariantsModal: React.FC<ModalProps> = ({
   function setDataWhenEdit() {
     if (initialData) {
       const initialSelected: Record<string, SelectedAttribute> = {};
-      attributes.forEach(({ attribute, values }) => {
+      publicAttributes.forEach(({ attribute }) => {
         const selectedValue = initialData.attributes.find(
           (attr: any) => attr.attributeId === attribute.id
         );
@@ -251,7 +259,7 @@ const AddVariantsModal: React.FC<ModalProps> = ({
 
         <div className="space-y-4">
           <div className="flex flex-wrap gap-4">
-            {attributes.map(({ attribute, values }) => (
+            {publicAttributes.map(({ attribute, values }) => (
               <div key={attribute.id} className="flex-1 min-w-[200px]">
                 <label className="block text-xs font-medium text-gray-700 mb-1">
                   {attribute.name}
@@ -283,8 +291,27 @@ const AddVariantsModal: React.FC<ModalProps> = ({
                           key={value.id}
                           value={value.attributeValue.value}
                         >
-                          <div className="flex items-center gap-2">
-                            {value.attributeValue.label}
+                          <div className="flex items-center gap-3">
+                            {/* Show image for Color attributes or if image exists */}
+                            {attribute.name === "Color" &&
+                            value.attributeValue.image?.[0]?.imageUrl ? (
+                              <div className="relative w-8 h-8 flex-shrink-0">
+                                <CashImage
+                                  width={32}
+                                  height={32}
+                                  imageUrl={`${config.BASE_URL}${value.attributeValue.image[0].imageUrl}`}
+                                />
+                              </div>
+                            ) : attribute.name === "Color" ? (
+                              <div className="w-8 h-8 bg-gray-200 rounded-md border flex items-center justify-center flex-shrink-0">
+                                <span className="text-xs text-gray-400">
+                                  No
+                                </span>
+                              </div>
+                            ) : null}
+                            <span className="text-sm">
+                              {value.attributeValue.label}
+                            </span>
                           </div>
                         </SelectItem>
                       ))}
@@ -382,7 +409,7 @@ const AddVariantsModal: React.FC<ModalProps> = ({
                 <input
                   id="multipleFileInput"
                   type="file"
-                  accept="image/*"
+                  accept="image/png,image/jpeg,image/jpg,image/webp"
                   onChange={handleImageListUpload}
                   multiple
                   className="hidden"

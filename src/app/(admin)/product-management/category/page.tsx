@@ -4,15 +4,12 @@
 import { useCallback, useEffect, useState } from "react";
 import CashImage from "@/components/custom/CashImage";
 import showToast from "@/components/error-handle/show-toast";
-import Header from "@/components/header/header";
 import Pagination from "@/components/pagination/Pagination";
 import { headerCategory } from "@/constants/data/header_table";
 import {
   Category,
   CategoryListModel,
 } from "@/redux/model/category/category_model";
-import { FiEdit } from "react-icons/fi";
-import { HiRefresh } from "react-icons/hi";
 import ButtonCustom from "@/components/custom/ButtonCustom";
 import CategoryModal from "@/components/modal/category_modal";
 import {
@@ -26,7 +23,6 @@ import { formatTimestamp } from "@/utils/date/format_timestamp";
 import { debounce } from "@/utils/debounce/debounce";
 import { config } from "@/utils/config/config";
 import CenteredLoading from "@/components/loading/center_loading";
-import { Switch } from "@/components/custom/Switch";
 import Input from "@/components/custom/Input";
 import {
   Select,
@@ -35,6 +31,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+// Import Lucide icons
+import { Edit, Globe, Lock, RefreshCw } from "lucide-react";
 
 // Status filter options like in the product page
 const STATUS_OPTIONS = [
@@ -110,12 +108,15 @@ const CategoryComponent = () => {
     setOpenModal(false);
     setLoading(true);
 
-    if (data.nameCategory != categoryItem?.name) {
+    if (
+      data.nameCategory != categoryItem?.name ||
+      data.isActive !== categoryItem?.isPublic
+    ) {
       const response = await onUpdateCategory({
         categoryId: categoryItem!.id,
         data: {
           name: data.nameCategory.trim(),
-          isPublic: undefined,
+          isPublic: data.isActive, // Include the isActive status
         },
       });
 
@@ -141,7 +142,7 @@ const CategoryComponent = () => {
       }
     }
 
-    setCategoryItem(null);
+    setCategoryItem(null); // Clear after edit
     onCallApi({ page: category!.pagination?.currentPage, search: search });
     setLoading(false);
   }
@@ -151,6 +152,7 @@ const CategoryComponent = () => {
     setLoading(true);
     const response = await uploadCategory({
       name: data.nameCategory.trim(),
+      isPublic: data.isActive,
     });
     if (response.success) {
       const responseImage = await uploadImageCategory({
@@ -182,12 +184,19 @@ const CategoryComponent = () => {
   }
 
   function onAddCategory() {
+    setCategoryItem(null); // Clear any existing item data
     setOpenModal(true);
   }
 
   function onOpenModalCategory(item: Category) {
     setCategoryItem(item);
     setOpenModal(true);
+  }
+
+  // Fixed onClose function to properly clear initial data
+  function onCloseModal() {
+    setOpenModal(false);
+    setCategoryItem(null); // Clear the initial data when closing
   }
 
   const onSearchChange = useCallback(
@@ -271,7 +280,7 @@ const CategoryComponent = () => {
             onChange={(e) => onSearchChange(e.target.value)}
           />
           <ButtonCustom className="w-9 h-9" onClick={onRefreshClick}>
-            <HiRefresh size={20} />
+            <RefreshCw size={20} />
           </ButtonCustom>
         </div>
 
@@ -353,11 +362,6 @@ const CategoryComponent = () => {
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
                         <div className="flex gap-2 items-center">
-                          <Switch
-                            disabled={loadingUpdate.loading}
-                            checked={categories.isPublic}
-                            onChange={() => toggleCategoryStatus(categories)}
-                          />
                           <span
                             className={
                               categories.isPublic
@@ -374,10 +378,25 @@ const CategoryComponent = () => {
                       <td className="border border-gray-300 px-4 py-2">
                         <div className="flex gap-2">
                           <ButtonCustom
+                            onClick={() => toggleCategoryStatus(categories)}
+                            className="w-6 h-6"
+                            title={categories.isPublic ? "Public" : "Private"}
+                            disabled={
+                              loadingUpdate.loading &&
+                              loadingUpdate.id === categories.id
+                            }
+                          >
+                            {categories.isPublic ? (
+                              <Globe size={14} className="text-white" />
+                            ) : (
+                              <Lock size={14} className="text-white" />
+                            )}
+                          </ButtonCustom>
+                          <ButtonCustom
                             onClick={() => onOpenModalCategory(categories)}
                             className="w-6 h-6"
                           >
-                            <FiEdit size={14} className="text-white" />
+                            <Edit size={14} className="text-white" />
                           </ButtonCustom>
                         </div>
                       </td>
@@ -411,7 +430,7 @@ const CategoryComponent = () => {
       <CategoryModal
         title="Category"
         isOpen={openModal}
-        onClose={() => setOpenModal(false)}
+        onClose={onCloseModal} // Use the fixed onCloseModal function
         onConfirm={onConfirm}
         initialData={categoryItem}
       />

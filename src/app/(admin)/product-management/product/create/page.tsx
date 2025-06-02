@@ -76,6 +76,7 @@ import { FiEdit } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 import { LuImagePlus } from "react-icons/lu";
 import { MdDeleteOutline } from "react-icons/md";
+import { HiRefresh } from "react-icons/hi";
 
 const CreateProductComponent = () => {
   const [productDetail, setProductDetail] = useState<ProductDetailModel | null>(
@@ -102,6 +103,18 @@ const CreateProductComponent = () => {
   const [activeTab, setActiveTab] = useState("tab1");
   const [tabChangeAttempt, setTabChangeAttempt] = useState<string | null>(null);
   const [showValidationModal, setShowValidationModal] = useState(false);
+  const [deleteAttributeModal, setDeleteAttributeModal] =
+    useState<boolean>(false);
+  const [attributeToDelete, setAttributeToDelete] = useState<MainValue | null>(
+    null
+  );
+  const [variantToResetDiscount, setVariantToResetDiscount] =
+    useState<Variant | null>(null);
+  const [resetDiscountModal, setResetDiscountModal] = useState<boolean>(false);
+
+  // Add these state variables for variant deletion (add near other useState declarations)
+  const [deleteVariantModal, setDeleteVariantModal] = useState<boolean>(false);
+  const [variantToDelete, setVariantToDelete] = useState<Variant | null>(null);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -146,57 +159,75 @@ const CreateProductComponent = () => {
 
   const getProductFirstDetail = async () => {
     setLoading(true);
-    const responseProduct = await getProductByIdService({
-      productId: productId!,
-    });
+    try {
+      const responseProduct = await getProductByIdService({
+        productId: productId!,
+      });
 
-    if (responseProduct.success) {
-      setNameProduct(responseProduct?.data.name);
-      setPriceProduct(responseProduct?.data.basePrice);
-      setDescription(responseProduct?.data.description);
-      setProductDetail(responseProduct.data);
-      getSubCategory(responseProduct?.data.subcategoryId);
-      if (responseProduct?.data.mainImage[0]?.imageUrl) {
-        setImage({
-          base64: responseProduct?.data.mainImage[0]?.imageUrl || "",
-          type: null,
-        });
+      if (responseProduct.success) {
+        setNameProduct(responseProduct?.data.name);
+        setPriceProduct(responseProduct?.data.basePrice);
+        setDescription(responseProduct?.data.description);
+        setProductDetail(responseProduct.data);
+        getSubCategory(responseProduct?.data.subcategoryId);
+        if (responseProduct?.data.mainImage[0]?.imageUrl) {
+          setImage({
+            base64: responseProduct?.data.mainImage[0]?.imageUrl || "",
+            type: null,
+          });
+        }
       }
+    } catch (error) {
+      console.error("Error fetching product details:", error);
+      showToast("Failed to load product details", "error");
     }
     setLoading(false);
   };
 
   const getProductDetail = async () => {
-    const responseProduct = await getProductByIdService({
-      productId: productId!,
-    });
+    try {
+      const responseProduct = await getProductByIdService({
+        productId: productId!,
+      });
 
-    if (responseProduct.success) {
-      setNameProduct(responseProduct?.data.name);
-      setPriceProduct(responseProduct?.data.basePrice);
-      setDescription(responseProduct?.data.description);
-      setProductDetail(responseProduct.data);
-      getSubCategory(responseProduct?.data.subcategoryId);
-      if (responseProduct?.data.mainImage[0]?.imageUrl) {
-        setImage({
-          base64: responseProduct?.data.mainImage[0]?.imageUrl || "",
-          type: null,
-        });
+      if (responseProduct.success) {
+        setNameProduct(responseProduct?.data.name);
+        setPriceProduct(responseProduct?.data.basePrice);
+        setDescription(responseProduct?.data.description);
+        setProductDetail(responseProduct.data);
+        getSubCategory(responseProduct?.data.subcategoryId);
+        if (responseProduct?.data.mainImage[0]?.imageUrl) {
+          setImage({
+            base64: responseProduct?.data.mainImage[0]?.imageUrl || "",
+            type: null,
+          });
+        }
       }
+    } catch (error) {
+      console.error("Error fetching product details:", error);
+      showToast("Failed to refresh product details", "error");
     }
   };
 
   const getProductSuggestion = async ({ page = 1 }: { page?: number }) => {
-    const response = await getProductSuggestionService({
-      productId: productId!,
-      page,
-    });
-    setProductSuggestion(response.data);
+    try {
+      const response = await getProductSuggestionService({
+        productId: productId!,
+        page,
+      });
+      setProductSuggestion(response.data);
+    } catch (error) {
+      console.error("Error fetching product suggestions:", error);
+    }
   };
 
   const getSubCategory = async (id: string) => {
-    const response = await getSubCategoryDetailService({ subCategoryId: id });
-    setSubCategoryItem(response);
+    try {
+      const response = await getSubCategoryDetailService({ subCategoryId: id });
+      setSubCategoryItem(response);
+    } catch (error) {
+      console.error("Error fetching subcategory:", error);
+    }
   };
 
   const onItemSelect = (value: Subcategory) => {
@@ -251,27 +282,42 @@ const CreateProductComponent = () => {
     setLoading(false);
   };
 
+  // Enhanced refresh function
+  const handleRefresh = async () => {
+    if (productId) {
+      await getProductDetail();
+      await getProductSuggestion({});
+      showToast("Data refreshed successfully!", "success");
+    } else {
+      await getAllSubCategory();
+      showToast("Subcategories refreshed!", "success");
+    }
+  };
+
   // Improved validateForm function to ensure toast messages are displayed
   const validateForm = (): boolean => {
     let isValid = true;
 
-    if (!nameProduct) {
-      showToast("Name Product is required", "error");
+    if (!nameProduct.trim()) {
+      showToast("Product name is required", "error");
       isValid = false;
     }
 
-    if (!priceProduct) {
-      showToast("Price Product is required", "error");
+    if (!priceProduct.trim()) {
+      showToast("Product price is required", "error");
+      isValid = false;
+    } else if (isNaN(Number(priceProduct)) || Number(priceProduct) <= 0) {
+      showToast("Please enter a valid price", "error");
       isValid = false;
     }
 
     if (!subCategoryItem) {
-      showToast("Sub-category is required", "error");
+      showToast("Sub-category selection is required", "error");
       isValid = false;
     }
 
     if (!image) {
-      showToast("Main Image is required", "error");
+      showToast("Main product image is required", "error");
       isValid = false;
     }
 
@@ -291,15 +337,15 @@ const CreateProductComponent = () => {
         basePrice: parseInt(priceProduct, 10),
       });
 
-      await uploadMainImageProductService({
-        productId: response.data?.id || "",
-        data: {
-          fileContent: image?.base64.replace(base64Cut.cutHead, ""),
-          fileExtension: image?.type || "",
-        },
-      });
-
       if (response.success) {
+        await uploadMainImageProductService({
+          productId: response.data?.id || "",
+          data: {
+            fileContent: image?.base64.replace(base64Cut.cutHead, ""),
+            fileExtension: image?.type || "",
+          },
+        });
+
         showToast(response.message, "success");
         router.push(
           `/${routed.productManagement}/${routed.product}/${routed.create}?id=${response.data.id}`
@@ -323,13 +369,14 @@ const CreateProductComponent = () => {
       const response = await editProductService({
         productId: productDetail?.id || "",
         data: {
-          name: nameProduct,
-          description: description,
+          name: nameProduct.trim(),
+          description: description.trim(),
           subcategoryId: subCategoryItem?.id || "",
           basePrice: parseInt(priceProduct, 10),
         },
       });
 
+      // Handle image upload/update
       if (productDetail?.mainImage[0]?.imageUrl) {
         if (image?.type) {
           await uploadMainImageProductService({
@@ -342,17 +389,20 @@ const CreateProductComponent = () => {
           });
         }
       } else {
-        await uploadMainImageProductService({
-          productId: productDetail?.id || "",
-          data: {
-            fileContent: image?.base64.replace(base64Cut.cutHead, ""),
-            fileExtension: image?.type || "",
-          },
-        });
+        if (image?.type) {
+          await uploadMainImageProductService({
+            productId: productDetail?.id || "",
+            data: {
+              fileContent: image?.base64.replace(base64Cut.cutHead, ""),
+              fileExtension: image?.type || "",
+            },
+          });
+        }
       }
 
       if (response.success) {
         showToast(response.message, "success");
+        await getProductDetail(); // Refresh product data
       } else {
         showToast(response.message, "error");
       }
@@ -363,21 +413,7 @@ const CreateProductComponent = () => {
     }
   };
 
-  const isDuplicateName = (attributes: any[], newName: string): boolean => {
-    const allNames = attributes?.flatMap((attr) =>
-      attr.values.map((value: any) => value.name.toLowerCase())
-    );
-    return allNames.includes(newName.toLowerCase());
-  };
-
   const createAttribudeValue = async (item: any) => {
-    if (isDuplicateName(productDetail!.attributes, item.name)) {
-      showToast(
-        "This Attribute is already in product. Please choose a different name.!",
-        "error"
-      );
-      return;
-    }
     setLoading(true);
     try {
       let response;
@@ -387,18 +423,20 @@ const CreateProductComponent = () => {
           value: item.name.trim() || "",
           attributeId: item.selectedAttribute.id,
           valueType: "COLOR",
+          isActive: true,
         });
       } else {
         response = await createAttributeValueService({
           label: item.name.trim() || "",
           value: item.name.trim() || "",
           attributeId: item.selectedAttribute.id,
+          isActive: true,
         });
       }
 
       if (response.success) {
         const createdAttributeValue = response?.data[0];
-        if (item.selectedAttribute.name == "Color") {
+        if (item.selectedAttribute.name == "Color" && item.image) {
           await addAttributeValueImageProductService({
             productId: productDetail!.id,
             data: {
@@ -442,7 +480,6 @@ const CreateProductComponent = () => {
     } else {
       createAttribudeValue(item);
     }
-
     setDataAttribudeValueItem(null);
   };
 
@@ -483,10 +520,12 @@ const CreateProductComponent = () => {
   };
 
   const onOpenModalAttribude = () => {
+    setDataAttribudeValueItem(null); // Clear previous data
     setModalCreateAttribude(true);
   };
 
   const onOpenModalVariants = () => {
+    setDataVariantItem(null); // Clear previous data
     setModalCreateVariant(true);
   };
 
@@ -506,6 +545,7 @@ const CreateProductComponent = () => {
         ? convertToISOString(data.selectedToDate)
         : undefined,
       stock: data.stock ? parseInt(data.stock) : undefined,
+      isActive: true,
     };
 
     setLoading(true);
@@ -516,14 +556,15 @@ const CreateProductComponent = () => {
       });
 
       if (responseVariant.success) {
-        getProductDetail();
         showToast(responseVariant.message, "success");
       } else {
         showToast(responseVariant.message, "error");
       }
 
-      const imageUploadPromises = data.imagesList.map((image) => {
-        if (image.type) {
+      // Upload new images
+      const imageUploadPromises = data.imagesList
+        .filter((image) => image.type) // Only upload new images
+        .map((image) => {
           return addVariantImageProductService({
             variantId: dataVariantItem?.id || "",
             data: {
@@ -531,9 +572,8 @@ const CreateProductComponent = () => {
               fileExtension: image.type!,
             },
           });
-        }
-        return Promise.resolve();
-      });
+        });
+
       await Promise.all(imageUploadPromises);
       getProductDetail();
     } catch (error) {
@@ -541,6 +581,68 @@ const CreateProductComponent = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Complete the onDeleteAttributeValue function
+  const onDeleteAttributeValue = (value: Variant) => {
+    setVariantToDelete(value);
+    setDeleteVariantModal(true);
+  };
+
+  // Add the delete variant handler function
+  const handleDeleteVariant = async () => {
+    if (!variantToDelete) return;
+
+    setDeleteVariantModal(false);
+    setLoading(true);
+
+    try {
+      // Get yesterday's date to expire any active discount
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayISO = convertToISOString(
+        yesterday.toISOString().split("T")[0]
+      );
+
+      // Set isActive to false and expire discount by setting end date to yesterday
+      const variantData: addVariant = {
+        price: variantToDelete.price,
+        discount: variantToDelete.discount
+          ? parseFloat(variantToDelete.discount.toString())
+          : undefined,
+        discountType: variantToDelete.discountType
+          ? variantToDelete.discountType
+          : undefined,
+        discountStartDate: variantToDelete.discountStartDate || undefined,
+        discountEndDate: variantToDelete.discount ? yesterdayISO : undefined, // Set to yesterday if discount exists
+        stock: variantToDelete.stock
+          ? parseInt(variantToDelete.stock.toString())
+          : undefined,
+        isActive: false, // Set to false to "delete" the variant
+      };
+
+      const response = await updateVariantProductService({
+        variantId: variantToDelete.id,
+        data: variantData,
+      });
+
+      if (response.success) {
+        showToast("Variant deleted successfully", "success");
+        await getProductDetail(); // Refresh the product data
+      } else {
+        showToast(response.message || "Failed to delete variant", "error");
+      }
+    } catch (error) {
+      showToast("Failed to delete variant", "error");
+    } finally {
+      setLoading(false);
+      setVariantToDelete(null);
+    }
+  };
+
+  const handleCloseDeleteVariantModal = () => {
+    setDeleteVariantModal(false);
+    setVariantToDelete(null);
   };
 
   const onSubmidModalVarants = async (data: FormData) => {
@@ -554,22 +656,6 @@ const CreateProductComponent = () => {
   };
 
   const onCreateVarant = async (data: FormData) => {
-    const targetLabel =
-      (data.selectedAttributes?.Color?.attributeValue?.label || "") +
-      (data.selectedAttributes?.Size?.attributeValue?.label || "");
-    const combinedLabelsList = productDetail?.variants.map((variant) =>
-      variant.attributes.map((attr) => attr.attributeValue.label).join("")
-    );
-
-    const exists = combinedLabelsList?.includes(targetLabel);
-    if (exists) {
-      showToast(
-        "This Attribute variant is already in product. Please choose a different name.!",
-        "error"
-      );
-      return;
-    }
-
     setLoading(true);
     try {
       const variantData: addVariant = {
@@ -583,6 +669,7 @@ const CreateProductComponent = () => {
           ? convertToISOString(data.selectedToDate)
           : undefined,
         stock: data.stock ? parseInt(data.stock) : undefined,
+        isActive: true,
       };
 
       const responseVariant = await addVariantProductService({
@@ -592,6 +679,8 @@ const CreateProductComponent = () => {
 
       if (responseVariant.success) {
         const variantId = responseVariant?.data?.id;
+
+        // Add Color attribute
         const response = await addVariantValueProductService({
           productId: productDetail!.id,
           data: {
@@ -602,36 +691,35 @@ const CreateProductComponent = () => {
           },
         });
 
-        if (response.success) {
-          if (data.selectedAttributes?.Size?.id) {
-            await addVariantValueProductService({
-              productId: productDetail!.id,
-              data: {
-                variantId: response.data?.variant?.id,
-                attributeId:
-                  data.selectedAttributes.Size.attributeValue.attributeId,
-                attributeValueId:
-                  data.selectedAttributes.Size.attributeValue.id,
-              },
-            });
-          }
+        // Add Size attribute if present
+        if (response.success && data.selectedAttributes?.Size?.id) {
+          await addVariantValueProductService({
+            productId: productDetail!.id,
+            data: {
+              variantId: response.data?.variant?.id,
+              attributeId:
+                data.selectedAttributes.Size.attributeValue.attributeId,
+              attributeValueId: data.selectedAttributes.Size.attributeValue.id,
+            },
+          });
         }
 
-        const imageUploadPromises = data.imagesList.map((image) =>
-          addVariantImageProductService({
-            variantId,
-            data: {
-              fileContent: image.base64.replace(base64Cut.cutHead, ""),
-              fileExtension: image.type!,
-            },
-          })
-        );
-        await Promise.all(imageUploadPromises);
-        getProductDetail();
-      }
+        // Upload variant images
+        const imageUploadPromises = data.imagesList
+          .filter((image) => image.type) // Only upload new images
+          .map((image) =>
+            addVariantImageProductService({
+              variantId,
+              data: {
+                fileContent: image.base64.replace(base64Cut.cutHead, ""),
+                fileExtension: image.type!,
+              },
+            })
+          );
 
-      if (responseVariant.success) {
+        await Promise.all(imageUploadPromises);
         showToast(responseVariant.message, "success");
+        getProductDetail();
       } else {
         showToast(responseVariant.message, "error");
       }
@@ -642,11 +730,76 @@ const CreateProductComponent = () => {
     }
   };
 
+  // Add function to reset discount only
+  const onResetDiscount = (value: Variant) => {
+    setVariantToResetDiscount(value);
+    setResetDiscountModal(true);
+  };
+
+  const handleCloseResetDiscountModal = () => {
+    setResetDiscountModal(false);
+    setVariantToResetDiscount(null);
+  };
+
+  // Add the reset discount handler function
+  const handleResetDiscount = async () => {
+    if (!variantToResetDiscount) return;
+
+    setResetDiscountModal(false);
+    setLoading(true);
+
+    try {
+      // Get yesterday's date to expire the discount
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayISO = convertToISOString(
+        yesterday.toISOString().split("T")[0]
+      );
+
+      // Reset discount by setting end date to yesterday, keep variant active
+      const variantData: addVariant = {
+        price: variantToResetDiscount.price,
+        discount: variantToResetDiscount.discount
+          ? parseFloat(variantToResetDiscount.discount.toString())
+          : undefined,
+        discountType: variantToResetDiscount.discountType
+          ? variantToResetDiscount.discountType
+          : undefined,
+        discountStartDate:
+          variantToResetDiscount.discountStartDate || undefined,
+        discountEndDate: variantToResetDiscount.discount
+          ? yesterdayISO
+          : undefined, // Set to yesterday if discount exists
+        stock: variantToResetDiscount.stock
+          ? parseInt(variantToResetDiscount.stock.toString())
+          : undefined,
+        isActive: true, // Keep variant active, only reset discount
+      };
+
+      const response = await updateVariantProductService({
+        variantId: variantToResetDiscount.id,
+        data: variantData,
+      });
+
+      if (response.success) {
+        showToast("Discount reset successfully", "success");
+        await getProductDetail(); // Refresh the product data
+      } else {
+        showToast(response.message || "Failed to reset discount", "error");
+      }
+    } catch (error) {
+      showToast("Failed to reset discount", "error");
+    } finally {
+      setLoading(false);
+      setVariantToResetDiscount(null);
+    }
+  };
+
   const onConfirmSuggestion = async (val: Product | null) => {
     setModalSuggestion(false);
     if (val?.id == productDetail?.id) {
       showToast(
-        "This Product suggestion is already in product. Please choose a different product.!",
+        "Cannot add the same product as a suggestion. Please choose a different product.",
         "error"
       );
       return;
@@ -690,6 +843,7 @@ const CreateProductComponent = () => {
       showToast("Failed to delete suggestion", "error");
     } finally {
       setLoading(false);
+      setProductIdDelete(null); // Clear after operation
     }
   };
 
@@ -733,12 +887,10 @@ const CreateProductComponent = () => {
     setProductDetail((prevProduct) => {
       if (!prevProduct) return null;
 
-      // Find the Color attribute
       const updatedAttributes = prevProduct.attributes.map((attribute) => {
         if (attribute.attribute.name == attributeName) {
           const updatedValues = attribute.values.map((value) => {
             if (value.id === valueId) {
-              // Update isPublic based on the valueId
               return { ...value, isPublic };
             }
             return value;
@@ -757,6 +909,30 @@ const CreateProductComponent = () => {
     setDataAttribudeValueItem(value);
   };
 
+  const handleDeleteAttribute = async () => {
+    if (!attributeToDelete) return;
+
+    setDeleteAttributeModal(false);
+
+    try {
+      // Find the attribute name for this value
+      const attributeName = productDetail?.attributes.find((attr) =>
+        attr.values.some((val) => val.id === attributeToDelete.id)
+      )?.attribute.name;
+
+      if (attributeName) {
+        // Call the existing toggle function to deactivate the attribute
+        await toggleAttritudeStatus(attributeToDelete, attributeName);
+      } else {
+        showToast("Could not find attribute to deactivate", "error");
+      }
+    } catch (error) {
+      showToast("Failed to deactivate attribute", "error");
+    } finally {
+      setAttributeToDelete(null);
+    }
+  };
+
   function onViewProduct(value: ProductPreview): void {
     router.push(
       `/${routed.productManagement}/${routed.product}/${routed.preview}/${value.productTo.id}`
@@ -772,12 +948,18 @@ const CreateProductComponent = () => {
   ) => {
     const file = event.target.files?.[0];
     if (file) {
-      const resizedBase64 = await resizeImageConvertBase64(file);
-      const fileExtension = `.${file.type.split("/")[1]}`;
-      setImage({
-        base64: resizedBase64,
-        type: fileExtension,
-      });
+      try {
+        const resizedBase64 = await resizeImageConvertBase64(file);
+        const fileExtension = `.${file.type.split("/")[1]}`;
+        setImage({
+          base64: resizedBase64,
+          type: fileExtension,
+        });
+      } catch (error) {
+        console.error("Image upload failed:", error);
+        // Reset file input on error
+        event.target.value = "";
+      }
     }
   };
 
@@ -809,21 +991,8 @@ const CreateProductComponent = () => {
     // Save the target tab we want to navigate to after creation
     const targetTab = tabChangeAttempt;
 
-    // Check if form is valid - this is where we need to improve error handling
+    // Check if form is valid
     if (!validateForm()) {
-      // When validation fails, we need to explicitly show toast messages
-      if (!nameProduct) {
-        showToast("Name Product is required", "error");
-      }
-      if (!priceProduct) {
-        showToast("Price Product is required", "error");
-      }
-      if (!subCategoryItem) {
-        showToast("Sub-category is required", "error");
-      }
-      if (!image) {
-        showToast("Main Image is required", "error");
-      }
       return;
     }
 
@@ -863,17 +1032,70 @@ const CreateProductComponent = () => {
     }
   };
 
-  return (
-    <div>
-      <div className="p-4 bg-white flex justify-between">
+  // Close modals properly
+  const handleCloseAttributeModal = () => {
+    setModalCreateAttribude(false);
+    setDataAttribudeValueItem(null);
+  };
+
+  const handleCloseVariantModal = () => {
+    setModalCreateVariant(false);
+    setDataVariantItem(null);
+  };
+
+  const handleCloseSuggestionModal = () => {
+    setModalSuggestion(false);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setModalConfirmDeleteOpen(false);
+    setProductIdDelete(null);
+  };
+
+  const handleCloseValidationModal = () => {
+    setShowValidationModal(false);
+    setTabChangeAttempt(null);
+  };
+
+  const handleCloseDeleteAttributeModal = () => {
+    setDeleteAttributeModal(false);
+    setAttributeToDelete(null);
+  };
+
+  const onDeleteAttribute = (value: MainValue) => {
+    setAttributeToDelete(value);
+    setDeleteAttributeModal(true);
+  };
+
+  // Custom header component
+  const CustomHeader = () => (
+    <div className="p-4 bg-white rounded-md shadow-sm">
+      <div className="flex justify-between items-center">
         <h1 className="font-bold text-xl">
           {productId ? "Edit Product" : "Create Product"}
         </h1>
+        <div className="flex gap-2">
+          {productId && (
+            <ButtonCustom
+              className="w-9 h-9"
+              onClick={handleRefresh}
+              title="Refresh Data"
+            >
+              <HiRefresh size={20} />
+            </ButtonCustom>
+          )}
+        </div>
       </div>
+    </div>
+  );
+
+  return (
+    <div>
+      <CustomHeader />
       <Tabs
         value={activeTab}
         onValueChange={handleTabChange}
-        className="w-full bg-white mt-4"
+        className="w-full bg-white mt-4 rounded-md shadow-sm"
       >
         <TabsList className="bg-[#F1F5F9] my-4 mx-4 py-6">
           <TabsTrigger className="py-2 px-8" value="tab1">
@@ -890,247 +1112,273 @@ const CreateProductComponent = () => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="tab1">
+        <TabsContent value="tab1" className="px-4 pb-4">
           <div className="h-4 bg-[#F7F8FA] mb-4" />
-          <div className="flex justify-end">
+          <div className="flex justify-end mb-4">
             {productId ? (
-              <ButtonCustom onClick={editProduct} className="px-4 h-9">
-                Save Product
+              <ButtonCustom
+                onClick={editProduct}
+                className="px-4 h-9"
+                disabled={loading}
+              >
+                {loading ? "Saving..." : "Save Product"}
               </ButtonCustom>
             ) : (
-              <ButtonCustom onClick={createProduct} className="px-4 h-9">
-                Create Product
+              <ButtonCustom
+                onClick={createProduct}
+                className="px-4 h-9"
+                disabled={loading}
+              >
+                {loading ? "Creating..." : "Create Product"}
               </ButtonCustom>
             )}
           </div>
-          <div className="flex flex-col md:flex-row mt-4">
-            <div className="md:mr-8 mb-4 md:mb-0">
-              <div className="mb-4">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Main Image<span className="text-red-500 ml-1">*</span>
-                </label>
-                {image ? (
-                  <div className="relative w-[96px] h-[96px]">
-                    {image.type ? (
-                      <img
-                        src={image.base64}
-                        alt="Uploaded Preview"
-                        className="w-full h-full object-cover rounded-md border"
-                      />
-                    ) : (
-                      <CashImage
-                        width={96}
-                        height={96}
-                        imageUrl={`${config.BASE_URL}${image?.base64}`}
-                      />
-                    )}
-                    <button
-                      onClick={handleRemoveImage}
-                      className="absolute top-2 right-2 bg-red-500 text-white px-1 py-1 rounded"
-                    >
-                      <IoClose />
-                    </button>
-                  </div>
-                ) : (
-                  <label
-                    htmlFor="singleFileInput"
-                    className="flex items-center justify-center w-[96px] h-[96px] bg-[#00000026] rounded-md cursor-pointer relative"
-                  >
-                    <input
-                      id="singleFileInput"
-                      type="file"
-                      accept="image/png, image/jpeg, image/jpg"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-                    <LuImagePlus className="text-gray-500 text-2xl rounded" />
-                  </label>
-                )}
+
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* Image Upload Section */}
+            <div className="flex-shrink-0">
+              <label className="block text-xs font-medium text-gray-700 mb-2">
+                Main Product Image<span className="text-red-500 ml-1">*</span>
+              </label>
+              <div className="text-xs text-gray-500 mb-2">
+                PNG/JPEG/JPG up to 5MB
               </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Name Product
-                  <span className="text-red-500 ml-1">*</span>
+              {image ? (
+                <div className="relative w-32 h-32">
+                  {image.type ? (
+                    <img
+                      src={image.base64}
+                      alt="Product Preview"
+                      className="w-full h-full object-cover rounded-md border"
+                    />
+                  ) : (
+                    <CashImage
+                      width={128}
+                      height={128}
+                      imageUrl={`${config.BASE_URL}${image?.base64}`}
+                    />
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="absolute top-2 right-2 bg-red-500 text-white px-1 py-1 rounded hover:bg-red-600 transition-colors"
+                  >
+                    <IoClose />
+                  </button>
+                </div>
+              ) : (
+                <label
+                  htmlFor="singleFileInput"
+                  className="flex flex-col items-center justify-center w-32 h-32 bg-gray-100 rounded-md cursor-pointer border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors"
+                >
+                  <input
+                    id="singleFileInput"
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  <LuImagePlus className="text-gray-500 text-2xl mb-1" />
+                  <span className="text-xs text-gray-500 text-center">
+                    Upload Image
+                  </span>
                 </label>
-                <Input
-                  value={nameProduct}
-                  onChange={(e) => setNameProduct(e.target.value)}
-                  className="h-11"
+              )}
+            </div>
+
+            {/* Form Fields */}
+            <div className="flex-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Product Name<span className="text-red-500 ml-1">*</span>
+                  </label>
+                  <Input
+                    value={nameProduct}
+                    onChange={(e) => setNameProduct(e.target.value)}
+                    className="h-11"
+                    placeholder="Enter product name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Base Price<span className="text-red-500 ml-1">*</span>
+                  </label>
+                  <Input
+                    value={priceProduct}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      // Allow only digits and decimal point
+                      const formattedValue = value
+                        .replace(/[^0-9.]/g, "")
+                        .replace(/(\..*)\./g, "$1");
+                      setPriceProduct(formattedValue);
+                    }}
+                    className="h-11"
+                    placeholder="Enter base price"
+                  />
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <DropDownSubCategory
+                  onItemSelect={onItemSelect}
+                  onClearSearch={onClearSearch}
+                  value={searchAdd}
+                  dataList={subCategory?.data || []}
+                  onChange={onChange}
+                  label="Sub-category"
+                  onLoadMore={onLoadMore}
+                  isLoading={loading}
+                  selectedOption={subCategoryItem}
+                  hasNext={
+                    (subCategory?.pagination &&
+                      subCategory.pagination!.currentPage <
+                        subCategory.pagination!.totalPages) ||
+                    false
+                  }
                 />
               </div>
-              <DropDownSubCategory
-                onItemSelect={onItemSelect}
-                onClearSearch={onClearSearch}
-                value={searchAdd}
-                dataList={subCategory?.data || []}
-                onChange={onChange}
-                label="Sub-category"
-                onLoadMore={onLoadMore}
-                isLoading={loading}
-                selectedOption={subCategoryItem}
-                hasNext={
-                  (subCategory?.pagination &&
-                    subCategory.pagination!.currentPage <
-                      subCategory.pagination!.totalPages) ||
-                  false
-                }
-              />
+
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Base price (Optional)
-                  <span className="text-red-500 ml-1">*</span>
+                <label className="block text-xs font-medium text-gray-700 mb-2">
+                  Product Description
                 </label>
-                <Input
-                  value={priceProduct}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    // Regex to allow digits, dots, and ensure only one dot
-                    const formattedValue = value
-                      .replace(/[^0-9.]/g, "")
-                      .replace(/(\..*)\./g, "$1");
-                    setPriceProduct(formattedValue);
-                  }}
-                  className="h-11"
+                <textarea
+                  name="description"
+                  rows={4}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Enter detailed product description..."
+                  className="w-full p-3 rounded-md border border-gray-300 focus:border-primary focus:outline-none text-base resize-vertical"
                 />
               </div>
             </div>
           </div>
-          <textarea
-            name="description"
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Type your description here..."
-            className="w-full p-2 mt-8 rounded border border-gray-300 focus:border-primary focus:outline-none text-base"
-            style={{
-              fontSize: "16px",
-              borderRadius: "5px",
-              border: "1px solid #ccc",
-            }}
-          />
         </TabsContent>
 
-        {/* Tab 2 */}
-        <TabsContent value="tab2">
+        {/* Tab 2 - Attributes */}
+        <TabsContent value="tab2" className="px-4 pb-4">
           <div className="h-4 bg-[#F7F8FA] mb-4" />
-          <div className="flex justify-end">
+          <div className="flex justify-end mb-4">
             <ButtonCustom onClick={onOpenModalAttribude} className="px-4 h-9">
               Create Attribute
             </ButtonCustom>
           </div>
           <div>
             {productDetail?.attributes?.map((attribute) => (
-              <div key={attribute.attribute.id}>
+              <div key={attribute.attribute.id} className="mb-6">
                 <h2 className="font-semibold text-lg mb-2 mt-4">
                   {attribute.attribute.name}
                 </h2>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead className="bg-gray-100">
-                    <tr>
-                      {attribudeHeader.map((header, index) => {
-                        if (
-                          attribute.attribute.name === "Size" &&
-                          header === "IMAGE"
-                        ) {
-                          return null;
-                        }
-                        return (
-                          <th
-                            key={header + index.toString()}
-                            className="border border-gray-300 px-4 py-2 text-left"
-                          >
-                            {header}
-                          </th>
-                        );
-                      })}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {attribute.values.map((value, index) => (
-                      <tr key={value.id} className="hover:bg-gray-200">
-                        <td>{index + 1}</td>
-                        <td
-                          onClick={() => {
-                            navigator.clipboard.writeText(
-                              value?.attributeValue?.id || ""
-                            );
-                            showToast("Copied to clipboard", "success");
-                          }}
-                          className="cursor-pointer"
-                        >
-                          {value?.attributeValue?.id || ""}
-                        </td>
-
-                        {attribute.attribute.name !== "Size" && (
-                          <td>
-                            <CashImage
-                              width={32}
-                              height={32}
-                              imageUrl={`${config.BASE_URL}${value?.attributeValue?.image[0]?.imageUrl}`}
-                            />
-                          </td>
-                        )}
-                        <td>{value?.attributeValue?.label}</td>
-                        <td>
-                          {formatTimestamp(value?.attributeValue?.createdAt)}
-                        </td>
-                        <td>
-                          <div className="flex gap-2 items-center">
-                            <Switch
-                              disabled={
-                                loadingUpdate.loading &&
-                                loadingUpdate.id === value.id
-                              }
-                              checked={value.isPublic}
-                              onChange={() =>
-                                toggleAttritudeStatus(
-                                  value,
-                                  attribute.attribute.name
-                                )
-                              }
-                            />
-                            <span
-                              className={
-                                value.isPublic
-                                  ? "text-green-500"
-                                  : "text-red-500"
-                              }
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        {attribudeHeader.map((header, index) => {
+                          if (
+                            attribute.attribute.name === "Size" &&
+                            header === "IMAGE"
+                          ) {
+                            return null;
+                          }
+                          return (
+                            <th
+                              key={header + index.toString()}
+                              className="border border-gray-300 px-4 py-2 text-left"
                             >
-                              {value.isPublic ? "Active" : "Inactive"}
-                            </span>
-                          </div>
-                        </td>
-                        <td>
-                          <div className="flex gap-2">
-                            <ButtonCustom
-                              onClick={() => onUpdateAttribudeValue(value)}
-                              className="w-6 h-6"
-                            >
-                              <FiEdit size={14} className="text-white" />
-                            </ButtonCustom>
-                          </div>
-                        </td>
+                              {header}
+                            </th>
+                          );
+                        })}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {attribute.values
+                        .filter((value) => value.isPublic) // Only show public attributes
+                        .map((value, index) => (
+                          <tr key={value.id} className="hover:bg-gray-200">
+                            <td className="border border-gray-300 px-4 py-2">
+                              {index + 1}
+                            </td>
+                            <td
+                              onClick={() => {
+                                navigator.clipboard.writeText(
+                                  value?.attributeValue?.id || ""
+                                );
+                                showToast("Copied to clipboard", "success");
+                              }}
+                              className="border border-gray-300 px-4 py-2 cursor-pointer hover:bg-blue-50"
+                              title="Click to copy ID"
+                            >
+                              {value?.attributeValue?.id || ""}
+                            </td>
+
+                            {attribute.attribute.name !== "Size" && (
+                              <td className="border border-gray-300 px-4 py-2">
+                                <CashImage
+                                  width={32}
+                                  height={32}
+                                  imageUrl={`${config.BASE_URL}${value?.attributeValue?.image[0]?.imageUrl}`}
+                                />
+                              </td>
+                            )}
+                            <td className="border border-gray-300 px-4 py-2">
+                              {value?.attributeValue?.label}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {formatTimestamp(
+                                value?.attributeValue?.createdAt
+                              )}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              <span className="text-green-500">Active</span>
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              <div className="flex gap-2 items-center">
+                                <ButtonCustom
+                                  onClick={() => onUpdateAttribudeValue(value)}
+                                  className="w-6 h-6"
+                                  title="Edit Attribute"
+                                >
+                                  <FiEdit size={14} className="text-white" />
+                                </ButtonCustom>
+                                <ButtonCustom
+                                  onClick={() => onDeleteAttribute(value)}
+                                  className="w-6 h-6 bg-red-600 hover:bg-red-700"
+                                  disabled={
+                                    loadingUpdate.loading &&
+                                    loadingUpdate.id === value.id
+                                  }
+                                >
+                                  <MdDeleteOutline
+                                    size={14}
+                                    className="text-white"
+                                  />
+                                </ButtonCustom>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             ))}
           </div>
         </TabsContent>
 
-        {/* Tab 3 */}
-        <TabsContent value="tab3">
+        {/* Tab 3 - Variants */}
+        <TabsContent value="tab3" className="px-4 pb-4">
           <div className="h-4 bg-[#F7F8FA] mb-4" />
-          <div className="flex justify-end">
+          <div className="flex justify-end mb-4">
             <ButtonCustom onClick={onOpenModalVariants} className="px-4 h-9">
               Create Variants
             </ButtonCustom>
           </div>
-          <div className="mt-4 overflow-x-auto">
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
               <thead className="bg-gray-100">
                 <tr>
                   {variantsHeader.map((header, index) => (
@@ -1144,90 +1392,140 @@ const CreateProductComponent = () => {
                 </tr>
               </thead>
               <tbody>
-                {productDetail?.variants?.map((value, index) => (
-                  <tr key={value.id} className="hover:bg-gray-200">
-                    <td>{index + 1}</td>
-                    <td
-                      onClick={() => {
-                        navigator.clipboard.writeText(value.id || "");
-                        showToast("Copied to clipboard", "success");
-                      }}
-                      className="cursor-pointer"
-                    >
-                      {value.id || ""}
-                    </td>
-                    <td>
-                      {value?.attributes?.map((attribute, index) =>
-                        index === value.attributes.length - 1
-                          ? attribute.attributeValue.label
-                          : `${attribute.attributeValue.label}, `
-                      )}
-                    </td>
-                    <td>{value.price}</td>
-                    <td>{value.stock}</td>
-                    <td>{value.discount || "- - -"}</td>
-                    <td>{value.discountType || "- - -"}</td>
-                    <td>
-                      {formatTimestamp(value?.discountStartDate) || "- - -"}
-                    </td>
-                    <td>
-                      {formatTimestamp(value?.discountEndDate) || "- - -"}
-                    </td>
-                    <td className="max-w-[380px]">
-                      <div className="flex gap-2">
-                        {value?.images.map((img, index) => (
-                          <CashImage
-                            key={index}
-                            imageUrl={`${config.BASE_URL}${img?.imageUrl}`}
-                          />
-                        ))}
-                      </div>
-                    </td>
-                    <td>{formatTimestamp(value.createdAt)}</td>
-                    <td>
-                      <div className="flex gap-2">
-                        <ButtonCustom
-                          className="w-6 h-6"
-                          onClick={() => onEditVariants(value)}
-                        >
-                          <FiEdit size={14} className="text-white" />
-                        </ButtonCustom>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {productDetail?.variants
+                  ?.filter((value) => value.isActive)
+                  .map((value, index) => (
+                    <tr key={value.id} className="hover:bg-gray-200">
+                      <td className="border border-gray-300 px-4 py-2">
+                        {index + 1}
+                      </td>
+                      <td
+                        onClick={() => {
+                          navigator.clipboard.writeText(value.id || "");
+                          showToast("Copied to clipboard", "success");
+                        }}
+                        className="border border-gray-300 px-4 py-2 cursor-pointer hover:bg-blue-50"
+                        title="Click to copy ID"
+                      >
+                        {value.id || ""}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {value?.attributes?.map((attribute, index) =>
+                          index === value.attributes.length - 1
+                            ? attribute.attributeValue.label
+                            : `${attribute.attributeValue.label}, `
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        ${value.price}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {value.stock || "0"}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {value.discount ? `${value.discount}%` : "- - -"}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {value.discountType || "- - -"}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {formatTimestamp(value?.discountStartDate) || "- - -"}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {formatTimestamp(value?.discountEndDate) || "- - -"}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 max-w-[380px]">
+                        <div className="flex gap-2 flex-wrap">
+                          {value?.images.map((img, index) => (
+                            <CashImage
+                              key={index}
+                              width={40}
+                              height={40}
+                              imageUrl={`${config.BASE_URL}${img?.imageUrl}`}
+                            />
+                          ))}
+                        </div>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {formatTimestamp(value.createdAt)}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        <div className="flex gap-2">
+                          <ButtonCustom
+                            className="w-6 h-6"
+                            onClick={() => onEditVariants(value)}
+                            title="Edit Variant"
+                          >
+                            <FiEdit size={14} className="text-white" />
+                          </ButtonCustom>
+                          {/* Reset Discount Button - only show if variant has a discount */}
+                          {value.discount && (
+                            <ButtonCustom
+                              onClick={() => onResetDiscount(value)}
+                              className="w-6 h-6 bg-orange-600 hover:bg-orange-700"
+                              title="Reset Discount"
+                              disabled={
+                                loadingUpdate.loading &&
+                                loadingUpdate.id === value.id
+                              }
+                            >
+                              <HiRefresh size={14} className="text-white" />
+                            </ButtonCustom>
+                          )}
+                          <ButtonCustom
+                            onClick={() => onDeleteAttributeValue(value)}
+                            className="w-6 h-6 bg-red-600 hover:bg-red-700"
+                            disabled={
+                              loadingUpdate.loading &&
+                              loadingUpdate.id === value.id
+                            }
+                          >
+                            <MdDeleteOutline size={14} className="text-white" />
+                          </ButtonCustom>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
         </TabsContent>
 
-        <TabsContent value="tab4">
+        {/* Tab 4 - Suggestions */}
+        <TabsContent value="tab4" className="px-4 pb-4">
           <div className="h-4 bg-[#F7F8FA] mb-4" />
-          <div>
-            <div className="flex justify-end mb-4">
-              <ButtonCustom
-                onClick={onOpenModalSuggestion}
-                className="px-4 h-9"
-              >
-                Create Suggestion
-              </ButtonCustom>
-            </div>
-            <div className="overflow-x-auto min-h-[50vh]">
-              <table className="w-full">
-                <thead className="bg-gray-100">
+          <div className="flex justify-end mb-4">
+            <ButtonCustom onClick={onOpenModalSuggestion} className="px-4 h-9">
+              Create Suggestion
+            </ButtonCustom>
+          </div>
+          <div className="overflow-x-auto min-h-[50vh]">
+            <table className="w-full border-collapse">
+              <thead className="bg-gray-100">
+                <tr>
+                  {productPreviewSuggestionHeader.map((header, index) => (
+                    <th
+                      key={header + index.toString()}
+                      className="border border-gray-300 px-4 py-2 text-left"
+                    >
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
                   <tr>
-                    {productPreviewSuggestionHeader.map((header, index) => (
-                      <th
-                        key={header + index.toString()}
-                        className="border border-gray-300 px-4 py-2 text-left"
-                      >
-                        {header}
-                      </th>
-                    ))}
+                    <td
+                      colSpan={productPreviewSuggestionHeader.length}
+                      className="text-center py-4"
+                    >
+                      <CenteredLoading loading={true} />
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {productSuggestion?.data.map((value, index: number) => {
+                ) : productSuggestion?.data &&
+                  productSuggestion.data.length > 0 ? (
+                  productSuggestion.data.map((value, index: number) => {
                     const displayIndex =
                       ((productSuggestion.pagination?.currentPage || 1) - 1) *
                         15 +
@@ -1239,14 +1537,29 @@ const CreateProductComponent = () => {
                         <td className="border border-gray-300 px-4 py-2">
                           {displayIndex}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2 max-w-72 truncate">
+                        <td
+                          onClick={() => {
+                            navigator.clipboard.writeText(value.productTo.id);
+                            showToast(
+                              "Product ID copied to clipboard",
+                              "success"
+                            );
+                          }}
+                          className="border border-gray-300 px-4 py-2 max-w-72 truncate cursor-pointer hover:bg-blue-50"
+                          title="Click to copy Product ID"
+                        >
                           {value.productTo.id}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           {value.productTo.name || "- - -"}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {value.productTo.description || "- - -"}
+                        <td className="border border-gray-300 px-4 py-2 max-w-xs">
+                          <div
+                            className="truncate"
+                            title={value.productTo.description}
+                          >
+                            {value.productTo.description || "- - -"}
+                          </div>
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           {value.productTo.viewCount}
@@ -1261,48 +1574,58 @@ const CreateProductComponent = () => {
                               variant="cancel"
                               onClick={() => onViewProduct(value)}
                               className="w-6 h-6"
+                              title="View Product"
                             >
                               <FaEye size={14} className="text-white" />
                             </ButtonCustom>
-                            <button
+                            <ButtonCustom
                               onClick={() => {
                                 setProductIdDelete(value?.toId);
                                 setModalConfirmDeleteOpen(true);
                               }}
-                              className="w-6 h-6 bg-red-600 rounded flex justify-center items-center"
+                              className="w-6 h-6 bg-red-600 hover:bg-red-700"
+                              title="Delete Suggestion"
                             >
                               <MdDeleteOutline
                                 size={16}
                                 className="text-white"
                               />
-                            </button>
+                            </ButtonCustom>
                           </div>
                         </td>
                       </tr>
                     );
-                  })}
-                </tbody>
-              </table>
-            </div>
-            {productSuggestion && productSuggestion.data.length > 0 && (
-              <div className="flex justify-end mr-8 mt-8">
-                <Pagination
-                  currentPage={productSuggestion.pagination?.currentPage || 1}
-                  onPageChange={(page) => getProductSuggestion({ page })}
-                  totalPages={productSuggestion.pagination?.totalPages || 1}
-                />
-              </div>
-            )}
+                  })
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={productPreviewSuggestionHeader.length}
+                      className="text-center py-4"
+                    >
+                      No product suggestions found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
+          {productSuggestion && productSuggestion.data.length > 0 && (
+            <div className="flex justify-end mr-8 my-4">
+              <Pagination
+                currentPage={productSuggestion.pagination?.currentPage || 1}
+                onPageChange={(page) => getProductSuggestion({ page })}
+                totalPages={productSuggestion.pagination?.totalPages || 1}
+              />
+            </div>
+          )}
         </TabsContent>
       </Tabs>
-
       <CenteredLoading loading={loading} />
-
+      {/* Modals */}
       <AddAttributeModal
         isOpen={modalCreateAttribude}
         onConfirm={onConfirmAttribudeValue}
-        onClose={() => setModalCreateAttribude(false)}
+        onClose={handleCloseAttributeModal}
         title={
           dataAttribudeValueItem
             ? "Update Attribute Value"
@@ -1310,28 +1633,53 @@ const CreateProductComponent = () => {
         }
         initialData={dataAttribudeValueItem}
       />
-
       <AddVarantsModal
         onSubmit={onSubmidModalVarants}
         attributes={productDetail?.attributes || []}
-        onClose={() => setModalCreateVariant(false)}
+        onClose={handleCloseVariantModal}
         isOpen={modalCreateVariant}
         initialData={dataVariantItem}
       />
-
       <AddSuggestionModal
         isOpen={modalSuggestion}
-        onClose={() => setModalSuggestion(false)}
+        onClose={handleCloseSuggestionModal}
         onConfirm={onConfirmSuggestion}
         title="Create product suggestion"
       />
-
       <ConfirmationModal
         isOpen={modalConfirmDeleteOpen}
         title="Confirm Delete!"
-        onClose={() => setModalConfirmDeleteOpen(false)}
+        onClose={handleCloseDeleteModal}
         onConfirm={onApproveDelete}
-        message="Are you sure you want to delete?"
+        message="Are you sure you want to delete this product suggestion?"
+        isNotCancel={true}
+      />
+      {/* Delete Attribute Modal */}
+      <ConfirmationModal
+        isOpen={deleteAttributeModal}
+        title="Delete Attribute"
+        onClose={handleCloseDeleteAttributeModal}
+        onConfirm={handleDeleteAttribute}
+        message={`Are you sure you want to delete the attribute "${attributeToDelete?.attributeValue?.label}"? This action cannot be undone.`}
+        isNotCancel={true}
+      />
+      {/* Delete Variant Modal */}
+      <ConfirmationModal
+        isOpen={deleteVariantModal}
+        title="Delete Variant"
+        onClose={handleCloseDeleteVariantModal}
+        onConfirm={handleDeleteVariant}
+        message={`Are you sure you want to delete this variant? This action cannot be undone.`}
+        isNotCancel={true}
+      />
+
+      {/* Reset Discount Modal */}
+      <ConfirmationModal
+        isOpen={resetDiscountModal}
+        title="Reset Discount"
+        onClose={handleCloseResetDiscountModal}
+        onConfirm={handleResetDiscount}
+        message={`Are you sure you want to reset the discount for this variant? The discount will be expired immediately.`}
         isNotCancel={true}
       />
 
@@ -1339,7 +1687,7 @@ const CreateProductComponent = () => {
       <ConfirmationModal
         isOpen={showValidationModal}
         title="Create Product First"
-        onClose={() => setShowValidationModal(false)}
+        onClose={handleCloseValidationModal}
         onConfirm={handleValidationConfirm}
         message="You need to create and save the product before accessing other tabs. Do you want to create the product now?"
         isNotCancel={false}

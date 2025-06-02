@@ -12,10 +12,12 @@ import MessgaeError from "../error-handle/message_error";
 import ButtonCustom from "../custom/ButtonCustom";
 import { LuImagePlus } from "react-icons/lu";
 import { IoClose } from "react-icons/io5";
+import { MdToggleOn, MdToggleOff } from "react-icons/md";
 import { resizeImageConvertBase64 } from "@/utils/security/image_convert";
 import { Category } from "@/redux/model/category/category_model";
 import CashImage from "../custom/CashImage";
 import { config } from "@/utils/config/config";
+import { Switch } from "../custom/Switch";
 
 interface CategoryModalProps {
   isOpen: boolean;
@@ -39,12 +41,14 @@ const CategoryModal = ({
 }: CategoryModalProps) => {
   const [nameCategory, setNameCategory] = useState("");
   const [image, setImage] = useState<ProcessedImage | null>(null);
+  const [isActive, setIsActive] = useState(true); // Default to active
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (initialData) {
       setNameCategory(initialData.name);
       setImage({ base64: initialData.image?.imageUrl, type: null });
+      setIsActive(initialData.isPublic ?? true); // Use initialData.isActive or default to true
     } else {
       resetForm();
     }
@@ -69,12 +73,14 @@ const CategoryModal = ({
     onConfirm({
       nameCategory,
       image,
+      isActive,
     });
   };
 
   const resetForm = () => {
     setNameCategory("");
     setImage(null);
+    setIsActive(true); // Reset to default active state
     setErrors({});
   };
 
@@ -87,13 +93,24 @@ const CategoryModal = ({
   ) => {
     const file = event.target.files?.[0];
     if (file) {
-      const resizedBase64 = await resizeImageConvertBase64(file); // Resize to Full HD (1920x1080)
-      const fileExtension = `.${file.type.split("/")[1]}`;
-      setImage({
-        base64: resizedBase64,
-        type: fileExtension,
-      });
+      try {
+        const resizedBase64 = await resizeImageConvertBase64(file);
+        const fileExtension = `.${file.type.split("/")[1]}`;
+        setImage({
+          base64: resizedBase64,
+          type: fileExtension,
+        });
+        // Clear image error if upload is successful
+        setErrors((prev) => ({ ...prev, image: "" }));
+      } catch (error) {
+        // Error handling is already done in resizeImageConvertBase64 function
+        console.error("Image upload failed:", error);
+      }
     }
+  };
+
+  const toggleActive = () => {
+    setIsActive(!isActive);
   };
 
   function onCloseFrom() {
@@ -110,7 +127,7 @@ const CategoryModal = ({
           </DialogDescription>
         </DialogHeader>
         <form onKeyDown={handleKeyPress}>
-          <div className="my-4 ">
+          <div className="my-4">
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Category
               <span className="text-red-500 ml-1">*</span>
@@ -152,6 +169,7 @@ const CategoryModal = ({
                 )}
 
                 <button
+                  type="button"
                   onClick={handleRemoveImage}
                   className="absolute top-2 right-2 bg-red-500 text-white px-1 py-1 rounded"
                 >
@@ -166,7 +184,7 @@ const CategoryModal = ({
                 <input
                   id="fileInput"
                   type="file"
-                  accept="image/*"
+                  accept="image/png,image/jpeg,image/jpg"
                   onChange={handleImageUpload}
                   className="hidden"
                 />
@@ -176,6 +194,22 @@ const CategoryModal = ({
             {errors.image && (
               <MessgaeError message={errors.image} type="error" />
             )}
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-xs font-medium text-gray-700 mb-2">
+              Status
+            </label>
+            <div className="flex items-center space-x-3">
+              <Switch checked={isActive} onChange={toggleActive} />
+              <span
+                className={`text-sm font-medium ${
+                  isActive ? "text-green-600" : "text-gray-500"
+                }`}
+              >
+                {isActive ? "Active" : "Inactive"}
+              </span>
+            </div>
           </div>
 
           <div className="flex justify-end space-x-2 mt-8">

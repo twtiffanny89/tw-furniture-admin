@@ -4,7 +4,6 @@
 import ButtonCustom from "@/components/custom/ButtonCustom";
 import CashImage from "@/components/custom/CashImage";
 import Input from "@/components/custom/Input";
-import { Switch } from "@/components/custom/Switch";
 import showToast from "@/components/error-handle/show-toast";
 import CenteredLoading from "@/components/loading/center_loading";
 import SubCategoryModal from "@/components/modal/sub_category_modal";
@@ -36,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Globe, Lock } from "lucide-react";
 
 // Status filter options like in the product page
 const STATUS_OPTIONS = [
@@ -110,6 +110,7 @@ const SubCategoryComponent = () => {
   }
 
   function onAddCategory() {
+    setSubCategoryItem(null); // Clear any existing item data
     setOpenModal(true);
   }
 
@@ -117,6 +118,7 @@ const SubCategoryComponent = () => {
     const response = await createSubCategory({
       name: data.nameSub.trim(),
       categoryId: data.idCategory,
+      isPublic: data.isActive, // Include the isActive status
     });
     if (response.success) {
       const responseImage = await uploadImageSubCategory({
@@ -139,10 +141,11 @@ const SubCategoryComponent = () => {
 
   async function onEditCategory(data: any) {
     const response = await updatedSubCategory({
-      subCategoryId: data.id,
+      subCategoryId: subCategoryItem!.id,
       data: {
         name: data.nameSub.trim(),
         categoryId: data.idCategory,
+        isPublic: data.isActive, // Include the isActive status
       },
     });
 
@@ -173,7 +176,7 @@ const SubCategoryComponent = () => {
     setLoading(true);
     if (subCategoryItem) {
       await onEditCategory(data);
-      setSubCategoryItem(null);
+      setSubCategoryItem(null); // Clear after edit
       onCallApi({
         page: subCategories?.pagination?.currentPage,
         search: search,
@@ -188,6 +191,12 @@ const SubCategoryComponent = () => {
   function onOpenModalSub(item: Subcategory) {
     setSubCategoryItem(item);
     setOpenModal(true);
+  }
+
+  // Fixed onClose function to properly clear initial data
+  function onCloseModal() {
+    setOpenModal(false);
+    setSubCategoryItem(null); // Clear the initial data when closing
   }
 
   const onSearchChange = useCallback(
@@ -405,11 +414,6 @@ const SubCategoryComponent = () => {
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
                         <div className="flex gap-2 items-center">
-                          <Switch
-                            disabled={loadingUpdate.loading}
-                            checked={sub.isPublic}
-                            onChange={() => toggleCategoryStatus(sub)}
-                          />
                           <span
                             className={
                               sub.isPublic ? "text-green-500" : "text-red-500"
@@ -427,6 +431,21 @@ const SubCategoryComponent = () => {
                       } Items`}</td>
                       <td className="border border-gray-300 px-4 py-2">
                         <div className="flex gap-2">
+                          <ButtonCustom
+                            onClick={() => toggleCategoryStatus(sub)}
+                            className="w-6 h-6"
+                            title={sub.isPublic ? "Public" : "Private"}
+                            disabled={
+                              loadingUpdate.loading &&
+                              loadingUpdate.id === sub.id
+                            }
+                          >
+                            {sub.isPublic ? (
+                              <Globe size={14} className="text-white" />
+                            ) : (
+                              <Lock size={14} className="text-white" />
+                            )}
+                          </ButtonCustom>
                           <ButtonCustom
                             onClick={() => onOpenModalSub(sub)}
                             className="w-6 h-6"
@@ -466,7 +485,7 @@ const SubCategoryComponent = () => {
         category={category?.data || []}
         title="Sub category"
         isOpen={openModal}
-        onClose={() => setOpenModal(false)}
+        onClose={onCloseModal} // Use the fixed onCloseModal function
         onConfirm={onConfirm}
         initialData={subCategoryItem}
         isLoading={loadingSelect}

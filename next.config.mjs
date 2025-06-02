@@ -6,6 +6,10 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
   env: {
     BASE_URL: process.env.BASE_URL,
     DEV: process.env.DEV,

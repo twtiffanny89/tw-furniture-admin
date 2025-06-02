@@ -144,6 +144,7 @@ export interface addVariant {
   discountEndDate?: string;
   stock?: number;
   sku?: string;
+  isActive?: boolean;
 }
 
 interface getByProductIdModel {
@@ -408,8 +409,6 @@ export async function addVariantProductService({
   productId,
 }: addVariantModel) {
   try {
-    console.log("### data", data);
-    console.log("### productId", productId);
     const response = await axiosServerWithAuth.post(
       `/v1/admin/product/${productId}/add-variant`,
       data

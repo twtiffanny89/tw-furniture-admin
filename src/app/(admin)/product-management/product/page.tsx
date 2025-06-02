@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { STATUS_OPTIONS } from "@/constants/enum/order-status";
+import { Globe, Lock } from "lucide-react";
 
 const ProductComponent = () => {
   const [product, setProduct] = useState<ProductListModel | null>(null);
@@ -282,10 +283,6 @@ const ProductComponent = () => {
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
                       <div className="flex gap-2 items-center">
-                        <Switch
-                          checked={item.isPublic}
-                          onChange={() => toggleProductStatus(item)}
-                        />
                         <span
                           className={
                             item.isPublic ? "text-green-500" : "text-red-500"
@@ -300,6 +297,17 @@ const ProductComponent = () => {
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
                       <div className="flex gap-2">
+                        <ButtonCustom
+                          onClick={() => toggleProductStatus(item)}
+                          className="w-6 h-6"
+                          title={item.isPublic ? "Public" : "Private"}
+                        >
+                          {item.isPublic ? (
+                            <Globe size={14} className="text-white" />
+                          ) : (
+                            <Lock size={14} className="text-white" />
+                          )}
+                        </ButtonCustom>
                         <ButtonCustom
                           variant="cancel"
                           onClick={() => handleViewProduct(item)}
