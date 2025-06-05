@@ -4,7 +4,6 @@
 import ButtonCustom from "@/components/custom/ButtonCustom";
 import CashImage from "@/components/custom/CashImage";
 import Input from "@/components/custom/Input";
-import { Switch } from "@/components/custom/Switch";
 import showToast from "@/components/error-handle/show-toast";
 import CenteredLoading from "@/components/loading/center_loading";
 import Pagination from "@/components/pagination/Pagination";

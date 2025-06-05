@@ -28,6 +28,7 @@ interface createProductParams {
 interface AttributeValue {
   attributeValueId: string;
   name: string;
+  isPublic: boolean;
 }
 
 interface PostData {

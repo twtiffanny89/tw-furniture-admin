@@ -456,6 +456,7 @@ const CreateProductComponent = () => {
               {
                 attributeValueId: createdAttributeValue.id,
                 name: item.name,
+                isPublic: true, // Default to true for new values
               },
             ],
           },
