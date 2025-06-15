@@ -12,8 +12,8 @@ import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const LoginPage = () => {
-  const [username, setUsername] = useState("menghorfreelance@gmail.com");
-  const [password, setPassword] = useState("71OV58HM");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
