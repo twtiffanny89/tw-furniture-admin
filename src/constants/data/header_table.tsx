@@ -11,6 +11,17 @@ export const headerAllUser: string[] = [
   "STATUS",
 ];
 
+export const headerAllAdminUser: string[] = [
+  "NO",
+  "USER_ID",
+  "USERNAME",
+  "CREATE_AT",
+  "ROLE",
+  "FIRST_NAME",
+  "LAST_NAME",
+  "STATUS",
+];
+
 export const headerAllOrder: string[] = [
   "NO",
   "ORDER_ID",
